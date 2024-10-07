@@ -2,26 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+@layer base {
+    @font-face {
+      font-family: "Kanit";
+      font-style: normal;
+      font-weight: 800;
+      src: url(/fonts/Kanit-ExtraBold.ttf) format("truetype");
+    }
+    @font-face {
+      font-family: "Kanit";
+      font-style: normal;
+      font-weight: 700;
+      src: url(/fonts/Kanit-Bold.ttf) format("truetype");
+    }
+    @font-face {
+      font-family: "Kanit";
+      font-style: normal;
+      font-weight: 500;
+      font-display: optional;
+      src: url(/fonts/Kanit-Medium.ttf) format("truetype");
+    }
+    @font-face {
+      font-family: "Kanit";
+      font-style: normal;
+      font-weight: 400;
+      src: url(/fonts/Kanit-Regular.ttf) format("truetype");
+    }
+    @font-face {
+      font-family: "Kanit";
+      font-style: normal;
+      font-weight: 300;
+      src: url(/fonts/Kanit-Light.ttf) format("truetype");
+    }
 }
