@@ -1,9 +1,11 @@
 name: Auto deploy website to server
 
-on:
-  push:
-    branches:
-      - main
+on: workflow_dispatch
+# Auto push
+#  push:
+#   branches:
+#      - main
+  
 jobs:
   deploy:
     name: Deploy project
