@@ -51,3 +51,19 @@ jobs:
             cd ..
             docker compose down 
             docker compose up --build -d
+      - name: Update deployment Status (success)
+        if: success()
+        uses: chrnorm/deployment-status@v2
+        with:
+          token: '${{ github.token }}'
+          environment-url: ${{ vars.MY_APP }}
+          state: 'success'
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+      - name: Update deployment status (failure)
+        if: failure()
+        uses: chrnorm/deployment-status@v2
+        with:
+          token: '${{ github.token }}'
+          environment-url: ${{ vars.MY_APP }}
+          state: 'failure'
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}     
