@@ -48,5 +48,6 @@ jobs:
             git config --global url."https://${{ secrets.PERSONAL_GITHUB_TOKEN }}:@github.com".insteadOf "https://github.com"
             cd /home/duangcharoen024/Server/Frontend
             git pull origin main
-      - name: Build Docker Containers
-        run:  docker-compose -f "/home/duangcharoen024/Server/docker-compose.yml" up -d --build
+            cd ..
+            docker compose down 
+            docker compose up --build -d
