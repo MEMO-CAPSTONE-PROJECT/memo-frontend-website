@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: 'actions/checkout@v3'
+        uses: 'actions/checkout@v4'
         with:
           ref: main
           token: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
@@ -21,7 +21,7 @@ jobs:
           sudo apt update
           sudo apt install -y openvpn openvpn-systemd-resolved
       - name: Connect to VPN
-        uses: "kota65535/github-openvpn-connect-action@v2"
+        uses: "kota65535/github-openvpn-connect-action@v3"
         with:
           config_file: .github/workflows/client.ovpn
           username: ${{ secrets.VPN_USERNAME }}
