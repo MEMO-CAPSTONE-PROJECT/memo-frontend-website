@@ -35,7 +35,7 @@ jobs:
           environment: production
       - name: Set up SSH Key and Deploy
         # run: |
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
         with:
