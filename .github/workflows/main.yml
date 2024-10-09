@@ -45,7 +45,6 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           port: 22
           script: |
-            git config --global url."https://${{ username }}:${access_token}@github.com".insteadOf "https://github.com"
             git config --global url."https://${{ secrets.PERSONAL_GITHUB_TOKEN }}:@github.com".insteadOf "https://github.com"
             cd /home/duangcharoen024/Server/Frontend
             git pull origin main
