@@ -39,7 +39,7 @@ jobs:
         with:
           token: '${{ github.token }}'
           environment-url: ${{ vars.MY_APP }}
-          environment: production
+          environment: Production
       - name: Set up SSH Key and Deploy
         # run: |
         uses: appleboy/ssh-action@master
