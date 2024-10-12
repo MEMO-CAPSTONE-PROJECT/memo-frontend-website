@@ -18,15 +18,12 @@ jobs:
         with:
           ref: main
           token: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+      ### CACHE DEPENDENCIES ###
       - name: Install OpenVPN 
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: openvpn openvpn-systemd-resolved
-#          version: 1.0
-#      - name: Install OpenVPN
-#        run: |
-#          sudo apt update
-#          sudo apt install -y openvpn openvpn-systemd-resolved
+      ##########################
       - name: Connect to VPN
         uses: "kota65535/github-openvpn-connect-action@v3"
         with:
