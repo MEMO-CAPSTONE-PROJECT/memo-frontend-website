@@ -10,7 +10,7 @@ RUN npm install
 FROM node:22-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY src ./src
+COPY . .
 COPY public ./public
 COPY package.json next.config.js jsconfig.json ./
 RUN npm run build
