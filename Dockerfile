@@ -1,16 +1,25 @@
-# Install bun
-FROM oven/bun:latest
+# Stage 1: install dependencies
+FROM node:22-alpine AS deps
 WORKDIR /app
-# Copy package.json and package-lock.json to container
-COPY package*.json ./
-# Install dependencies
-RUN bun install
-# Copy the rest of the application
-COPY . .
-# Build app and start
-ENV NEXT_TELEMETRY_DISABLED 1
-# Production
-RUN bun run build
-ENTRYPOINT ["bun","run","start"]
-# Dev
-# CMD ["bun","run","dev"]
+COPY package*.json .
+#ARG NODE_ENV
+#ENV NODE_ENV $NODE_ENV
+RUN npm install
+
+# Stage 2: build
+FROM node:22-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY src ./src
+COPY public ./public
+COPY package.json next.config.js jsconfig.json ./
+RUN npm run build
+
+# Stage 3: run
+FROM node:22-alpine
+WORKDIR /app
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
+CMD ["npm", "run", "start"]

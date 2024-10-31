@@ -1,4 +1,8 @@
 import type { Config } from "tailwindcss";
+import { BorderRadius } from "./constants/theme/border-radius";
+import { Color } from "./constants/theme/color";
+import { FontFamily, FontSize, FontWeight } from "./constants/theme/font";
+import { LayoutSize } from "./constants/theme/layout-size";
 
 const config: Config = {
   content: [
@@ -7,12 +11,14 @@ const config: Config = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    borderRadius: BorderRadius,
+    fontSize: FontSize,
+    fontWeight: FontWeight,
+    fontFamily: FontFamily,
+    colors: Color,
     extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-      },
-    },
+      spacing: LayoutSize,
+    }
   },
   plugins: [],
 };
