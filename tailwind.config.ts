@@ -20,6 +20,6 @@ const config: Config = {
       spacing: LayoutSize,
     }
   },
-  plugins: [],
+  plugins: [require('daisyui')],
 };
 export default config;
