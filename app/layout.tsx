@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-kanit-medium">
+      <body className="font-[kanit] tracking-[0.01rem]">
         {children}
       </body>
     </html>

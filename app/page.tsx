@@ -1,43 +1,39 @@
 
-import Image from 'next/image'
+import BrandingBackground from '@/components/background/branding-background';
+import MemoCard from '@/components/container/memo-card';
+import MemoCharacterCard from '@/components/container/memo-character-card';
+import MemoImage from '@/components/container/memo-image';
 import Link from "next/link";
 import './globals.css';
 
-
-export default function Page() {
+export default function Home() {
   return (
-    <div className="font-[kanit] bg-[url('/Desktop-1.png')] bg-cover bg-center"> 
-    <div className=' flex items-center justify-center min-h-screen'>
-    <div className='flex items-center justify-center  mx-auto py-12 px-16 bg-[#FCFCFC] rounded-lg  shadow-md  flex-col  min-h-fit '>
-      <p className='text-[#605E5C] text-[32px]'>กรุณาเลือกประเภทผู้ใช้</p>
-      <p className='text-[#A19F9D] text-[20px]'>กรุณาเลือกประเภทผู้ใช้</p>
-    
-    <div className='flex grid-cols-3 gap-12 pt-[50px] '>
-      <Link href={"/student1"}>
-        <div className=" group hover:bg-[url('/frame.png')]  pt-5 relative place-items-center border-[3px] rounded-[15px] w-[250px] h-[260px] border-[#D9D9D9]">
-          <Image src="/Teacher-Boy-Mascot.png" alt="Teacher-Boy Mascot.png" width={180}height={180} />
-          <p className='  group-hover:text-[#FCFCFC] text-[#605E5C] text-[18px] absolute bottom-0 left-1/2 transform -translate-x-1/2 mb-2 text-center'> ผู้ดูแลระบบ</p>
-        </div>
-      </Link>
+    <BrandingBackground>
+        <MemoCard>
+          <section className="text-center">
+            <p className='text-body-1 text-header font-bold'>กรุณาเลือกประเภทผู้ใช้</p>
+            <p className='text-body-2 text-title font-semibold'>เลือกเพื่อใช้ในการเข้าสู่ระบบ</p>
+          </section>
+          <div className="flex flex-row gap-5xl">
+            <Link href={"/admin"}>
+              <MemoCharacterCard title="คุณครูผู้ดูแลระบบ">
+                <MemoImage size="small" src="/Teacher-Boy-Mascot.png" alt="Teacher-Boy Mascot.png" image={{ width: 175, height: 175 }} />
+              </MemoCharacterCard>
+            </Link>
+            <Link href={"/teacher"}>
+              <MemoCharacterCard title="คุณครูทั่วไป">
+                <MemoImage size="small" src="/Teacher-Girl-Mascot.png" alt="Teacher-girl Mascot.png" image={{ width: 160, height: 160 }} />
+              </MemoCharacterCard>
+            </Link>
 
-      <Link href={"/student1"}>
-        <div className=" group hover:bg-[url('/frame.png')]  pt-5 relative place-items-center border-[3px] rounded-[15px] w-[250px] h-[260px] border-[#D9D9D9]">
-          <Image src="/Teacher-Girl-Mascot.png" alt="Teacher-Girl Mascot.png" width={160} height={160}/>
-          <p className='  group-hover:text-[#FCFCFC] text-[#605E5C] text-[18px] absolute bottom-0 left-1/2 transform -translate-x-1/2 mb-2 text-center'> ผู้ดูแลระบบ</p>
-        </div>
-      </Link>
-
-      <Link href={"/student1"}>
-        <div className=" group hover:bg-[url('/frame.png')]  pt-5 relative place-items-center border-[3px] rounded-[15px] w-[250px] h-[260px] border-[#D9D9D9]">
-          <Image src="/Student-girl.png" alt="Girl-Mascot.png" width={145} height={145} />
-          <p className='  group-hover:text-[#FCFCFC] text-[#605E5C] text-[18px] absolute bottom-0 left-1/2 transform -translate-x-1/2 mb-2 text-center'> ผู้ดูแลระบบ</p>
-        </div>
-      </Link>
-      
-    </div>
-  </div>
-  </div>
-  </div>
+            <Link href={"/student"}>
+              <MemoCharacterCard title="นักเรียน">
+                  <MemoImage size="small" src="/Student-girl.png" alt="Student-girl Mascot.png" image={{ width: 145, height: 145 }} />
+              </MemoCharacterCard>         
+            </Link>
+          </div>
+        </MemoCard>
+    </BrandingBackground>
 
   )
 }
