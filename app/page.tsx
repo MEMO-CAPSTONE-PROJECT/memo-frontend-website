@@ -15,7 +15,7 @@ export default function Home() {
             <p className='text-body-2 text-title font-semibold'>เลือกเพื่อใช้ในการเข้าสู่ระบบ</p>
           </section>
           <div className="flex flex-row gap-5xl">
-            <Link href={"/admin"}>
+            <Link href={"/admin/register"}>
               <MemoCharacterCard title="คุณครูผู้ดูแลระบบ">
                 <MemoImage size="small" src="/Teacher-Boy-Mascot.png" alt="Teacher-Boy Mascot.png" image={{ width: 175, height: 175 }} />
               </MemoCharacterCard>
