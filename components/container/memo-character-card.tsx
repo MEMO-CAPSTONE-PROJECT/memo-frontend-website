@@ -29,7 +29,7 @@ export default function MemoCharacterCard({ title, children, size = "medium" }: 
             >
                     
                 {children && <div className="z-20">{children}</div>}
-                {title && <p className="z-20 text-title text-center font-bold">{title}</p>}
+                {title && <p className="z-20 text-title text-center font-semibold">{title}</p>}
                 <div className={`z-10 invisible group-hover:visible absolute bottom-[2.5rem] -right-[6.5rem] rounded-full border-[50px] border-title-1 opacity-20 ${circle[size]}`}></div>
                 <div className={`z-10 invisible group-hover:visible absolute -bottom-[6.5rem] right-[2.5rem] rounded-full border-[50px] border-title-1 opacity-20 ${circle[size]}`}></div>
             </div>  

@@ -1,11 +1,11 @@
 
 interface BrandingBackgroundProps {
-    children: React.ReactNode
+    children?: React.ReactNode
 }
 
 export default function BrandingBackground({ children }: Readonly<BrandingBackgroundProps>) {
     return (
-        <div className="bg-[url('/Desktop-1.png')] bg-cover bg-center w-screen h-screen flex items-center justify-center min-h-screen">
+        <div className="bg-[url('/Desktop-1.png')] bg-cover bg-center w-full h-full flex items-center justify-center">
             {children}
         </div>
     )
