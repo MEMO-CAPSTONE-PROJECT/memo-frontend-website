@@ -5,25 +5,23 @@ import MemoInputText from '@/components/input/memo-input-text';
 import Image from 'next/image';
 import Link from 'next/link';
 
-export default function TeacherRegistrationForm() {
+export default function AdminResetPassword() {
     return (
       <BrandingBackground>
           <MemoCard>
             <section className="flex flex-col items-center space-y-xl">
               <Image src="/Logo-circle.png" alt="logo.png" width={140} height={140}/>
-              <p className="text-body-1 text-header font-bold">ส่งคำร้องเพื่อลงทะเบียนระบบ</p>
+              <p className="text-body-1 text-header font-bold">ตั้งค่ารหัสผ่านใหม่</p>
             </section>
             <form className="flex flex-col space-y-lg">
-              <MemoInputText placeholder="รหัสประจำตัวคุณครู"/>
-              <MemoInputText placeholder="อีเมล"/>
               <MemoInputText placeholder="รหัสผ่าน"/>
               <MemoInputText placeholder="ยืนยันรหัสผ่าน"/>
-              <MemoButton title="ลงทะเบียน"/>
+              <MemoButton title="ยืนยัน"/>
               <Link href="/">
                 <MemoButton title="กลับไปยังหน้าเลือกผู้ใช้" variant="ghost"/>
               </Link>
             </form>        
           </MemoCard>
       </BrandingBackground>
-    );
+    )
   }

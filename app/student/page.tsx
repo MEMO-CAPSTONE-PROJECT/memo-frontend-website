@@ -3,6 +3,7 @@ import MemoButton from '@/components/button/memo-button';
 import MemoCard from '@/components/container/memo-card';
 import MemoInputText from '@/components/input/memo-input-text';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function StudentRegistrationForm() {
   return (
@@ -19,6 +20,9 @@ export default function StudentRegistrationForm() {
           <MemoInputText placeholder="รหัสผ่าน" />
           <MemoInputText placeholder="ยืนยันรหัสผ่าน" />
           <MemoButton title="ถัดไป" />
+          <Link href="/">
+                <MemoButton title="กลับไปยังหน้าเลือกผู้ใช้" variant="ghost"/>
+          </Link>
         </form>
       </MemoCard>
     </BrandingBackground>
