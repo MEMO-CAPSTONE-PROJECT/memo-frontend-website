@@ -3,15 +3,21 @@ import Image from "next/image";
 interface MemoImageProps {
     src: string
     alt: string
-    size: "small" | "medium" | "large"
+    size: keyof MemoContainerSize
     image: {
         width: number
         height: number
     }
 }
 
+interface MemoContainerSize {
+    small: string
+    medium: string
+    large: string
+}
+
 export default function MemoImage({ src, alt, size, image: { width, height} }: Readonly<MemoImageProps>) {
-    const container = {
+    const container: MemoContainerSize = {
         small: "w-[180px] h-[180px]",
         medium: "w-[360px] h-[360px]",
         large: "w-[540px] h-[540px]",

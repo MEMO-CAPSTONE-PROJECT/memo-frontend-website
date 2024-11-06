@@ -18,6 +18,12 @@
     @font-face {
       font-family: "Kanit";
       font-style: normal;
+      font-weight: 600;
+      src: url(/fonts/Kanit-SemiBold.ttf) format("truetype");
+    }
+    @font-face {
+      font-family: "Kanit";
+      font-style: normal;
       font-weight: 500;
       font-display: optional;
       src: url(/fonts/Kanit-Medium.ttf) format("truetype");

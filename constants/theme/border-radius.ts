@@ -6,4 +6,5 @@ export const BorderRadius = {
     "lg": "20px",
     "xl": "25px",
     "2xl": "30px",
+    "full": "100%"
 }

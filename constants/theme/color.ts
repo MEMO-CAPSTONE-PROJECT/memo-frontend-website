@@ -7,6 +7,7 @@ export const Color = {
     "primary-3": "#521C7C",
     "secondary-1": "#FFD98F",
     "secondary-2": "#FFA856",
+    "secondary-2-hover": "#FF8C48",
     "secondary-3": "#A34053",
     "secondary-4": "#FFCCCC",
     "title-1": "#323130",
