@@ -1,4 +1,3 @@
-"use client"
 import BrandingBackground from "@/components/background/branding-background";
 import MemoButton from "@/components/button/memo-button";
 import MemoCard from "@/components/container/memo-card";
@@ -6,7 +5,7 @@ import MemoCharacterCard from "@/components/container/memo-character-card";
 import MemoInputText from "@/components/input/memo-input-text";
 import MultiStep from "@/components/step/multi-step";
 import { Color } from "@/constants/theme/color";
-import { UserCircle, Warning, WarningCircle } from "@phosphor-icons/react";
+import { UserCircle, Warning, WarningCircle } from "@phosphor-icons/react/dist/ssr";
 
 export default function DesignPage() {
     return (
