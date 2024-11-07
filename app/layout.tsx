@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   }
 }
 
-const kanit = Kanit({
+export const kanit = Kanit({
   subsets: ['latin'],
   style: 'normal',
   weight: ['400', '500', '600', '700', '800'],
@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-[kanit] w-screen h-dvh tracking-[0.01rem] text-body-1">
+      <body className={`${kanit.className} w-screen h-dvh tracking-[0.01rem] text-body-1`}>
         {children}
       </body>
     </html>
