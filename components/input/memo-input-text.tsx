@@ -1,3 +1,6 @@
+import { Case, Switch } from "@/components/switch/switch"
+import { Color } from "@/constants/theme/color"
+import { CheckCircle, PencilSimpleSlash, XCircle } from "@phosphor-icons/react/dist/ssr"
 
 interface MemoInputTextProps {
     size?: keyof MemoInputTextSize
@@ -49,13 +52,28 @@ export default function MemoInputText({
     }
     const { container, input } = states[state]
     return (
-        <div className={`group input flex items-center ${container} ${sizes[size]}`}>
+        <div className={`group input flex items-center pr-3 ${container} ${sizes[size]}`}>
             <input 
                 type="text" 
                 placeholder={placeholder} 
                 className={`grow font-regular text-body group-hover:!border-primary-2 ${input}`}
                 disabled={state === "disabled"}
             />
+            {state !== "default" && (
+                <div className="flex items-center justify-center">
+                    <Switch test={state}>
+                        <Case value="error">
+                            <XCircle size={24} color={Color["system-error"]} weight="bold"/>
+                        </Case>
+                        <Case value="success">
+                            <CheckCircle size={24} color={Color["system-success"]} weight="bold"/>
+                        </Case>
+                        <Case value="disabled">
+                            <PencilSimpleSlash size={24} color={Color["body-2"]} weight="bold"/>
+                        </Case>
+                    </Switch>
+                </div>
+            )}
         </div>
     )
 }

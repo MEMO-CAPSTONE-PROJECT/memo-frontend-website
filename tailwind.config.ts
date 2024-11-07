@@ -26,6 +26,5 @@ const config: Config = {
   daisyui: {
     themes: false,
   },
-  important: true,
 };
 export default config;
