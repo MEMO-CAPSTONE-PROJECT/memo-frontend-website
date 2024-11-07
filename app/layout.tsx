@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   }
 }
 
-export const kanit = Kanit({
+const kanit = Kanit({
   subsets: ['latin'],
   style: 'normal',
   weight: ['400', '500', '600', '700', '800'],
