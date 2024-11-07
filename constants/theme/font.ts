@@ -14,12 +14,3 @@ export const FontWeight = {
   regular: "400",
   light: "300",
 }
-
-export const FontFamily = {
-    "kanit-extrabold": "Kanit-ExtraBold",
-    "kanit-bold": "Kanit-Bold",
-    "kanit-semibold": "Kanit-SemiBold",
-    "kanit-medium": "Kanit-Medium",
-    "kanit-regular": "Kanit-Regular",
-    "kanit-light": "Kanit-Light",
-}

@@ -2,7 +2,7 @@ import type { Config } from "tailwindcss";
 import { BorderRadius } from "./constants/theme/border-radius";
 import { BorderWidth } from "./constants/theme/border-width";
 import { Color } from "./constants/theme/color";
-import { FontFamily, FontSize, FontWeight } from "./constants/theme/font";
+import { FontSize, FontWeight } from "./constants/theme/font";
 import { LayoutSize } from "./constants/theme/layout-size";
 
 const config: Config = {
@@ -16,7 +16,7 @@ const config: Config = {
     borderRadius: BorderRadius,
     fontSize: FontSize,
     fontWeight: FontWeight,
-    fontFamily: FontFamily,
+    fontFamily: { kanit: ["var(--font-kanit)"] },
     colors: Color,
     extend: {
       spacing: LayoutSize,
