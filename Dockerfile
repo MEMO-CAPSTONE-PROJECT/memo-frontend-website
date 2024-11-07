@@ -12,7 +12,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 COPY public ./public
-COPY package.json next.config.mjs tsconfig.json ./
+COPY package.json next.config.js tsconfig.json .env.production ./
 RUN npm run build
 
 # Stage 3: run
