@@ -1,12 +1,12 @@
 # Stage 1: install dependencies
 FROM node:22-alpine AS deps
-ENV NODE_ENV=production
 WORKDIR /app
 COPY package*.json .
 RUN npm install
 
 # Stage 2: build
 FROM node:22-alpine AS builder
+ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
