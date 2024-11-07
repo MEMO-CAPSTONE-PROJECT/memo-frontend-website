@@ -23,5 +23,9 @@ const config: Config = {
     }
   },
   plugins: [require('daisyui'), require("tailwindcss-inner-border"),],
+  daisyui: {
+    themes: false,
+  },
+  important: true,
 };
 export default config;
