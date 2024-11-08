@@ -3,6 +3,7 @@ interface MemoCharacterCardProps {
     title?: string
     children?: React.ReactNode
     size?: keyof MemoCharacterCardSize
+    onClick?: () => void
 }
 
 interface MemoCharacterCardSize {
@@ -10,7 +11,7 @@ interface MemoCharacterCardSize {
     medium: string
 }
 
-export default function MemoCharacterCard({ title, children, size = "medium" }: Readonly<MemoCharacterCardProps>) {
+export default function MemoCharacterCard({ title, children, size = "medium", onClick }: Readonly<MemoCharacterCardProps>) {
     const sizes: MemoCharacterCardSize = {
         small: "w-48 h-48",
         medium: "w-64 h-64",
@@ -20,10 +21,10 @@ export default function MemoCharacterCard({ title, children, size = "medium" }: 
         medium: "w-44 h-44",
     }
     return (
-        <div className="group rounded-md overflow-clip">
+        <div className="group rounded-md overflow-clip" onClick={onClick}>
             <div className={`
                         relative flex flex-col items-center justify-center border-sm rounded-md text-body-2 border-system-gray space-y-lg px-3xl py-lg 
-                        group-hover:border-primary-2 group-hover:bg-primary-2 group-hover:text-system-white
+                        group-hover:border-primary-2 group-hover:bg-primary-2 group-hover:text-system-white group-hover:ease-in group-hover:duration-150
                         ${sizes[size]}
                         `}
             >

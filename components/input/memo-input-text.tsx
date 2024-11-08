@@ -2,7 +2,7 @@ import { Case, Switch } from "@/components/switch/switch"
 import { Color } from "@/constants/theme/color"
 import { CheckCircle, PencilSimpleSlash, XCircle } from "@phosphor-icons/react/dist/ssr"
 
-interface MemoInputTextProps {
+export interface MemoInputTextProps {
     size?: keyof MemoInputTextSize
     state?: keyof MemoInputTextVariant
     placeholder?: string

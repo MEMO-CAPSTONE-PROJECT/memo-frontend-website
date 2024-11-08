@@ -1,15 +1,22 @@
+"use client"
 import BrandingBackground from "@/components/background/branding-background";
 import MemoButton from "@/components/button/memo-button";
 import MemoCard from "@/components/container/memo-card";
 import MemoCharacterCard from "@/components/container/memo-character-card";
+import MemoErrorMessage from "@/components/helper/memo-error-message";
 import MemoInputText from "@/components/input/memo-input-text";
+import MemoInputTextHelper from "@/components/input/memo-input-text-helper";
 import MultiStep from "@/components/step/multi-step";
 import { Color } from "@/constants/theme/color";
 import { UserCircle, Warning, WarningCircle } from "@phosphor-icons/react/dist/ssr";
+import { useState } from "react";
 
 export default function DesignPage() {
+    const [step, setStep] = useState(1)
+    const [error, setError] = useState<string | undefined>("Error Text")
+    
     return (
-        <div className="w-screen h-screen flex flex-col flex-wrap items-start content-start p-8 gap-4 bg-system-white">
+        <div className="min-h-screen flex flex-wrap content-start p-8 gap-4 bg-system-white">
             <DesignBorder title="Phosphor Icons" direction="row">
                 <WarningCircle weight="bold" size={32} color={Color["system-error"]}/>
                 <WarningCircle weight="fill" size={32} color={Color["system-error"]}/>
@@ -19,14 +26,16 @@ export default function DesignPage() {
                 <UserCircle weight="fill" size={32} color={Color["body-1"]}/>
                 <div className="text-title-1">and much more...</div>
             </DesignBorder>
-            <DesignBorder title="TextField">
-                <MemoInputText placeholder="Placeholder Text" state="default" size="medium" />  {/* default */}
-                <MemoInputText placeholder="Placeholder Text" state="error" />
-                <MemoInputText placeholder="Placeholder Text" state="success" />
-                <MemoInputText placeholder="Placeholder Text" state="disabled" />
+            <DesignBorder title="InputText">
+                <MemoInputText placeholder="Placeholder Text" state="default" size="full" />  {/* default */}
+                <MemoInputText placeholder="Placeholder Text" state="error" size="full" />
+                <MemoInputText placeholder="Placeholder Text" state="success" size="full"/>
+                <MemoInputText placeholder="Placeholder Text" state="disabled" size="full"/>
             </DesignBorder>
             <DesignBorder title="MultiStep">
-                <MultiStep step={2} steps={["สร้างบัญชีนักเรียน", "ข้อมูลนักเรียน", "ข้อมูลผู้ปกครอง"]} />
+                <MultiStep step={step} steps={["สร้างบัญชีนักเรียน", "ข้อมูลนักเรียน", "ข้อมูลผู้ปกครอง"]} />
+                <MemoButton title="เพิ่มสเต็ป" variant="ghost" onClick={() => setStep(step < 3 ? step + 1 : 3)} />
+                <MemoButton title="ลดสเต็ป" variant="ghost" onClick={() => setStep(step > 1 ? step - 1 : 1)} />
             </DesignBorder>
             <DesignBorder title="Button">
                 <MemoButton title="เข้าสู่ระบบ" variant="primary" size="full"/>  {/* default */}
@@ -37,7 +46,7 @@ export default function DesignPage() {
                 <MemoCharacterCard title="Test Text" size="medium"/>
             </DesignBorder>
             <DesignBorder title="BrandingBackground">
-                <div className="w-full h-96">
+                <div className="w-full h-72">
                     <BrandingBackground/>
                 </div>
             </DesignBorder>
@@ -48,6 +57,15 @@ export default function DesignPage() {
                         This is a card container box. You can put a lot of content in here!
                     </div>
                 </MemoCard>
+            </DesignBorder>
+            <DesignBorder title="InputTextHelper & Single ErrorHelper">
+                <div className="flex flex-col space-y-lg w-full">
+                    <MemoButton title={error ? "ปิดแสดงเออเร่อ" : "แสดงเออเร่อ"} variant="ghost" onClick={() => setError(error ? undefined : "Error Text")} />
+                    <MemoErrorMessage error={error} hideContainer={false}/>
+                    <hr className="text-system-gray"/>
+                    <MemoInputTextHelper placeholder="Placeholder Text" error={error} size="full" />
+                    <MemoInputTextHelper placeholder="Placeholder Text" size="full"/> 
+                </div>
             </DesignBorder>
         </div>
     )
@@ -67,8 +85,8 @@ function DesignBorder({ title, children, direction = "col", bg = "none"  }: Read
         secondary: "bg-secondary-1",
     }
     return (
-        <div className={`border-sm border-dotted border-[#9747FF] rounded-md p-4 space-y-4 w-[30rem] ${bgs[bg]}`}>
-            <section className="text-[#9747FF]">{ title }</section>
+        <div className={`border-sm border-dotted border-[#9747FF] rounded-md p-4 space-y-4 w-[24rem] ${bgs[bg]}`}>
+            <section className="text-[#9747FF] font-bold">{ title }</section>
             <div className={`flex ${directions[direction]} justify-center items-center gap-xl`}>
                 {children}
             </div>
