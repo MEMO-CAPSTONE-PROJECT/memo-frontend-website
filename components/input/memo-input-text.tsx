@@ -6,6 +6,7 @@ export interface MemoInputTextProps {
     size?: keyof MemoInputTextSize
     state?: keyof MemoInputTextVariant
     placeholder?: string
+    type?: string
 }
 
 interface MemoInputTextSize {
@@ -25,7 +26,7 @@ interface InputContainer {
 }
 
 export default function MemoInputText({
-    placeholder = "", state = "default", size = "medium"
+    placeholder = "", state = "default", size = "medium",type = "text"
 }: Readonly<MemoInputTextProps>) {
     const states: MemoInputTextVariant = {
         default: {
@@ -54,7 +55,7 @@ export default function MemoInputText({
     return (
         <div className={`group input flex items-center pr-3 ${container} ${sizes[size]}`}>
             <input 
-                type="text" 
+                type={type}
                 placeholder={placeholder} 
                 className={`grow font-regular text-body group-hover:!border-primary-2 ${input}`}
                 disabled={state === "disabled"}
