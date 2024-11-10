@@ -1,12 +1,12 @@
-import { Case, Switch } from "@/components/switch/switch"
-import { Color } from "@/constants/theme/color"
-import { CheckCircle, PencilSimpleSlash, XCircle } from "@phosphor-icons/react/dist/ssr"
+import { Case, Switch } from "@/components/switch/switch";
+import { Color } from "@/constants/theme/color";
+import { CheckCircle, PencilSimpleSlash, XCircle } from "@phosphor-icons/react/dist/ssr";
+import * as React from 'react';
+import { twMerge } from "tailwind-merge";
 
-export interface MemoInputTextProps {
+export interface MemoInputTextProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> {
     size?: keyof MemoInputTextSize
     state?: keyof MemoInputTextVariant
-    placeholder?: string
-    type?: string
 }
 
 interface MemoInputTextSize {
@@ -26,7 +26,7 @@ interface InputContainer {
 }
 
 export default function MemoInputText({
-    placeholder = "", state = "default", size = "medium",type = "text"
+    state = "default", size = "medium", ...inputProps
 }: Readonly<MemoInputTextProps>) {
     const states: MemoInputTextVariant = {
         default: {
@@ -51,14 +51,13 @@ export default function MemoInputText({
         medium: "w-96", //384px
         small: "w-48", //192px
     }
-    const { container, input } = states[state]
+    const { container, input: inputClassName } = states[state]
     return (
         <div className={`group input flex items-center pr-3 ${container} ${sizes[size]}`}>
             <input 
-                type={type}
-                placeholder={placeholder} 
-                className={`grow font-regular text-body group-hover:!border-primary-2 ${input}`}
+                className={twMerge(`grow font-regular text-body group-hover:!border-primary-2`, inputClassName)}
                 disabled={state === "disabled"}
+                {...inputProps}
             />
             {state !== "default" && (
                 <div className="flex items-center justify-center">
