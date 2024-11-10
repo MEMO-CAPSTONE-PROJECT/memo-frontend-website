@@ -14,8 +14,8 @@ export default function AdminLogin() {
               <p className="text-body-1 text-header font-bold">ลงชื่อเข้าใช้ระบบผู้ดูแล</p>
             </section>
             <form className="flex flex-col space-y-lg">
-              <MemoInputText placeholder="รหัสประจำตัวครู"/>
-              <MemoInputText placeholder="รหัสผ่าน"/>
+              <MemoInputText type="number" placeholder="รหัสประจำตัวครู"/>
+              <MemoInputText type="password" placeholder="รหัสผ่าน"/>
               <div className='justify-items-stretch flex gap-56 pt-4'>
                 <p className='text-system-error text-[14px] justify-self-start '>รหัสผ่านไม่ถูกต้อง</p>
                 <Link href="/admin/password"><p className='text-title-1 underline text-[14px] justify-self-end'>ลืมรหัสผ่าน</p></Link>

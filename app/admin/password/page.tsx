@@ -14,8 +14,8 @@ export default function AdminResetPassword() {
               <p className="text-body-1 text-header font-bold">ตั้งค่ารหัสผ่านใหม่</p>
             </section>
             <form className="flex flex-col space-y-lg">
-              <MemoInputText placeholder="รหัสผ่าน"/>
-              <MemoInputText placeholder="ยืนยันรหัสผ่าน"/>
+              <MemoInputText type="password" placeholder="รหัสผ่าน"/>
+              <MemoInputText type="password" placeholder="ยืนยันรหัสผ่าน"/>
               <MemoButton title="ยืนยัน"/>
               <Link href="/">
                 <MemoButton title="กลับไปยังหน้าเลือกผู้ใช้" variant="ghost"/>

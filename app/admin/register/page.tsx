@@ -14,10 +14,10 @@ export default function AdminRegister() {
               <p className="text-body-1 text-header font-bold">ลงทะเบียนผู้ดูแลระบบ</p>
             </section>
             <form className="flex flex-col space-y-lg">
-              <MemoInputText placeholder="รหัสประจำตัวครู"/>
-              <MemoInputText placeholder="อีเมล"/>
-              <MemoInputText placeholder="รหัสผ่าน"/>
-              <MemoInputText placeholder="ยืนยันรหัสผ่าน"/>
+              <MemoInputText type="number" placeholder="รหัสประจำตัวครู"/>
+              <MemoInputText type="email" placeholder="อีเมล"/>
+              <MemoInputText type="password" placeholder="รหัสผ่าน"/>
+              <MemoInputText type="password" placeholder="ยืนยันรหัสผ่าน"/>
               <MemoButton title="เข้าสู่ระบบ"/>
               <Link href="/">
                 <MemoButton title="กลับไปยังหน้าเลือกผู้ใช้" variant="ghost"/>
