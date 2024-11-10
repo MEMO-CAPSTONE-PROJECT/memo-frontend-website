@@ -1,4 +1,4 @@
-name: Auto deploy website to server
+name: "[DEPLOY] Frontend service"
 
 on: workflow_dispatch
 # Auto push
@@ -51,7 +51,8 @@ jobs:
             cd /home/duangcharoen024/Server/Frontend
             git pull https://${{ secrets.PERSONAL_GITHUB_USERNAME }}:${{ secrets.PERSONAL_GITHUB_TOKEN }}@github.com/MEMO-CAPSTONE-PROJECT/MEMO-FRONTEND-WEBSITE.git
             cd ..
-            docker compose down frontend
+            docker compose stop frontend
+            docker compose rm -f frontend
             docker compose up --build -d frontend
       - name: Update deployment Status (success)
         if: success()
