@@ -6,6 +6,7 @@ import MemoCharacterCard from "@/components/container/memo-character-card";
 import MemoErrorMessage from "@/components/helper/memo-error-message";
 import MemoInputText from "@/components/input/memo-input-text";
 import MemoInputTextHelper from "@/components/input/memo-input-text-helper";
+import MemoOtpInputText from "@/components/input/memo-otp-input-text";
 import MultiStep from "@/components/step/multi-step";
 import { Color } from "@/constants/theme/color";
 import { UserCircle, Warning, WarningCircle } from "@phosphor-icons/react/dist/ssr";
@@ -67,13 +68,22 @@ export default function DesignPage() {
                     <MemoInputTextHelper placeholder="Placeholder Text" size="full"/> 
                 </div>
             </DesignBorder>
+            <DesignBorder title="OtpInputText" center>
+                <section className="font-bold">OTP Verify</section>
+                <div className="w-96 flex flex-row justify-center space-x-lg">
+                    <MemoOtpInputText defaultValue="0"/>
+                    <MemoOtpInputText defaultValue="1"/>
+                    <MemoOtpInputText/>
+                    <MemoOtpInputText/>
+                </div>
+            </DesignBorder>
         </div>
     )
 }
 
 // Utilities border (for design system page)
-function DesignBorder({ title, children, direction = "col", bg = "none"  }: Readonly<{ 
-    title: string, children: React.ReactNode, direction?: "row" | "col", bg?: "none" | "primary" | "secondary"
+function DesignBorder({ title, children, direction = "col", bg = "none", center = false  }: Readonly<{ 
+    title: string, children: React.ReactNode, direction?: "row" | "col", bg?: "none" | "primary" | "secondary", center?: boolean
 }>) {
     const directions = {
         row: "flex-row",
@@ -85,9 +95,9 @@ function DesignBorder({ title, children, direction = "col", bg = "none"  }: Read
         secondary: "bg-secondary-1",
     }
     return (
-        <div className={`border-sm border-dotted border-[#9747FF] rounded-md p-4 space-y-4 w-[24rem] ${bgs[bg]}`}>
+        <div className={`flex flex-col border-sm border-dotted border-[#9747FF] rounded-md p-4 space-y-4 w-[24rem] ${bgs[bg]}`}>
             <section className="text-[#9747FF] font-bold">{ title }</section>
-            <div className={`flex ${directions[direction]} justify-center items-center gap-xl`}>
+            <div className={`flex ${directions[direction]} justify-center items-center gap-xl ${center ? "h-full justify-center items-center" : ""}`}>
                 {children}
             </div>
         </div>

@@ -2,42 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* @layer base {
-    @font-face {
-      font-family: "Kanit";
-      font-style: normal;
-      font-weight: 800;
-      src: url(/fonts/Kanit-ExtraBold.ttf) format("truetype");
-    }
-    @font-face {
-      font-family: "Kanit";
-      font-style: normal;
-      font-weight: 700;
-      src: url(/fonts/Kanit-Bold.ttf) format("truetype");
-    }
-    @font-face {
-      font-family: "Kanit";
-      font-style: normal;
-      font-weight: 600;
-      src: url(/fonts/Kanit-SemiBold.ttf) format("truetype");
-    }
-    @font-face {
-      font-family: "Kanit";
-      font-style: normal;
-      font-weight: 500;
-      font-display: optional;
-      src: url(/fonts/Kanit-Medium.ttf) format("truetype");
-    }
-    @font-face {
-      font-family: "Kanit";
-      font-style: normal;
-      font-weight: 400;
-      src: url(/fonts/Kanit-Regular.ttf) format("truetype");
-    }
-    @font-face {
-      font-family: "Kanit";
-      font-style: normal;
-      font-weight: 300;
-      src: url(/fonts/Kanit-Light.ttf) format("truetype");
-    }
-} */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
