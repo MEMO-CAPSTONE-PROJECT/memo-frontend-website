@@ -2,7 +2,7 @@
 
 export const Color = {
     "primary-1": "#FFE598",
-    "primary-2": "#9751AFFF",
+    "primary-2": "#9751AF",
     "primary-2-hover": "#85409D",
     "primary-3": "#521C7C",
     "secondary-1": "#FFD98F",
@@ -20,4 +20,6 @@ export const Color = {
     "system-success-light": "#E1FFE5",
     "system-error": "#FA8585",
     "system-error-light": "#FFDEDE",
+    "system-light-blue" : "#E1F2FF",
+    "system-brown" : "#694F45"
 }
