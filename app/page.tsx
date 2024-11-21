@@ -2,7 +2,10 @@
 import BrandingBackground from '@/components/background/branding-background';
 import MemoCard from '@/components/container/memo-card';
 import MemoCharacterCard from '@/components/container/memo-character-card';
-import MemoImage from '@/components/container/memo-image';
+import MemoCharacterContainer from '@/components/container/memo-character-container';
+import StudentgirlDefaultSvg from '@/components/ui/icons/mascot/student/girl-default';
+import TeacherManDefaultSvg from '@/components/ui/icons/mascot/teacher/man-default';
+import TeacherWomanDefaultSvg from '@/components/ui/icons/mascot/teacher/woman-default';
 import Link from "next/link";
 import './globals.css';
 
@@ -17,18 +20,18 @@ export default function Home() {
           <div className="flex flex-row gap-5xl">
             <Link href={"/admin/register"}>
               <MemoCharacterCard title="คุณครูผู้ดูแลระบบ">
-                <MemoImage size="small" src="/Teacher-Boy-Mascot.png" alt="Teacher-Boy Mascot.png" image={{ width: 175, height: 175 }} />
+                <MemoCharacterContainer size="small" svg={<TeacherManDefaultSvg size={175} />} />
               </MemoCharacterCard>
             </Link>
             <Link href={"/teacher"}>
               <MemoCharacterCard title="คุณครูทั่วไป">
-                <MemoImage size="small" src="/Teacher-Girl-Mascot.png" alt="Teacher-girl Mascot.png" image={{ width: 160, height: 160 }} />
+                <MemoCharacterContainer size="small" svg={<TeacherWomanDefaultSvg size={170}/>} />
               </MemoCharacterCard>
             </Link>
 
             <Link href={"/student"}>
               <MemoCharacterCard title="นักเรียน">
-                  <MemoImage size="small" src="/Student-girl.png" alt="Student-girl Mascot.png" image={{ width: 145, height: 145 }} />
+                <MemoCharacterContainer size="small" svg={<StudentgirlDefaultSvg size={170}/>} />
               </MemoCharacterCard>         
             </Link>
           </div>

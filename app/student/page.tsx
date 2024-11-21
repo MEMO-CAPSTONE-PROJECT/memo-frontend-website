@@ -4,10 +4,9 @@ import MemoButton from '@/components/button/memo-button';
 import MemoWhite from '@/components/container/memo-white';
 import MemoInputText from '@/components/input/memo-input-text';
 import MultiStep from '@/components/step/multi-step';
-import React, { Fragment, useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
 import StudentIcon from '@/components/ui/icons/registration/student';
+import Link from 'next/link';
+import { Fragment, useState } from 'react';
 
 export default function StudentRegistrationForm() {
   const [step, setStep] = useState(1);
@@ -43,7 +42,6 @@ export default function StudentRegistrationForm() {
               {step === 2 && (
                 <Fragment>
                   <section className="flex flex-col items-center space-y-xl">
-                    <Image src="/Logo-circle.png" alt="logo.png" width={140} height={140} />
                     <p className="text-body-1 text-header font-bold">กรอกประวัตินักเรียน</p>
                   </section>
                   <div className="flex flex-col space-y-lg">
@@ -57,10 +55,9 @@ export default function StudentRegistrationForm() {
               {step === 3 && (
                 <Fragment>
                   <section className="flex flex-col items-center space-y-xl">
-                    <Image src="/Logo-circle.png" alt="logo.png" width={140} height={140} />
                     <p className="text-body-1 text-header font-bold">กรอกประวัติผู้ปกครอง</p>
                   </section>
-                  <div className="flex flex-col space-y-xl">
+                  <div className="flex flex-col space-y-lg">
                     <MemoInputText type="text" placeholder="ชื่อผู้ปกครอง" />
                     <MemoInputText type="text" placeholder="นามสกุลผู้ปกครอง" />
                     <MemoInputText type="number" placeholder="เบอร์ผู้ปกครอง" />

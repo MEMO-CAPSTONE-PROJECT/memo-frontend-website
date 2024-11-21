@@ -1,9 +1,12 @@
+import { createRequire } from "module";
 import type { Config } from "tailwindcss";
 import { BorderRadius } from "./constants/theme/border-radius";
 import { BorderWidth } from "./constants/theme/border-width";
 import { Color } from "./constants/theme/color";
 import { FontSize, FontWeight } from "./constants/theme/font";
 import { LayoutSize } from "./constants/theme/layout-size";
+
+const require = createRequire(import.meta.url);
 
 const config: Config = {
   content: [
@@ -22,7 +25,10 @@ const config: Config = {
       spacing: LayoutSize,
     }
   },
-  plugins: [require('daisyui'), require("tailwindcss-inner-border"),],
+  plugins: [
+    require('daisyui'), 
+    require("tailwindcss-inner-border"),
+  ],
   daisyui: {
     themes: false,
   },
