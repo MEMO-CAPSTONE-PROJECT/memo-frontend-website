@@ -66,7 +66,7 @@ export default function StudentRegistrationIcon({ className }: Readonly<StudentR
                 fill={Color["system-white"]}/>
             <mask id="mask0_1240_5055"  maskUnits="userSpaceOnUse" x="104" y="171" width="13" height="17">
             <rect width="13" height="16.9548" rx="6.5" transform="matrix(-1 0 0 1 117 171)" 
-                fill={Color["title-1"]}/>
+                fill={Color["system-white"]}/>
             </mask>
             <g mask="url(#mask0_1240_5055)">
             <path d="M123.814 166.032C124.445 160.693 120.274 156 114.898 156H106.819C101.496 156 97.2735 160.487 97.5973 165.801L98.1601 175.034C98.4188 179.278 103.535 181.266 106.591 178.311L106.731 178.176C108.82 176.156 112.209 176.436 113.939 178.771C116.531 182.271 122.069 180.799 122.58 176.474L123.814 166.032Z" 
@@ -86,7 +86,7 @@ export default function StudentRegistrationIcon({ className }: Readonly<StudentR
                 fill={Color["system-white"]}/>
             <mask id="mask1_1240_5055" maskUnits="userSpaceOnUse" x="58" y="171" width="13" height="17">
             <rect width="13" height="16.9548" rx="6.5" transform="matrix(-1 0 0 1 70.9999 171)" 
-                fill={Color["title-1"]}/>
+                fill={Color["system-white"]}/>
             </mask>
             <g mask="url(#mask1_1240_5055)">
             <path d="M77.8141 166.032C78.4452 160.693 74.2741 156 68.8977 156H60.8191C55.4956 156 51.2735 160.487 51.5973 165.801L52.1601 175.034C52.4188 179.278 57.5347 181.266 60.5914 178.311L60.7308 178.176C62.8199 176.156 66.2095 176.436 67.9389 178.771C70.5308 182.271 76.0688 180.799 76.58 176.474L77.8141 166.032Z" 

@@ -25,7 +25,7 @@ export default function AdminTeacherRegisterIcon({ className }: Readonly<AdminTe
             fill={Color["system-white"]}/>
         <mask id="mask0_1230_3287"  maskUnits="userSpaceOnUse" x="106" y="161" width="11" height="16">
         <rect x="106.569" y="161" width="10" height="16" rx="5" 
-            fill={Color["secondary-3"]}/>
+            fill={Color["system-white"]}/>
         </mask>
         <g mask="url(#mask0_1230_3287)">
         <rect x="97.5692" y="147.526" width="28" height="29.8565" rx="14" 
@@ -37,7 +37,7 @@ export default function AdminTeacherRegisterIcon({ className }: Readonly<AdminTe
             fill="#FCFCFC"/>
         <mask id="mask1_1230_3287"  maskUnits="userSpaceOnUse" x="60" y="162" width="11" height="15">
         <rect x="60.5692" y="162" width="10" height="15" rx="5" 
-            fill="#A34053"/>
+            fill={Color["system-white"]}/>
         </mask>
         <g mask="url(#mask1_1230_3287)">
         <rect x="51.5692" y="149.368" width="28" height="27.9904" rx="13.9952" 

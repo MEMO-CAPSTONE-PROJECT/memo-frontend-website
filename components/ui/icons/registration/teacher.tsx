@@ -31,7 +31,7 @@ export default function TeacherRegistrationIcon({ className }: Readonly<TeacherR
                 fill={Color["system-white"]}/>
             <mask id="mask0_1240_4767" maskUnits="userSpaceOnUse" x="109" y="183" width="10" height="16">
             <rect x="109" y="183" width="10" height="16" rx="5" 
-                fill={Color["secondary-3"]}/>
+                fill={Color["system-white"]}/>
             </mask>
             <g mask="url(#mask0_1240_4767)">
             <rect x="100" y="169.526" width="28" height="29.8565" rx="14" 
@@ -42,7 +42,7 @@ export default function TeacherRegistrationIcon({ className }: Readonly<TeacherR
             <rect x="54.0001" y="169" width="28" height="23" rx="7" 
                 fill={Color["system-white"]}/>
             <mask id="mask1_1240_4767" maskUnits="userSpaceOnUse" x="63" y="183" width="10" height="16">
-            <rect x="63.0001" y="183" width="10" height="16" rx="5" fill="#A34053"/>
+            <rect x="63.0001" y="183" width="10" height="16" rx="5" fill={Color["system-white"]}/>
             </mask>
             <g mask="url(#mask1_1240_4767)">
             <rect x="54.0001" y="169.526" width="28" height="29.8565" rx="14" 
