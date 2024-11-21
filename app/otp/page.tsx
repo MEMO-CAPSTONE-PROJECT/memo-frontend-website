@@ -5,20 +5,23 @@ import MemoCard from "@/components/container/memo-card";
 import MemoErrorMessage from "@/components/helper/memo-error-message";
 import MemoOtpInputText from "@/components/input/memo-otp-input-text";
 import LockIcon from "@/components/ui/icons/lock-icon";
+import MemoWhite from '@/components/container/memo-white';
+import MemoInputText from '@/components/input/memo-input-text';
 import Link from "next/link";
 
 export default function OtpPage() {
   const error = "รหัสนี้ไม่ถูกต้อง"
   return (
     <BrandingBackground>
-      <MemoCard className="!space-y-2xl">
-        <section className="flex flex-col items-center space-y-xl">
-          <LockIcon className="w-48 h-48"/>
-          <div className="text-center">
+      <section className='w-1/2 h-screen ml-auto flex flex-col items-center justify-center space-y-xl'>
+          <LockIcon className="space-x-xl w-72 h-72"/>
+        </section>    
+          <MemoWhite>
+          <section className="flex flex-col items-center ">
             <p className="text-header font-bold">ยืนยันรหัส OTP</p>
-            <p className="text-body font-regular">กรุณาตรวจสอบรหัสจากอีเมลของท่าน</p>
-          </div>
-        </section>
+            <p className="text-body font-regular space-y-2xl">กรุณาตรวจสอบรหัสจากอีเมลของท่าน</p>
+          </section>
+        <section className="flex flex-col space-y-xl">
         <main className="flex flex-col items-center space-y-md">
           <div className="flex space-x-lg">
             <MemoOtpInputText state={error ? "error" : undefined}/>
@@ -40,7 +43,8 @@ export default function OtpPage() {
             <MemoButton title="ย้อนกลับไปหน้าลงทะเบียน" variant="ghost"/>
           </Link>
         </footer>
-      </MemoCard>
-    </BrandingBackground>
+        </section>
+      </MemoWhite>     
+      </BrandingBackground>
   )
 }
