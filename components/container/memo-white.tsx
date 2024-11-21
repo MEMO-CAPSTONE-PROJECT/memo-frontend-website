@@ -7,7 +7,7 @@ interface MemoWhite {
 
 export default function MemoWhite({ children, className }: MemoWhite) {
     return (
-        <div className={twMerge(`w-1/2 h-screen bg-system-white ml-auto flex flex-col items-center justify-center space-y-xl`, className)}>
+        <div className={twMerge(`flex-1 h-screen bg-system-white ml-auto flex flex-col items-center justify-center space-y-xl`, className)}>
             {children}
         </div>
     )

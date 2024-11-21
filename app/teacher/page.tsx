@@ -45,7 +45,7 @@ export default function TeacherRegistrationForm() {
 
   return (
     <BrandingBackground>
-      <section className='w-w-1/2 h-screen ml-auto flex flex-col items-center justify-center space-y-xl'>
+      <section className='hidden lg:flex flex-1 h-screen ml-auto  flex-col items-center justify-center space-y-xl'>
         <TeacherIcon className="space-x-xl w-96 h-96" />
       </section>
       <MemoWhite>
