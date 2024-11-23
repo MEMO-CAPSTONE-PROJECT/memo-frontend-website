@@ -1,25 +1,16 @@
 "use client"
 
+import { MemoInputVariant } from "@/shared/types/input-type"
 import { isNumeric } from "@/shared/utils/number"
+import { InputStates } from "@/shared/variants/input-variant"
 import { ChangeEvent, useState } from "react"
 
-interface MemoOtpInputTextProps {
-    state?: keyof MemoOtpInputTextVariant
+interface MemoOtpInputTextProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    state?: keyof MemoInputVariant
     defaultValue?: string
 }
 
-interface MemoOtpInputTextVariant {
-    default: InputContainer
-    error: InputContainer
-    success: InputContainer
-    disabled: InputContainer
-}
-interface InputContainer {
-    container: string
-    input: string
-}
-
-export default function MemoOtpInputText({ state = "default", defaultValue = "" }: Readonly<MemoOtpInputTextProps>) {
+export default function MemoOtpInputText({ state = "default", defaultValue = "", ...inputProps }: Readonly<MemoOtpInputTextProps>) {
     const [number, setNumber] = useState(defaultValue);
     const digits = 1;
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -27,25 +18,7 @@ export default function MemoOtpInputText({ state = "default", defaultValue = "" 
         if (value && !isNumeric(value)) return;
         setNumber(value.slice(0, digits))
     }
-    const states: MemoOtpInputTextVariant = {
-        default: {
-            container: "bg-system-light-gray border-xsm hover:border-body-1",
-            input: "text-title-1 placeholder-body-2"
-        },
-        error: {
-            container: "bg-system-error-light border-xsm border-system-error hover:border-body-1",
-            input: "text-system-error placeholder-system-error"
-        },
-        success: {
-            container: "bg-system-success-light border-xsm border-system-success hover:border-body-1",
-            input: "text-system-success placeholder-system-success"
-        },
-        disabled: {
-            container: "!bg-system-gray border-xsm !border-body-2",
-            input: "!text-body-2 !placeholder-body-2"
-        }
-    }
-    const { container, input } = states[state]
+    const { container, input } = InputStates[state]
     return (
         <div className={`group input flex w-16 h-16 items-center ${container}`}>
             <input 
@@ -54,6 +27,7 @@ export default function MemoOtpInputText({ state = "default", defaultValue = "" 
                 disabled={state === "disabled"}
                 value={number}
                 onChange={handleChange}
+                {...inputProps}
             />
         </div>
     )

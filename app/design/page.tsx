@@ -77,6 +77,12 @@ export default function DesignPage() {
                     <MemoOtpInputText/>
                     <MemoOtpInputText/>
                 </div>
+                <div className="w-96 flex flex-row justify-center space-x-lg">
+                    <MemoOtpInputText defaultValue="0" state="error"/>
+                    <MemoOtpInputText defaultValue="1" state="error"/>
+                    <MemoOtpInputText state="error"/>
+                    <MemoOtpInputText state="error"/>
+                </div>
             </DesignBorder>
             <DesignBorder title="SelectHelper">
                 <div className="flex flex-col space-y-lg w-full">
