@@ -1,0 +1,24 @@
+import { MemoInputSize, MemoInputVariant } from "@/shared/types/input-type";
+import { InputSizes, InputStates } from "@/shared/variants/input-variant";
+
+export interface MemoSelectProps {
+    options: string[]
+    placeholder?: string
+    size?: keyof MemoInputSize
+    state?: keyof MemoInputVariant
+}
+
+export default function MemoSelect({
+    placeholder, options, state = "default", size = "medium"
+}: Readonly<MemoSelectProps>) {
+    const { container, input: inputClassName, placeholder: placeholderClassName } = InputStates[state]
+    const containerSize = InputSizes[size]
+    return (
+        <select className={`group select flex items-center pr-3 font-regular text-body ${container} ${containerSize} ${inputClassName} invalid:${placeholderClassName}`} required disabled={state === "disabled"}>
+            <option value="" disabled selected>{placeholder}</option>
+            {options.map((option) => (
+                <option key={option} value={option}>{option}</option>
+            ))}
+        </select>
+    )
+}

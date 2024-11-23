@@ -7,6 +7,7 @@ import MemoErrorMessage from "@/components/helper/memo-error-message";
 import MemoInputText from "@/components/input/memo-input-text";
 import MemoInputTextHelper from "@/components/input/memo-input-text-helper";
 import MemoOtpInputText from "@/components/input/memo-otp-input-text";
+import MemoSelectHelper from "@/components/input/memo-select-helper";
 import MultiStep from "@/components/step/multi-step";
 import { Color } from "@/constants/theme/color";
 import { UserCircle, Warning, WarningCircle } from "@phosphor-icons/react/dist/ssr";
@@ -75,6 +76,13 @@ export default function DesignPage() {
                     <MemoOtpInputText defaultValue="1"/>
                     <MemoOtpInputText/>
                     <MemoOtpInputText/>
+                </div>
+            </DesignBorder>
+            <DesignBorder title="SelectHelper">
+                <div className="flex flex-col space-y-lg w-full">
+                    <MemoButton title={error ? "ปิดแสดงเออเร่อ" : "แสดงเออเร่อ"} variant="ghost" onClick={() => setError(error ? undefined : "Error Text")} />
+                    <MemoSelectHelper options={["Option 1", "Option 2", "Option 3"]} placeholder="Placeholder Text" error={error} size="full" />
+                    <MemoSelectHelper options={["Option 1", "Option 2", "Option 3"]} placeholder="Placeholder Text" size="full"/>
                 </div>
             </DesignBorder>
         </div>
