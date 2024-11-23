@@ -18,7 +18,7 @@ export default function TeacherRegistrationForm() {
     teacherId: z
       .string()
       .regex(/^\d+$/, "รหัสคุณครูต้องเป็นตัวเลข")
-      .length(5, "รหัสคุณครูต้องมีความยาว 5 หลัก")
+      .length(5, "รหัสคุณครูต้องมีจำนวน 5 หลัก")
       .nonempty("กรุณากรอกรหัสคุณครู"),
     position: z
       .string()
@@ -34,11 +34,11 @@ export default function TeacherRegistrationForm() {
       .nonempty("กรุณากรอกนามสกุล"),
     gender: z
       .string()
-      .nonempty("กรุณากรอกตำแหน่ง"),
+      .nonempty("กรุณาเลือกเพศ"),
     phoneNumber: z
       .string()
-      .regex(/^\d+$/, "Teacher ID must be a number")
-      .length(10, "Phone number must be 10 digits")
+      .regex(/^\d+$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข")
+      .length(10, "เบอร์โทรศัพท์ต้องมีจำนวน 10 หลัก")
       .nonempty("Phone number is required"),
   });
 
@@ -75,7 +75,7 @@ export default function TeacherRegistrationForm() {
       const response = await axios.post("http://cp24sy1.sit.kmutt.ac.th:8081/register/teacher",formData);
       console.log("Response:", response.data);
       console.log(formData)
-      setSubmitStatus("Form submitted successfully!");
+      setSubmitStatus("ลงทะเบียนบัชชีคุณครูสำเร็จ");
 
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -88,7 +88,7 @@ export default function TeacherRegistrationForm() {
         setErrors(fieldErrors);
       } else {
         console.error("Error submitting form:", error);
-        setSubmitStatus("Error submitting form. Please try again.");
+        setSubmitStatus("แอคเคานต์นี้มีแล้ว กรุณากรอกข้อมูลใหม่");
       }
     }
   };
