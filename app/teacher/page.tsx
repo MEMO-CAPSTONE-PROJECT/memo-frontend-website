@@ -3,46 +3,95 @@ import BrandingBackground from '@/components/background/branding-background'
 import MemoButton from '@/components/button/memo-button'
 import MemoWhite from '@/components/container/memo-white'
 import MemoErrorMessage from '@/components/helper/memo-error-message'
-import MemoInputText from '@/components/input/memo-input-text'
+import MemoInputTextHelper from '@/components/input/memo-input-text-helper'
+// import MemoInputText from '@/components/input/memo-input-text'
 import TeacherIcon from '@/components/ui/icons/registration/teacher'
 import Link from 'next/link'
 import { useState } from 'react'
+import axios from "axios";
+import { z } from "zod";
 
-interface User {
-  teacherId: string,
-  email: string,
-  password: string,
-  confirmpassword: string
-}
 
 export default function TeacherRegistrationForm() {
-  const mockDatabase: User[] = []
 
-  const [teacherId, setTeacherId] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmpassword, setConfirmpassword] = useState('')
-  const [message, setMessage] = useState('')
+  const formSchema = z.object({
+    teacherId: z
+      .string()
+      .regex(/^\d+$/, "รหัสคุณครูต้องเป็นตัวเลข")
+      .length(5, "รหัสคุณครูต้องมีความยาว 5 หลัก")
+      .nonempty("กรุณากรอกรหัสคุณครู"),
+    position: z
+      .string()
+      .nonempty("กรุณากรอกตำแหน่ง"),
+    email: z
+      .string()
+      .email("กรุณากรอกอีเมล"),
+    firstName: z
+      .string()
+      .nonempty("กรุณากรอกขื่อ"),
+    lastName: z
+      .string()
+      .nonempty("กรุณากรอกนามสกุล"),
+    gender: z
+      .string()
+      .nonempty("กรุณากรอกตำแหน่ง"),
+    phoneNumber: z
+      .string()
+      .regex(/^\d+$/, "Teacher ID must be a number")
+      .length(10, "Phone number must be 10 digits")
+      .nonempty("Phone number is required"),
+  });
 
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault()
+  type FormData = z.infer<typeof formSchema>;
 
-    if (!teacherId || !email || !password || !confirmpassword) {
-      setMessage('กรุณากรอกชื่อและรหัสผ่าน')
-      return
+  const [formData, setFormData] = useState<FormData>({
+    teacherId: "",
+    position: "",
+    email: "",
+    firstName: "",
+    lastName: "",
+    gender: "",
+    phoneNumber: "",
+  });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitStatus, setSubmitStatus] = useState<string>("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Clear the error for the current field
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+
+
+    try {
+      formSchema.parse(formData);
+      const response = await axios.post("http://cp24sy1.sit.kmutt.ac.th:8081/register/teacher",formData);
+      console.log("Response:", response.data);
+      console.log(formData)
+      setSubmitStatus("Form submitted successfully!");
+
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldErrors: Record<string, string> = {};
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            fieldErrors[err.path[0]] = err.message;
+          }
+        });
+        setErrors(fieldErrors);
+      } else {
+        console.error("Error submitting form:", error);
+        setSubmitStatus("Error submitting form. Please try again.");
+      }
     }
-
-    const existingEmail = mockDatabase.find((user) => user.email === email)
-    if (existingEmail) {
-      setMessage('ชื่อผู้ใช้นี้มีอยู่แล้ว')
-      return
-    }
-
-    mockDatabase.push({ teacherId, email, password, confirmpassword })
-    setMessage('ลงทะเบียนสำเร็จ!')
-    console.log(mockDatabase)
-  }
-
+  };
   return (
     <BrandingBackground>
       <section className='hidden lg:flex flex-1 h-screen ml-auto  flex-col items-center justify-center space-y-xl'>
@@ -53,17 +102,70 @@ export default function TeacherRegistrationForm() {
           <p className="text-body-1 text-header font-bold">ส่งคำร้องเพื่อลงทะเบียนระบบ</p>
         </section>
         <form className="flex flex-col space-y-lg">
-          <MemoInputText value={teacherId} onChange={(e) => setTeacherId(e.target.value)} type="text" placeholder="รหัสประจำตัวคุณครู" />
-          <MemoInputText value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="อีเมล" />
-          <MemoInputText value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="รหัสผ่าน" />
-          <MemoInputText value={confirmpassword} onChange={(e) => setConfirmpassword(e.target.value)} type="password" placeholder="ยืนยันรหัสผ่าน" />
-          <MemoErrorMessage error={message}/>
-          <MemoButton onClick={handleRegister} title="ลงทะเบียน" />
+          <MemoInputTextHelper  
+            type="text"
+            name="teacherId"
+            error={errors.teacherId}
+            value={formData.teacherId}
+            onChange={handleChange} 
+            placeholder="รหัสประจำตัวคุณครู" />
+          
+          <MemoInputTextHelper 
+            type="text"
+            name="position"
+            error={errors.position}
+            value={formData.position}
+            onChange={handleChange}
+            placeholder="ตำแหน่ง" />
+
+          <MemoInputTextHelper 
+            type="email"
+            name="email"
+            error={errors.email}
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="อีเมล"/>
+          
+          <MemoInputTextHelper 
+            type="text"
+            name="firstName"
+            error={errors.firstName}
+            value={formData.firstName}
+            onChange={handleChange}
+            placeholder="ชื่อ"/>
+
+          <MemoInputTextHelper 
+            type="text"
+            name="lastName"
+            error={errors.lastName}
+            value={formData.lastName}
+            onChange={handleChange}
+            placeholder="นามสกุล"/>
+
+          <MemoInputTextHelper 
+            type="text"
+            name="gender"
+            error={errors.gender}
+            value={formData.gender}
+            onChange={handleChange}
+            placeholder="เพศ"/>
+          
+          <MemoInputTextHelper 
+            type="text"
+            name="phoneNumber"
+            error={errors.phoneNumber}
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            placeholder="เบอร์โทรศัพท์"/>
+                   
+          <MemoErrorMessage error={submitStatus}/>
+          <MemoButton onClick={handleSubmit} title="ลงทะเบียน" />
           <Link href="/">
             <MemoButton title="กลับไปยังหน้าเลือกผู้ใช้" variant="ghost" />
           </Link>
         </form>
       </MemoWhite>
     </BrandingBackground>
-  )
-}
+    )
+  }
+  
