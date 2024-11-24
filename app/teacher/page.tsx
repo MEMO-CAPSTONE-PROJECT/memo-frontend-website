@@ -4,7 +4,7 @@ import MemoButton from '@/components/button/memo-button'
 import MemoWhite from '@/components/container/memo-white'
 import MemoErrorMessage from '@/components/helper/memo-error-message'
 import MemoInputTextHelper from '@/components/input/memo-input-text-helper'
-// import MemoInputText from '@/components/input/memo-input-text'
+import MemoSelectHelper from 'components/input/memo-select-helper'
 import TeacherIcon from '@/components/ui/icons/registration/teacher'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -19,27 +19,27 @@ export default function TeacherRegistrationForm() {
       .string()
       .regex(/^\d+$/, "รหัสคุณครูต้องเป็นตัวเลข")
       .length(5, "รหัสคุณครูต้องมีจำนวน 5 หลัก")
-      .nonempty("กรุณากรอกรหัสคุณครู"),
+      .min(1,"กรุณากรอกรหัสของคุณครู"),
     position: z
       .string()
-      .nonempty("กรุณากรอกตำแหน่ง"),
+      .min(1,"กรุณากรอกตำแหน่งของคุณครู"),
     email: z
       .string()
-      .email("กรุณากรอกอีเมล"),
+      .min(1,"กรุณากรอกอีเมลของคุณครู"),
     firstName: z
       .string()
-      .nonempty("กรุณากรอกขื่อ"),
+      .min(1,"กรุณากรอกขื่อของคุณครู"),
     lastName: z
       .string()
-      .nonempty("กรุณากรอกนามสกุล"),
+      .min(1,"กรุณากรอกนามสกุลของคุณครู"),
     gender: z
       .string()
-      .nonempty("กรุณาเลือกเพศ"),
+      .min(1,"กรุณาเลือกเพศของคุณครู"),
     phoneNumber: z
       .string()
       .regex(/^\d+$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข")
       .length(10, "เบอร์โทรศัพท์ต้องมีจำนวน 10 หลัก")
-      .nonempty("Phone number is required"),
+      .min(1,"กรุณากรอกเบอร์โทรศัพท์ของคุณครู"),
   });
 
   type FormData = z.infer<typeof formSchema>;
@@ -56,13 +56,14 @@ export default function TeacherRegistrationForm() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitStatus, setSubmitStatus] = useState<string>("");
-
+  const [status, setStatus] = useState<string>("");
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Clear the error for the current field
-    setErrors((prev) => ({ ...prev, [name]: undefined }));
+    setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,7 +76,8 @@ export default function TeacherRegistrationForm() {
       const response = await axios.post("http://cp24sy1.sit.kmutt.ac.th:8081/register/teacher",formData);
       console.log("Response:", response.data);
       console.log(formData)
-      setSubmitStatus("ลงทะเบียนบัชชีคุณครูสำเร็จ");
+      setStatus("success");
+      setSubmitStatus("ลงทะเบียนผู้ใช้สำเร็จ");
 
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -88,7 +90,8 @@ export default function TeacherRegistrationForm() {
         setErrors(fieldErrors);
       } else {
         console.error("Error submitting form:", error);
-        setSubmitStatus("แอคเคานต์นี้มีแล้ว กรุณากรอกข้อมูลใหม่");
+        setStatus("error");
+        setSubmitStatus("มีผู้ใช้นี้แล้ว กรุณากรอกข้อมูลใหม่");
       }
     }
   };
@@ -110,13 +113,15 @@ export default function TeacherRegistrationForm() {
             onChange={handleChange} 
             placeholder="รหัสประจำตัวคุณครู" />
           
-          <MemoInputTextHelper 
+          <MemoSelectHelper 
             type="text"
             name="position"
+            options={["คุณครูประจำชั้น", "คุณครูฝ่ายปกครอง"]}
             error={errors.position}
             value={formData.position}
             onChange={handleChange}
-            placeholder="ตำแหน่ง" />
+            placeholder="ตำแหน่งของคุณครู"
+            size="full"/>
 
           <MemoInputTextHelper 
             type="email"
@@ -124,7 +129,7 @@ export default function TeacherRegistrationForm() {
             error={errors.email}
             value={formData.email}
             onChange={handleChange}
-            placeholder="อีเมล"/>
+            placeholder="อีเมลของคุณครู"/>
           
           <MemoInputTextHelper 
             type="text"
@@ -142,13 +147,14 @@ export default function TeacherRegistrationForm() {
             onChange={handleChange}
             placeholder="นามสกุล"/>
 
-          <MemoInputTextHelper 
-            type="text"
-            name="gender"
-            error={errors.gender}
-            value={formData.gender}
-            onChange={handleChange}
-            placeholder="เพศ"/>
+          <MemoSelectHelper 
+          options={["ผู้หญิง", "ผู้ชาย"]} 
+          onChange={handleChange} 
+          name="gender" 
+          placeholder="เลือกเพศของคุณ" 
+          value={formData.gender} 
+          error={errors.gender} 
+          size="full" />
           
           <MemoInputTextHelper 
             type="text"
@@ -158,7 +164,7 @@ export default function TeacherRegistrationForm() {
             onChange={handleChange}
             placeholder="เบอร์โทรศัพท์"/>
                    
-          <MemoErrorMessage error={submitStatus}/>
+          <MemoErrorMessage error={submitStatus} status={status} />
           <MemoButton onClick={handleSubmit} title="ลงทะเบียน" />
           <Link href="/">
             <MemoButton title="กลับไปยังหน้าเลือกผู้ใช้" variant="ghost" />
