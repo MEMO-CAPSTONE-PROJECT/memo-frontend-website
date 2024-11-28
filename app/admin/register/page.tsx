@@ -8,20 +8,14 @@ import MemoSelectHelper from 'components/input/memo-select-helper'
 import AdminIcon from '@/components/ui/icons/registration/admin'
 import Link from 'next/link'
 import { useState } from 'react'
+import {MEMO_API} from '@/constants/apis';
 import axios from "axios";
 import { z } from "zod";
 
 
 
 export default function AdminRegistrationForm() {
-
   const formSchema = z.object({
-    teacherId: z
-      .string()
-      .regex(/^\d+$/, "รหัสคุณครูต้องเป็นตัวเลข")
-      .length(5, "รหัสคุณครูต้องมีจำนวน 5 หลัก")
-      .min(1,"กรุณากรอกรหัสของคุณครู"),
-
     email: z
       .string()
       .email("กรุณากรอกอีเมลในรูปแบบที่ถูกต้อง เช่น example@example.com")
@@ -29,7 +23,7 @@ export default function AdminRegistrationForm() {
 
     userName: z
       .string()
-      .min(1,"กรุณากรอกชื่อผู้ใช้ของคุณครู"),
+      .min(1,"กรุณากรอกชื่อบัญชีผู้ใช้ของคุณครู"),
 
       firstName: z
       .string()
@@ -56,7 +50,6 @@ export default function AdminRegistrationForm() {
   type FormData = z.infer<typeof formSchema>;
 
   const [formData, setFormData] = useState<FormData>({
-    teacherId: "",
     firstName:"",
     lastName:"",
     userName:"",
@@ -67,7 +60,6 @@ export default function AdminRegistrationForm() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitStatus, setSubmitStatus] = useState<string>("");
- 
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -80,15 +72,11 @@ export default function AdminRegistrationForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-
-
     try {
       formSchema.parse(formData);
-      const response = await axios.post("http://cp24sy1.sit.kmutt.ac.th:8081/register/admin",formData);
+      const response = await axios.post(MEMO_API.adminRegister,formData);
       console.log("Response:", response.data);
       console.log(formData)
-      
-      setSubmitStatus("ลงทะเบียนผู้ใช้สำเร็จ");
 
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -101,7 +89,7 @@ export default function AdminRegistrationForm() {
         setErrors(fieldErrors);
       } else {
         console.error("Error submitting form:", error);
-        setSubmitStatus("มีผู้ใช้นี้แล้ว กรุณากรอกข้อมูลใหม่");
+        setSubmitStatus("รหัสประจำตัวนี้ถูกใช้งานแล้ว ลองใช้รหัสประจำตัวอื่น");
       }
     }
   };
@@ -111,17 +99,12 @@ export default function AdminRegistrationForm() {
         <AdminIcon className="space-x-xl w-96 h-96" />
       </section>
       <MemoWhite>
+
+
         <section className="flex flex-col items-center space-y-xl">
           <p className="text-body-1 text-header font-bold">ส่งคำร้องเพื่อลงทะเบียนระบบ</p>
         </section>
-        <form className="flex flex-col space-y-lg">
-          <MemoInputTextHelper  
-            type="text"
-            name="teacherId"
-            error={errors.teacherId}
-            value={formData.teacherId}
-            onChange={handleChange} 
-            placeholder="รหัสประจำตัวของคุณครู" />
+        <form className="flex flex-col space-y-lg" onSubmit={handleSubmit}>
 
             <MemoInputTextHelper 
             type="text"
@@ -145,7 +128,7 @@ export default function AdminRegistrationForm() {
             error={errors.userName}
             value={formData.userName}
             onChange={handleChange}
-            placeholder="ชื่อผู้ใช้ของคุณครู"/>
+            placeholder="ชื่อบัญชีผู้ใช้ของคุณครู"/>
 
             <MemoInputTextHelper 
             type="text"
@@ -170,13 +153,18 @@ export default function AdminRegistrationForm() {
             value={formData.password}
             onChange={handleChange}
             placeholder="รหัสผ่านของคุณครู"/>
-        
-                   
+                     
           <MemoErrorMessage error={submitStatus} />
-          <MemoButton onClick={handleSubmit} title="ลงทะเบียน" />
+          <div className="space-x-4 flex pt-4">
+          <div className="w-1/2">
           <Link href="/">
-            <MemoButton title="กลับไปยังหน้าเลือกผู้ใช้" variant="ghost" />
+              <MemoButton title="หน้าเลือกผู้ใช้" variant="ghost" />
           </Link>
+          </div>
+          <div className="w-1/2">
+               <MemoButton type='submit' title="ลงทะเบียน" />
+           </div>
+          </div>
         </form>
       </MemoWhite>
     </BrandingBackground>

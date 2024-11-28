@@ -6,8 +6,6 @@ import MemoErrorMessage from '@/components/helper/memo-error-message'
 import MemoInputTextHelper from '@/components/input/memo-input-text-helper'
 import MemoSelectHelper from 'components/input/memo-select-helper'
 import TeacherIcon from '@/components/ui/icons/registration/teacher'
-import MemoPopUp from '@/components/container/memo-popup';
-import LetterIcon from '@/components/ui/icons/letter';
 import {MEMO_API} from '@/constants/apis';
 import Link from 'next/link'
 import { useState } from 'react'
@@ -16,29 +14,7 @@ import { z } from "zod";
 import OTPVerificationPopup from '@/components/container/memo-otp';
 
 export default function TeacherRegistrationForm() {
-
-  // const [showPopup, setShowPopup] = useState(false);
-  // const handleConfirm = () => {
-  //   alert('Confirmed!');
-  //   setShowPopup(false);
-  // };
-
-  // const handleCancel = () => {
-  //   setShowPopup(false);
-  // };
-
   const [showPopup, setShowPopup] = useState(false);
-
-  // const handleOpenPopup = () => {
-  //   setShowPopup(true);
-    
-  // };
-
-  const handleClosePopup = () => {
-    setShowPopup(false);
-  };
-
-
   const formSchema = z.object({
     position: z
       .string()
@@ -85,7 +61,6 @@ export default function TeacherRegistrationForm() {
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // setFormData({...formData,gender: e.target.value,})
     setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
@@ -97,7 +72,6 @@ export default function TeacherRegistrationForm() {
       console.log("Response:", response.data);
       console.log(formData)
       setShowPopup(true);
-
 
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -119,12 +93,16 @@ export default function TeacherRegistrationForm() {
       <section className='hidden lg:flex flex-1 h-screen ml-auto  flex-col items-center justify-center space-y-xl'>
         <TeacherIcon className="space-x-xl w-96 h-96" />
       </section>
-
+   
       <MemoWhite>
+        {showPopup && (
+          <OTPVerificationPopup propEmail={formData.email} api={MEMO_API.teacherOtp} />
+        )}
+
         <section className="flex flex-col items-center space-y-xl">
           <p className="text-body-1 text-header font-bold">ส่งคำร้องเพื่อลงทะเบียนระบบ</p>
         </section>
-        <form className="flex flex-col space-y-lg">
+        <form className="flex flex-col space-y-lg" onSubmit={handleSubmit}>
           
           <MemoInputTextHelper 
             type="text"
@@ -177,32 +155,11 @@ export default function TeacherRegistrationForm() {
             placeholder="เบอร์โทรศัพท์"/>
                    
           <MemoErrorMessage error={submitStatus}  />
-          <MemoButton onClick={handleSubmit} title="ลงทะเบียน" />
+          <MemoButton type='submit' title="ลงทะเบียน" />
           <Link href="/">
             <MemoButton title="กลับไปยังหน้าเลือกผู้ใช้" variant="ghost" />
           </Link>
-
-          <div className="p-6">
-    
-      {/* <button
-        onClick={handleOpenPopup}
-        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-      >
-        Open OTP Verification
-      </button> */}
-
-    </div>
-
-          {/* <MemoPopUp show={showPopup} onClose={handleCancel} onConfirm={handleConfirm} >
-            <LetterIcon className="space-x-xl w-48 h-56  " />
-            <h2 className="text-title font-bold mb-2">ลงทะเบียนผู้ใช้สำเร็จ</h2>
-            <p className='text-body mb-4 '>ลงทะเบียนผู้ใช้สำเร็จ</p>
-          </MemoPopUp> */}
         </form>
-        
-      {showPopup && (
-        <OTPVerificationPopup emailTeacher={formData.email} onClose={handleClosePopup} api={MEMO_API.teacherOtp} />
-      )}
       </MemoWhite>
     </BrandingBackground>
     )

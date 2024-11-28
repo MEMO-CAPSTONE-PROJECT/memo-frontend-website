@@ -1,10 +1,9 @@
-import { MouseEvent } from "react"
+import { ButtonHTMLAttributes, MouseEvent } from "react"
 
-interface MemoButtonProps {
+interface MemoButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     title: string
     size?: keyof MemoButtonSize
     variant?: keyof MemoButtonVariant
-    onClick?: (event: MouseEvent<HTMLButtonElement>) => void
 }
 
 interface MemoButtonSize {
@@ -19,7 +18,7 @@ interface MemoButtonVariant {
     ghost: string
 }
 
-export default function MemoButton({ title, variant = "primary", size = "full", onClick }: Readonly<MemoButtonProps>) {
+export default function MemoButton({ title, variant = "primary", size = "full", onClick, ...props }: Readonly<MemoButtonProps>) {
     const variants: MemoButtonVariant = {
         primary: "bg-primary-2 text-system-white hover:bg-primary-2-hover",
         secondary: "bg-secondary-2 text-system-white hover:bg-secondary-2-hover",
@@ -32,8 +31,8 @@ export default function MemoButton({ title, variant = "primary", size = "full", 
     }
     return (
       <button 
-        className={`font-medium text-title rounded-sm py-3 hover:ease-in hover:duration-150 ${variants[variant]} ${sizes[size]}`}
-        onClick={onClick}
+        className={`font-medium text-title rounded-sm py-3 hover:ease-in hover:duration-150 ${variants[variant]} ${sizes[size]} `}
+        {...props}
       >
         {title}
       </button> 

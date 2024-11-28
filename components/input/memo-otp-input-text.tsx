@@ -1,5 +1,4 @@
 "use client"
-
 import { MemoInputVariant } from "@/shared/types/input-type"
 import { isNumeric } from "@/shared/utils/number"
 import { InputStates } from "@/shared/variants/input-variant"

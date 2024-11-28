@@ -7,6 +7,6 @@ export const MEMO_API = {
 
     adminRegister : "http://cp24sy1.sit.kmutt.ac.th:8081/register/admin",
     adminLogin : "http://cp24sy1.sit.kmutt.ac.th:8081/login/admin",
-    adminOtp : "http://cp24sy1.sit.kmutt.ac.th:8081/teacher/verify/otp",
+    adminOtp : "http://cp24sy1.sit.kmutt.ac.th:8081/admin/verify/otp",
 }
 
