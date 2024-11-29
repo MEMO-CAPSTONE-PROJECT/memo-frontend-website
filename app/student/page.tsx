@@ -4,7 +4,8 @@ import BrandingBackground from "@/components/background/branding-background";
 import MemoButton from "@/components/button/memo-button";
 import MemoWhite from "@/components/container/memo-white";
 import MemoErrorMessage from "@/components/helper/memo-error-message";
-import MemoInputTextHelper from "@/components/input/memo-input-text-helper";
+import MemoInputHeader from "@/components/input/memo-input-header";
+import MemoSelectHelper from 'components/input/memo-select-helper'
 import MultiStep from "@/components/step/multi-step";
 import StudentIcon from "@/components/ui/icons/registration/student";
 import { MEMO_API } from "@/constants/apis";
@@ -139,6 +140,8 @@ export default function StudentRegistrationForm() {
   
   const submit = async () => {
     const formData = getFormData();
+    console.log(formData)
+    
     try {
       const response = await fetch(MEMO_API.studentRegister, {
         method: "POST",
@@ -161,8 +164,7 @@ export default function StudentRegistrationForm() {
     } catch (error) {
       console.error("Network error:", error);
       setSubmitStatus("Network error. Please check your connection.");
-    }
-    
+    }   
   };
 
   return (
@@ -171,8 +173,8 @@ export default function StudentRegistrationForm() {
         <StudentIcon className="space-x-xl w-96 h-96" />
       </section>
       <MemoWhite>
-      {showPopup && (
-          <OTPVerificationPopup propEmail={student.emailStudent}   api={MEMO_API.studentOtp} />
+        {showPopup && (
+          <OTPVerificationPopup propEmail={student.emailStudent} api={MEMO_API.teacherOtp} onCancel={() =>setShowPopup(false)} />
         )}
 
         <div className="w-[30rem]">
@@ -185,38 +187,41 @@ export default function StudentRegistrationForm() {
           {step === 1 && (
             <Fragment>
               <section className="flex flex-col items-center space-y-xl">
-                <p className="text-body-1 text-header font-bold ">
+                <p className="text-body-1 text-header font-bold  ">
                   ส่งคำร้องเข้าใช้ระบบนักเรียน
                 </p>
               </section>
               <div className="flex flex-col space-y-lg">
-                <MemoInputTextHelper
+                <MemoInputHeader
+                  text="ชื่อผู้ใช้"
                   type="text"
                   name="displayName"
-                  placeholder="ชื่อผู้ใช้ของนักเรียน"
-                  error={errors.displayName}
+                  placeholder="กรุณาพิมพ์ชื่อผู้ใช้ของคุณ"
+                  error={errors?.displayName}
                   value={student.displayName}
                   onChange={(e) =>
                     setStudent({ ...student, displayName: e.target.value })
                   }
                 />
 
-                <MemoInputTextHelper
+                <MemoInputHeader
+                  text="อีเมล"
                   type="email"
                   name="emailStudent"
-                  placeholder="อีเมลของนักเรียน"
-                  error={errors.emailStudent}
+                  placeholder="example@domain.com"
+                  error={errors?.emailStudent}
                   value={student.emailStudent}
                   onChange={(e) =>
                     setStudent({ ...student, emailStudent: e.target.value })
                   }
                 />
 
-                <MemoInputTextHelper
+                <MemoInputHeader
+                  text="เบอร์โทรศัพท์"
                   type="text"
                   name="phoneNumber"
-                  placeholder="เบอร์โทรศัพท์ของนักเรียน"
-                  error={errors.phoneNumber}
+                  placeholder="กรอกเบอร์โทรศัพท์ 08X-XXX-XXXX"
+                  error={errors?.phoneNumber}
                   value={student.phoneNumber}
                   onChange={(e) =>
                     setStudent({ ...student, phoneNumber: e.target.value })
@@ -243,60 +248,65 @@ export default function StudentRegistrationForm() {
                 </p>
               </section>
               <div className="flex flex-col space-y-lg">
-                <MemoInputTextHelper
-                  type="text"
-                  name="firstName"
-                  placeholder="ชื่อของนักเรียน"
-                  error={errors.firstName}
-                  value={student.firstName}
-                  onChange={(e) =>
-                    setStudent({ ...student, firstName: e.target.value })
-                  }
-                />
+                <MemoInputHeader
+                    text="ชื่อ"
+                    type="text"
+                    name="firstName"
+                    placeholder="กรุณาพิมพ์ชื่อของคุณ"
+                    error={errors?.firstName}
+                    value={student.firstName}
+                    onChange={(e) =>
+                      setStudent({ ...student, firstName: e.target.value })
+                    }
+                  />
 
-                <MemoInputTextHelper
-                  type="text"
-                  name="lastName"
-                  placeholder="นามสกุลของนักเรียน"
-                  error={errors.lastName}
-                  value={student.lastName}
-                  onChange={(e) =>
-                    setStudent({ ...student, lastName: e.target.value })
-                  }
-                />
+                  <MemoInputHeader
+                    text="นามสกุล"
+                    type="text"
+                    name="lastName"
+                    placeholder="กรุณาพิมพ์นามสกุลของคุณ"
+                    error={errors?.lastName}
+                    value={student.lastName}
+                    onChange={(e) =>
+                      setStudent({ ...student, lastName: e.target.value })
+                    }
+                  />
 
-                <MemoInputTextHelper
-                  type="text"
-                  name="gender"
-                  placeholder="เพศของนักเรียน"
-                  error={errors.gender}
-                  value={student.gender}
-                  onChange={(e) =>
-                    setStudent({ ...student, gender: e.target.value })
-                  }
-                />
+                <label className="block text-lg font-medium text-body-1 mb-2">เพศ</label>
+                  <MemoSelectHelper 
+                    options={["ผู้หญิง", "ผู้ชาย"]} 
+                    name="gender" 
+                    placeholder="กรุณาเลือกเพศของคุณ" 
+                    value={student.gender} 
+                    error={errors?.gender} 
+                    size="full" 
+                    onChange={(e) =>
+                      setStudent({ ...student, gender: e.target.value })
+                    }/>
 
-                <MemoInputTextHelper
-                  type="text"
-                  name="classroom"
-                  placeholder="เลขห้องเรียนของนักเรียน"
-                  error={errors.classroom}
-                  value={student.classroom}
-                  onChange={(e) =>
-                    setStudent({ ...student, classroom: e.target.value })
-                  }
-                />
+                  <MemoInputHeader
+                    text="ห้องเรียน"
+                    type="text"
+                    name="classroom"
+                    placeholder="กรุณาพิมพ์เลขห้องเรียนของคุณ"
+                    error={errors?.classroom}
+                    value={student.classroom}
+                    onChange={(e) =>
+                      setStudent({ ...student, classroom: e.target.value })
+                    }
+                  />
 
-                <MemoInputTextHelper
-                  type=" text"
-                  name="classLevel"
-                  placeholder="เลขชั้นเรียนของนักเรียน"
-                  error={errors.classLevel}
-                  value={student.classLevel}
-                  onChange={(e) =>
-                    setStudent({ ...student, classLevel: e.target.value })
-                  }
-                />
+                  <MemoInputHeader
+                    text="ชั้นเรียน"
+                    type="text"
+                    name="classLevel"
+                    placeholder="กรุณาพิมพ์เลขชั้นเรียนของคุณ"
+                    error={errors?.classLevel}
+                    value={student.classLevel}
+                    onChange={(e) =>
+                      setStudent({ ...student, classLevel: e.target.value })
+                    }
+                  />
               </div>
               <div className="flex space-x-4">
                 <MemoButton id="previous" type="button" onClick={handlePrevious} title="ย้อนกลับ" />
@@ -312,60 +322,65 @@ export default function StudentRegistrationForm() {
                 </p>
               </section>
               <div className="flex flex-col space-y-lg">
-                <MemoInputTextHelper
-                  type="text"
-                  name="firstNameParent"
-                  placeholder="ชื่อของผู้ปกครอง"
-                  error={errors.firstNameParent}
-                  value={parent.firstNameParent}
-                  onChange={(e) =>
-                    setParent({ ...parent, firstNameParent: e.target.value })
-                  }
-                />
+              <MemoInputHeader
+                    text="ชื่อผู้ปกครอง"
+                    type="text"
+                    name="firstNameParent"
+                    placeholder="กรุณาพิมพ์ชื่อผู้ปกครองของคุณ"
+                    error={errors?.firstNameParent}
+                    value={parent.firstNameParent}
+                    onChange={(e) =>
+                      setParent({ ...parent, firstNameParent: e.target.value })
+                    }
+                  />
 
-                <MemoInputTextHelper
-                  type="text"
-                  name="lastNameParent"
-                  placeholder="นามสกุลของผู้ปกครอง"
-                  error={errors.lastNameParent}
-                  value={parent.lastNameParent}
-                  onChange={(e) =>
-                    setParent({ ...parent, lastNameParent: e.target.value })
-                  }
-                />
+                  <MemoInputHeader
+                    text="นามสกุลผู้ปกครอง"
+                    type="text"
+                    name="lastNameParent"
+                    placeholder="กรุณาพิมพ์นามสกุลผู้ปกครองของคุณ"
+                    error={errors?.lastNameParent}
+                    value={parent.lastNameParent}
+                    onChange={(e) =>
+                      setParent({ ...parent, lastNameParent: e.target.value })
+                    }
+                  />
 
-                <MemoInputTextHelper
-                  type="text"
-                  name="relation"
-                  placeholder="ความสัมพันธ์ของผู้ปกครองกับนักเรียน"
-                  error={errors.relation}
-                  value={parent.relation}
-                  onChange={(e) =>
-                    setParent({ ...parent, relation: e.target.value })
-                  }
-                />
+                  <MemoInputHeader
+                    text="ความสัมพันธ์ของผู้ปกครอง"
+                    type="text"
+                    name="relation"
+                    placeholder="กรุณาพิมพ์ความสัมพันธ์ของผู้ปกครองกับคุณ"
+                    error={errors?.relation}
+                    value={parent.relation}
+                    onChange={(e) =>
+                      setParent({ ...parent, relation: e.target.value })
+                    }
+                  />
 
-                <MemoInputTextHelper
-                  type="text"
-                  name="phoneNumberParent"
-                  placeholder="เบอร์โทรศัพท์ของผู้ปกครอง"
-                  error={errors.phoneNumberParent}
-                  value={parent.phoneNumberParent}
-                  onChange={(e) =>
-                    setParent({ ...parent, phoneNumberParent: e.target.value })
-                  }
-                />
+                  <MemoInputHeader
+                    text="เบอร์โทรศัพท์ผู้ปกครอง"
+                    type="text"
+                    name="phoneNumberParent"
+                    placeholder="กรุณาพิมพ์เบอร์โทรศัพท์ผู้ปกครองของคุณ"
+                    error={errors?.phoneNumberParent}
+                    value={parent.phoneNumberParent}
+                    onChange={(e) =>
+                      setParent({ ...parent, phoneNumberParent: e.target.value })
+                    }
+                  />
 
-                <MemoInputTextHelper
-                  type="email"
-                  name="emailParent"
-                  placeholder="อีเมลของผู้ปกครอง"
-                  error={errors.emailParent}
-                  value={parent.emailParent}
-                  onChange={(e) =>
-                    setParent({ ...parent, emailParent: e.target.value })
-                  }
-                />
+                  <MemoInputHeader
+                    text="ความสัมพันธ์ผู้ปกครอง"
+                    type="email"
+                    name="emailParent"
+                    placeholder="example@domain.com"
+                    error={errors?.emailParent}
+                    value={parent.emailParent}
+                    onChange={(e) =>
+                      setParent({ ...parent, emailParent: e.target.value })
+                    }
+                  />
               </div>
               <MemoErrorMessage error={submitStatus} />
 

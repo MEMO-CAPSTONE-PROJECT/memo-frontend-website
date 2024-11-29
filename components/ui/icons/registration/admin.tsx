@@ -4,7 +4,6 @@ interface AdminTeacherRegisterIconProps  {
     className?: string;
 }
 
-
 export default function AdminTeacherRegisterIcon({ className }: Readonly<AdminTeacherRegisterIconProps>) {
     return (
         <svg width="250" height="250" viewBox="0 0 250 250" fill="none" xmlns="http://www.w3.org/2000/svg " className={className}>
@@ -60,10 +59,10 @@ export default function AdminTeacherRegisterIcon({ className }: Readonly<AdminTe
         <ellipse cx="83.5881" cy="77.8837" rx="34.5942" ry="10.8019" transform="rotate(151.763 83.5881 77.8837)" 
             fill={Color["title-1"]}/>
         <path d="M79.5691 186C79.5691 184.895 80.4645 184 81.5691 184H83.5691H85.5691C86.6737 184 87.5691 184.895 87.5691 186C87.5691 187.105 86.6737 188 85.5691 188H83.5691H81.5691C80.4645 188 79.5691 187.105 79.5691 186Z" fill="#FCFCFC"/>
-        <circle cx="61.0002" cy="168" r="16" stroke="#605E5C" stroke-width="4"/>
+        <circle cx="61.0002" cy="168" r="16" stroke="#605E5C" strokeWidth="4"/>
         <rect x="78.0002" y="164" width="12" height="3" 
             fill={Color["body-1"]}/>
-        <circle cx="107" cy="168" r="16" stroke="#605E5C" stroke-width="4"/>
+        <circle cx="107" cy="168" r="16" stroke="#605E5C" strokeWidth="4"/>
         <rect x="50.8202" y="140.881" width="20" height="5" rx="2.5" transform="rotate(-5 50.8202 140.881)" 
             fill={Color["title-1"]}/>
         <rect x="97.256" y="139.138" width="20" height="5" rx="2.5" transform="rotate(5 97.256 139.138)" 

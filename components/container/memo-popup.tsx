@@ -34,12 +34,14 @@
 //   );
 // }
 import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface MemoPopUpProps {
   children: React.ReactNode;
   className?: string;
   onClose: () => void; // Make this required
   show: boolean; // Make this required
+  redirectUrl?: string; // Add optional redirect URL
 }
 
 export default function MemoPopUp({
@@ -47,24 +49,27 @@ export default function MemoPopUp({
   className = '',
   show,
   onClose,
+  redirectUrl,
 }: MemoPopUpProps) {
+  const router = useRouter();
+
   useEffect(() => {
     if (show) {
       const timer = setTimeout(() => {
-        onClose(); // Ensure onClose is called
-      }, 5000); // 5 seconds
-
-      // Cleanup timer on component unmount or if `show` changes
+        if (redirectUrl) {
+          router.push(redirectUrl); 
+        }
+        onClose(); 
+      }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [show, onClose]);
+  }, [show, onClose, redirectUrl, router]);
 
   if (!show) return null;
 
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center bg-title-1 bg-opacity-50 ${className}`}
-      onClick={onClose}
     >
       <div
         className="relative bg-system-white rounded-lg shadow-lg p-6 w-full max-w-md"

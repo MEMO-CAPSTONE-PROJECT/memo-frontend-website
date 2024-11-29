@@ -5,6 +5,7 @@ import MemoTextButton from "@/components/button/memo-text-button";
 import MemoPopUp from '@/components/container/memo-popup';
 import LetterIcon from '@/components/ui/icons/letter';
 import LockIcon from "@/components/ui/icons/lock-icon";
+import {MEMO_API} from '@/constants/apis';
 import { useCallback, useEffect, useState } from "react"
 import MemoCard from "./memo-card";
 import axios from 'axios';
@@ -12,9 +13,10 @@ import axios from 'axios';
 interface OTPVerificationPopupProps {
   propEmail: string;
   api :string;
+  onCancel: () => void;
 }
 
-const OTPVerificationPopup: React.FC<OTPVerificationPopupProps> = ({ propEmail,api }) => {
+const OTPVerificationPopup: React.FC<OTPVerificationPopupProps> = ({ propEmail,api, onCancel }) => {
 
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -49,16 +51,16 @@ const OTPVerificationPopup: React.FC<OTPVerificationPopupProps> = ({ propEmail,a
   }
 
     let email = "";
-    if (api === "http://cp24sy1.sit.kmutt.ac.th:8081/teacher/verify/otp") {
+    if (api === MEMO_API.teacherOtp) {
       email = "emailteacher"
-    } else if (api === "http://cp24sy1.sit.kmutt.ac.th:8081/student/verify/otp") {
+    } else if (api === MEMO_API.studentOtp) {
       email = "emailStudent" 
     }  
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsLoading(true);
-    console.log(email)
+
     const data = {
       otp: otp,
       [email]: propEmail,
@@ -67,7 +69,6 @@ const OTPVerificationPopup: React.FC<OTPVerificationPopupProps> = ({ propEmail,a
     try {
       const response = await axios.post(api, data);
       if (response.status === 200) {
-        setMessage('ยืนยัน OTP สำเร็จ!');
         setShowSuccesPopup(true);
         setIsLoading(false);
       }
@@ -102,11 +103,8 @@ const OTPVerificationPopup: React.FC<OTPVerificationPopupProps> = ({ propEmail,a
   };
   
     const [showSuccessPopup, setShowSuccesPopup] = useState(false);
-    const handleCancel = () => {
-      setShowSuccesPopup(false);
-    };
+
     const handleClosePopup = () => {
-      console.log('Popup closed');
       setShowSuccesPopup(false);
     };
 
@@ -147,15 +145,17 @@ const OTPVerificationPopup: React.FC<OTPVerificationPopupProps> = ({ propEmail,a
           <p className="text-body-2">รหัสหมดอายุใน {getTime(timer)} นาที</p>
           <MemoTextButton onClick={reset} disabled={timer > 0} title="ส่งรหัส OTP อีกครั้ง?" />
         </div>
+        
+        
         <div className="flex space-x-4">
-          <MemoButton title="ยกเลิก"  onClick={handleCancel} variant="ghost" />
-          <MemoButton type="submit" disabled={isLoading} title="ยืนยันรหัส OTP" variant="primary" />
+          <MemoButton title="ยกเลิก"  onClick={onCancel}  variant="ghost" />
+          <MemoButton type="submit" disabled={isLoading} title="ยืนยันรหัส OTP" variant="primary"  />
         </div>
       </footer>
       </form>
     </section>
   </MemoCard>
-      <MemoPopUp show={showSuccessPopup} onClose={handleClosePopup}>
+      <MemoPopUp show={showSuccessPopup} onClose={handleClosePopup} redirectUrl="/">
         <LetterIcon className="space-x-xl w-48 h-56  " />
         <h2 className="text-title font-bold mb-2">ลงทะเบียนผู้ใช้สำเร็จ</h2>
         <p className='text-body mb-4 '>กลับไปยังหน้าเลือกผู้ใช้</p>

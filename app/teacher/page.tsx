@@ -3,9 +3,9 @@ import BrandingBackground from '@/components/background/branding-background'
 import MemoButton from '@/components/button/memo-button'
 import MemoWhite from '@/components/container/memo-white'
 import MemoErrorMessage from '@/components/helper/memo-error-message'
-import MemoInputTextHelper from '@/components/input/memo-input-text-helper'
 import MemoSelectHelper from 'components/input/memo-select-helper'
 import TeacherIcon from '@/components/ui/icons/registration/teacher'
+import MemoInputHeader from "@/components/input/memo-input-header";
 import {MEMO_API} from '@/constants/apis';
 import Link from 'next/link'
 import { useState } from 'react'
@@ -58,6 +58,10 @@ export default function TeacherRegistrationForm() {
     setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
+  const test = () => {
+    console.log(showPopup)
+  };
+
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -96,63 +100,73 @@ export default function TeacherRegistrationForm() {
    
       <MemoWhite>
         {showPopup && (
-          <OTPVerificationPopup propEmail={formData.email} api={MEMO_API.teacherOtp} />
+          <OTPVerificationPopup propEmail={formData.email} api={MEMO_API.teacherOtp} onCancel={() =>setShowPopup(false)} />
         )}
+
 
         <section className="flex flex-col items-center space-y-xl">
           <p className="text-body-1 text-header font-bold">ส่งคำร้องเพื่อลงทะเบียนระบบ</p>
         </section>
         <form className="flex flex-col space-y-lg" onSubmit={handleSubmit}>
-          
-          <MemoInputTextHelper 
+          <MemoInputHeader
+            text="ชื่อ"
             type="text"
             name="firstName"
-            error={errors.firstName}
+            placeholder="กรุณาพิมพ์ชื่อของคุณ"
+            error={errors?.firstName}
             value={formData.firstName}
             onChange={handleChange}
-            placeholder="ชื่อ"/>
+            />         
 
-          <MemoInputTextHelper 
+          <MemoInputHeader
+            text="นามสกุล"
             type="text"
             name="lastName"
-            error={errors.lastName}
+            placeholder="กรุณาพิมพ์นามสกุลของคุณ"
+            error={errors?.lastName}
             value={formData.lastName}
             onChange={handleChange}
-            placeholder="นามสกุล"/>
+            />  
 
+          <MemoInputHeader
+            text="อีเมล"
+            type="email"
+            name="email"
+            placeholder="กรุณาพิมพ์อีเมลของคุณ"
+            error={errors?.email}
+            value={formData.email}
+            onChange={handleChange}
+            />  
+
+        <label className="block text-lg font-medium text-body-1 mb-2">เพศ</label>
           <MemoSelectHelper 
           options={["ผู้หญิง", "ผู้ชาย"]} 
           onChange={handleSelect} 
           name="gender" 
-          placeholder="เลือกเพศของคุณ" 
+          placeholder="กรุณาเลือกเพศของคุณ" 
           value={formData.gender} 
           error={errors.gender} 
           size="full" />
-          
+        
+        <label className="block text-lg font-medium text-body-1 mb-2">ตำแหน่ง</label>
           <MemoSelectHelper 
             name="position"
             options={["คุณครูประจำชั้น", "คุณครูฝ่ายปกครอง"]}
             error={errors.position}
             value={formData.position}
             onChange={handleSelect}
-            placeholder="ตำแหน่งของคุณครู"
+            placeholder="กรุณาเลือกตำแหน่งของคุณ"
             size="full"/>
 
-          <MemoInputTextHelper 
-            type="email"
-            name="email"
-            error={errors.email}
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="อีเมลของคุณครู"/>
-
-          <MemoInputTextHelper 
+          <MemoInputHeader
+            text="เบอร์โทรศัพท์"
             type="text"
             name="phoneNumber"
-            error={errors.phoneNumber}
+            placeholder="กรุณาพิมพ์เบอร์โทรศัพท์ของคุณ"
+            error={errors?.phoneNumber}
             value={formData.phoneNumber}
             onChange={handleChange}
-            placeholder="เบอร์โทรศัพท์"/>
+            />
                    
           <MemoErrorMessage error={submitStatus}  />
           <MemoButton type='submit' title="ลงทะเบียน" />

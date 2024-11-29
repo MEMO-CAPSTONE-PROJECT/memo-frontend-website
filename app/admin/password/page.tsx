@@ -1,3 +1,4 @@
+'use client'
 import BrandingBackground from '@/components/background/branding-background';
 import MemoButton from '@/components/button/memo-button';
 import MemoWhite from '@/components/container/memo-white';

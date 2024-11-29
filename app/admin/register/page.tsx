@@ -4,14 +4,15 @@ import MemoButton from '@/components/button/memo-button'
 import MemoWhite from '@/components/container/memo-white'
 import MemoErrorMessage from '@/components/helper/memo-error-message'
 import MemoInputTextHelper from '@/components/input/memo-input-text-helper'
-import MemoSelectHelper from 'components/input/memo-select-helper'
+import MemoInputHeader from "@/components/input/memo-input-header";
 import AdminIcon from '@/components/ui/icons/registration/admin'
+import MemoSelectHelper from 'components/input/memo-select-helper'
 import Link from 'next/link'
-import { useState } from 'react'
 import {MEMO_API} from '@/constants/apis';
 import axios from "axios";
 import { z } from "zod";
-
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 
 export default function AdminRegistrationForm() {
@@ -21,7 +22,7 @@ export default function AdminRegistrationForm() {
       .email("กรุณากรอกอีเมลในรูปแบบที่ถูกต้อง เช่น example@example.com")
       .min(1,"กรุณากรอกอีเมลของคุณครู"),
 
-    userName: z
+    username: z
       .string()
       .min(1,"กรุณากรอกชื่อบัญชีผู้ใช้ของคุณครู"),
 
@@ -52,7 +53,7 @@ export default function AdminRegistrationForm() {
   const [formData, setFormData] = useState<FormData>({
     firstName:"",
     lastName:"",
-    userName:"",
+    username:"",
     password: "",
     role: "",
     email: "",
@@ -60,12 +61,16 @@ export default function AdminRegistrationForm() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitStatus, setSubmitStatus] = useState<string>("");
-  
+  const router = useRouter();
+
+  const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: '' }));
+  };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    // Clear the error for the current field
     setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
@@ -75,6 +80,7 @@ export default function AdminRegistrationForm() {
     try {
       formSchema.parse(formData);
       const response = await axios.post(MEMO_API.adminRegister,formData);
+      router.push('/admin/login');
       console.log("Response:", response.data);
       console.log(formData)
 
@@ -105,54 +111,66 @@ export default function AdminRegistrationForm() {
           <p className="text-body-1 text-header font-bold">ส่งคำร้องเพื่อลงทะเบียนระบบ</p>
         </section>
         <form className="flex flex-col space-y-lg" onSubmit={handleSubmit}>
-
-            <MemoInputTextHelper 
+            
+        <MemoInputHeader
+            text="ชื่อ"
             type="text"
             name="firstName"
-            error={errors.firstName}
+            placeholder="กรุณาพิมพ์ชื่อของคุณ"
+            error={errors?.firstName}
             value={formData.firstName}
             onChange={handleChange}
-            placeholder="ชื่อของคุณครู"/>
+            />    
 
-            <MemoInputTextHelper 
+          <MemoInputHeader
+            text="นามสกุล"
             type="text"
             name="lastName"
-            error={errors.lastName}
+            placeholder="กรุณาพิมพ์นามสกุลของคุณ"
+            error={errors?.lastName}
             value={formData.lastName}
             onChange={handleChange}
-            placeholder="นามสกุลของคุณครู"/>
+            />  
 
-            <MemoInputTextHelper 
+          <MemoInputHeader
+            text="ชื่อผู้ใช้"
             type="text"
-            name="userName"
-            error={errors.userName}
-            value={formData.userName}
+            name="username"
+            placeholder="กรุณาพิมพ์ชื่อบัชชีผู้ใช้ของคุณ"
+            error={errors?.username}
+            value={formData.username}
             onChange={handleChange}
-            placeholder="ชื่อบัญชีผู้ใช้ของคุณครู"/>
+            />  
 
-            <MemoInputTextHelper 
-            type="text"
-            name="role"
-            error={errors.role}
-            value={formData.role}
-            onChange={handleChange}
-            placeholder="ตำแหน่งของคุณครู"/>
+          <label className="block text-lg font-medium text-body-1 mb-2">ตำแหน่ง</label>
+          <MemoSelectHelper 
+            options={["ครูประจำชั้น", "ครูฝ่ายปกครอง"]} 
+            onChange={handleSelect} 
+            name="role" 
+            placeholder="กรุณาเลือกตำแหน่งของคุณ" 
+            value={formData.role} 
+            error={errors.role} 
+            size="full" />
 
-          <MemoInputTextHelper 
+          <MemoInputHeader
+            text="อีเมล"
             type="email"
             name="email"
-            error={errors.email}
+            placeholder="กรุณาพิมพ์อีเมลของคุณ"
+            error={errors?.email}
             value={formData.email}
             onChange={handleChange}
-            placeholder="อีเมลของคุณครู"/>
+            />
 
-            <MemoInputTextHelper 
+          <MemoInputHeader
+            text="รหัสผ่าน"
             type="text"
             name="password"
-            error={errors.password}
+            placeholder="กรุณาพิมพ์รหัสผ่านของคุณ"
+            error={errors?.password}
             value={formData.password}
             onChange={handleChange}
-            placeholder="รหัสผ่านของคุณครู"/>
+            />
                      
           <MemoErrorMessage error={submitStatus} />
           <div className="space-x-4 flex pt-4">
