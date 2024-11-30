@@ -1,11 +1,77 @@
+"use client";
 import BrandingBackground from '@/components/background/branding-background';
 import MemoButton from '@/components/button/memo-button';
 import MemoWhite from '@/components/container/memo-white';
-import MemoInputText from '@/components/input/memo-input-text';
 import AdminIcon from '@/components/ui/icons/registration/admin';
+import MemoInputTextHelper from "@/components/input/memo-input-text-helper";
+import {MEMO_API} from '@/constants/apis';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from 'next/link';
+import { z } from 'zod';
+
+const loginSchema = z.object({
+  username: z.string().min(1, { message: "กรุณากรอกชื่อบัชชีผู้ใช้ก่อนเข้าสู่ระบบ" }),
+  password: z.string().min(1, { message: "กรุณากรอกรหัสผ่านก่อนเข้าสู่ระบบ" }),
+});
+
 
 export default function AdminLogin() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState({ username: "", password: "" });
+  const router = useRouter();
+
+  const handlehome =()=>{
+    router.push("/");
+  }
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setFieldErrors({ username: "", password: "" }); // Reset field errors
+
+    // Validate the form
+    const validation = loginSchema.safeParse({ username, password });
+    if (!validation.success) {
+      const errors = validation.error.formErrors.fieldErrors;
+      setFieldErrors({
+        username: errors.username ? errors.username[0] : "",
+        password: errors.password ? errors.password[0] : "",
+      });
+      return; // Don't proceed with the API call if validation fails
+    }
+
+    try {
+      const response = await fetch(MEMO_API.adminLogin, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Invalid username or password");
+      }
+
+      const data = await response.json();
+      console.log("Login successful:", data);
+
+      // Redirect to the desired page after login
+      router.push("/dashboard"); // Replace with your desired path
+    } catch (err) {
+      // ตรวจสอบว่า err เป็น Error หรือไม่
+      if (err instanceof Error) {
+        // ถ้าใช่ จะสามารถเข้าถึง err.message ได้
+        setError(err.message);
+      } else {
+        // ถ้าไม่ใช่ Error ก็แสดงข้อความข้อผิดพลาดทั่วไป
+        setError("An unexpected error occurred.");
+      }
+    }
+  };
+
   return (
     <BrandingBackground>
       <section className='hidden lg:flex flex-1 h-screen ml-auto flex-col items-center justify-center space-y-xl'>
@@ -15,19 +81,42 @@ export default function AdminLogin() {
         <section className="flex flex-col items-center space-y-xl">
           <p className="text-body-1 text-header font-bold">ลงชื่อเข้าใช้ระบบผู้ดูแล</p>
         </section>
-        <form className="flex flex-col space-y-lg">
-          <MemoInputText type="number" placeholder="รหัสประจำตัวครู" />
-          <MemoInputText type="password" placeholder="รหัสผ่าน" />
+        <form className="flex flex-col space-y-lg" onSubmit={handleLogin}>
+
+
+          <label className="block text-lg font-medium text-body-1 mb-2">ชื่อบัชชีผู้ใช้</label>
+            <MemoInputTextHelper
+              type="text"
+              name="username"
+              placeholder=" กรุณาพิมพ์ชื่อบัชชีผู้ใช้"
+              error={fieldErrors.username}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          <label className="block text-lg font-medium text-body-1 mb-2">รหัสผ่าน</label>
+          <MemoInputTextHelper
+              type="text"
+              name="password"
+              placeholder=" กรุณาพิมพ์รหัสผ่าน"
+              error={fieldErrors.password}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+
+
           <div className='justify-items-stretch flex gap-56 pt-4'>
-            <p className='text-system-error text-[14px] justify-self-start '>รหัสผ่านไม่ถูกต้อง</p>
-            <Link href="/admin/password"><p className='text-title-1 underline text-[14px] justify-self-end'>ลืมรหัสผ่าน</p></Link>
+            <p className='text-system-error text-[14px] justify-self-start '>{error}</p>
+            <p className='text-title-1 underline text-[14px] justify-self-end'>ลืมรหัสผ่าน</p>
           </div>
-          <MemoButton title="เข้าสู่ระบบ" />
-          <Link href="/">
-            <MemoButton title="กลับไปยังหน้าเลือกผู้ใช้" variant="ghost" />
-          </Link>
+          <div className='flex space-x-4'>
+            <MemoButton title="เข้าสู่ระบบ" type="submit"/>
+            <MemoButton onClick={handlehome} title="หน้าเลือกผู้ใช้" variant="ghost" />
+          </div>
         </form>
       </MemoWhite>
     </BrandingBackground>
   )
 }
+
+

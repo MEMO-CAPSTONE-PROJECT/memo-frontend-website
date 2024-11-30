@@ -71,12 +71,14 @@ const OTPVerificationPopup: React.FC<OTPVerificationPopupProps> = ({ propEmail,a
       if (response.status === 200) {
         setShowSuccesPopup(true);
         setIsLoading(false);
+        console.log(data);
       }
     } catch (error) {
       seterror('true')
       setMessage('ไม่สามารถยืนยันรหัส OTP ได้ กรุณาลองใหม่อีกครั้ง');
       setIsLoading(false);
       console.error(error);
+      console.log(data);
     }
   };
 

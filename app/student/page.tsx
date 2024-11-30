@@ -174,7 +174,7 @@ export default function StudentRegistrationForm() {
       </section>
       <MemoWhite>
         {showPopup && (
-          <OTPVerificationPopup propEmail={student.emailStudent} api={MEMO_API.teacherOtp} onCancel={() =>setShowPopup(false)} />
+          <OTPVerificationPopup propEmail={student.emailStudent} api={MEMO_API.studentOtp} onCancel={() =>setShowPopup(false)} />
         )}
 
         <div className="w-[30rem]">
