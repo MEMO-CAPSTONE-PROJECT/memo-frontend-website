@@ -164,7 +164,7 @@ export default function AdminRegistrationForm() {
 
           <MemoInputHeader
             text="รหัสผ่าน"
-            type="text"
+            type="password"
             name="password"
             placeholder="กรุณาพิมพ์รหัสผ่านของคุณ"
             error={errors?.password}

@@ -1,12 +1,14 @@
+const baseUrl ="https://capstone24.sit.kmutt.ac.th/sy1/apis"
+
 export const MEMO_API = {
-    studentRegister : "http://cp24sy1.sit.kmutt.ac.th:8081/register/student",
-    studentOtp: "http://cp24sy1.sit.kmutt.ac.th:8081/student/verify/otp",
+    studentRegister : {baseUrl}+"/register/student",
+    studentOtp: {baseUrl}+"/student/verify/otp",
 
-    teacherRegister : "http://cp24sy1.sit.kmutt.ac.th:8081/register/teacher",
-    teacherOtp : "http://cp24sy1.sit.kmutt.ac.th:8081/teacher/verify/otp",
+    teacherRegister : {baseUrl}+"/register/teacher",
+    teacherOtp : {baseUrl}+"/teacher/verify/otp",
 
-    adminRegister : "http://cp24sy1.sit.kmutt.ac.th:8081/register/admin",
-    adminLogin : "http://cp24sy1.sit.kmutt.ac.th:8081/login/admin",
-    adminOtp : "http://cp24sy1.sit.kmutt.ac.th:8081/admin/verify/otp",
+    adminRegister : {baseUrl}+"/register/admin",
+    adminLogin : {baseUrl}+"/login/admin",
+    adminOtp : {baseUrl}+"/admin/verify/otp",
 }
 
