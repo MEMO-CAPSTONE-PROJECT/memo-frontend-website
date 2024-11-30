@@ -8,9 +8,12 @@ import MemoInputHeader from "@/components/input/memo-input-header";
 import MemoSelectHelper from 'components/input/memo-select-helper'
 import MultiStep from "@/components/step/multi-step";
 import StudentIcon from "@/components/ui/icons/registration/student";
-import { MEMO_API } from "@/constants/apis";
+import MemoPopUp from '@/components/container/memo-popup';
+import LetterIcon from '@/components/ui/icons/letter';
+import {MEMO_API} from '@/constants/apis';
+import axios from "axios";
 import Link from "next/link";
-import { FormEvent, FormEventHandler, Fragment, useState } from "react";
+import { FormEvent , Fragment, useState } from "react";
 import { z } from "zod";
 
 export default function StudentRegistrationForm() {
@@ -59,7 +62,8 @@ export default function StudentRegistrationForm() {
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [submitStatus, setSubmitStatus] = useState<string>("");
-  const [showPopup, setShowPopup] = useState(false);
+  const [showOtpPopup, setShowOtpPopup] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [student, setStudent] = useState({
     displayName: "",
     emailStudent: "",
@@ -138,6 +142,13 @@ export default function StudentRegistrationForm() {
     };
   };
   
+  const [showSuccessPopup, setShowSuccesPopup] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleClosePopup = () => {
+    setShowSuccesPopup(false);
+  };
+
   const submit = async () => {
     const formData = getFormData();
     console.log(formData)
@@ -153,8 +164,7 @@ export default function StudentRegistrationForm() {
 
       if (response.ok) {
         const result = await response.json();
-        setShowPopup(true);
-        console.log("Registration successful:", result);
+        setShowOtpPopup(true)
         console.log(formData);
       } else {
         const errorData = await response.json();
@@ -166,16 +176,44 @@ export default function StudentRegistrationForm() {
       setSubmitStatus("Network error. Please check your connection.");
     }   
   };
+  const handleSubmitOtp = async (event: React.FormEvent,otp:string) => {
+    event.preventDefault();
+    setIsLoading(true);
 
+    const data = {
+      otp: otp,
+      emailStudent:student.emailStudent ,
+    };
+
+    try {
+      const response = await axios.post(MEMO_API.studentOtp, data);
+      if (response.status === 200) {
+        setShowOtpPopup(false)
+        setShowSuccesPopup(true);
+        setIsLoading(false);
+        console.log(data);
+      }
+    } catch (error) {
+      setError('ไม่สามารถยืนยันรหัส OTP ได้ กรุณาลองใหม่อีกครั้ง');
+      setIsLoading(false);
+
+    }
+  };
   return (
     <BrandingBackground>
       <section className="hidden lg:flex flex-1 h-screen ml-auto flex-col items-center justify-center space-y-xl">
         <StudentIcon className="space-x-xl w-96 h-96" />
       </section>
       <MemoWhite>
-        {showPopup && (
-          <OTPVerificationPopup propEmail={student.emailStudent} api={MEMO_API.studentOtp} onCancel={() =>setShowPopup(false)} />
+        {showOtpPopup && (
+          <OTPVerificationPopup propEmail={student.emailStudent} api={MEMO_API.studentOtp} onCancel={() =>setShowOtpPopup(false)} onSubmit={handleSubmitOtp} isLoading={isLoading} error={error} />
         )}
+
+      <MemoPopUp show={showSuccessPopup} onClose={handleClosePopup} redirectUrl="/">
+        <LetterIcon className="space-x-xl w-48 h-56  " />
+        <h2 className="text-title font-bold mb-2">ลงทะเบียนผู้ใช้สำเร็จ</h2>
+        <p className='text-body mb-4 '>กลับไปยังหน้าเลือกผู้ใช้</p>
+      </MemoPopUp>
 
         <div className="w-[30rem]">
           <MultiStep

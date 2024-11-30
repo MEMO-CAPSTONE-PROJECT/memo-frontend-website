@@ -6,6 +6,8 @@ import MemoErrorMessage from '@/components/helper/memo-error-message'
 import MemoSelectHelper from 'components/input/memo-select-helper'
 import TeacherIcon from '@/components/ui/icons/registration/teacher'
 import MemoInputHeader from "@/components/input/memo-input-header";
+import MemoPopUp from '@/components/container/memo-popup';
+import LetterIcon from '@/components/ui/icons/letter';
 import {MEMO_API} from '@/constants/apis';
 import Link from 'next/link'
 import { useState } from 'react'
@@ -14,7 +16,7 @@ import { z } from "zod";
 import OTPVerificationPopup from '@/components/container/memo-otp';
 
 export default function TeacherRegistrationForm() {
-  const [showPopup, setShowPopup] = useState(false);
+  const [showOtpPopup, setShowOtpPopup] = useState(false);
   const formSchema = z.object({
     position: z
       .string()
@@ -58,10 +60,6 @@ export default function TeacherRegistrationForm() {
     setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  const test = () => {
-    console.log(showPopup)
-  };
-
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -75,7 +73,7 @@ export default function TeacherRegistrationForm() {
       const response = await axios.post(MEMO_API.teacherRegister,formData);
       console.log("Response:", response.data);
       console.log(formData)
-      setShowPopup(true);
+      setShowOtpPopup(true);
 
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -92,6 +90,37 @@ export default function TeacherRegistrationForm() {
       }
     }
   };
+  const [showSuccessPopup, setShowSuccesPopup] = useState(false);
+
+  const handleClosePopup = () => {
+    setShowSuccesPopup(false);
+  };
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const handleSubmitOtp = async (event: React.FormEvent,otp:string) => {
+    event.preventDefault();
+    setIsLoading(true);
+
+    const data = {
+      otp: otp,
+      emailTeacher:formData.email ,
+    };
+
+    try {
+      const response = await axios.post(MEMO_API.teacherOtp, data);
+      if (response.status === 200) {
+        setShowOtpPopup(false)
+        setShowSuccesPopup(true);
+        setIsLoading(false);
+        console.log(data);
+      }
+    } catch (error) {
+      setError('ไม่สามารถยืนยันรหัส OTP ได้ กรุณาลองใหม่อีกครั้ง');
+      setIsLoading(false);
+
+    }
+  };
   return (
     <BrandingBackground>
       <section className='hidden lg:flex flex-1 h-screen ml-auto  flex-col items-center justify-center space-y-xl'>
@@ -99,10 +128,14 @@ export default function TeacherRegistrationForm() {
       </section>
    
       <MemoWhite>
-        {showPopup && (
-          <OTPVerificationPopup propEmail={formData.email} api={MEMO_API.teacherOtp} onCancel={() =>setShowPopup(false)} />
+        {showOtpPopup && (
+          <OTPVerificationPopup propEmail={formData.email} api={MEMO_API.teacherOtp} onCancel={() =>setShowOtpPopup(false)} onSubmit={handleSubmitOtp} isLoading={isLoading} error={error}/>
         )}
-
+      <MemoPopUp show={showSuccessPopup} onClose={handleClosePopup} redirectUrl="/">
+        <LetterIcon className="space-x-xl w-48 h-56  " />
+        <h2 className="text-title font-bold mb-2">ลงทะเบียนผู้ใช้สำเร็จ</h2>
+        <p className='text-body mb-4 '>กลับไปยังหน้าเลือกผู้ใช้</p>
+      </MemoPopUp>
 
         <section className="flex flex-col items-center space-y-xl">
           <p className="text-body-1 text-header font-bold">ส่งคำร้องเพื่อลงทะเบียนระบบ</p>

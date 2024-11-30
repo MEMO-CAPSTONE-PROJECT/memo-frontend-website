@@ -13,15 +13,16 @@ import axios from 'axios';
 interface OTPVerificationPopupProps {
   propEmail: string;
   api :string;
+  onSubmit: (event: React.FormEvent,otp:string) => void;
   onCancel: () => void;
+  error?:string
+  isLoading: boolean
 }
 
-const OTPVerificationPopup: React.FC<OTPVerificationPopupProps> = ({ propEmail,api, onCancel }) => {
+const OTPVerificationPopup: React.FC<OTPVerificationPopupProps> = ({ propEmail,api, onCancel,onSubmit,error,isLoading}) => {
 
-  const [message, setMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  
   const [otpInputs, setOtpInputs] = useState(["", "", "", "", "", ""]);
-  const [error, seterror] = useState('');
 
   
   const TIMER = 60
@@ -57,31 +58,6 @@ const OTPVerificationPopup: React.FC<OTPVerificationPopupProps> = ({ propEmail,a
       email = "emailStudent" 
     }  
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setIsLoading(true);
-
-    const data = {
-      otp: otp,
-      [email]: propEmail,
-    };
-
-    try {
-      const response = await axios.post(api, data);
-      if (response.status === 200) {
-        setShowSuccesPopup(true);
-        setIsLoading(false);
-        console.log(data);
-      }
-    } catch (error) {
-      seterror('true')
-      setMessage('ไม่สามารถยืนยันรหัส OTP ได้ กรุณาลองใหม่อีกครั้ง');
-      setIsLoading(false);
-      console.error(error);
-      console.log(data);
-    }
-  };
-
   const handleOtpChange = (index: number, value: string) => {
     if (!/^\d?$/.test(value)) return;
     
@@ -104,12 +80,6 @@ const OTPVerificationPopup: React.FC<OTPVerificationPopupProps> = ({ propEmail,a
     }
   };
   
-    const [showSuccessPopup, setShowSuccesPopup] = useState(false);
-
-    const handleClosePopup = () => {
-      setShowSuccesPopup(false);
-    };
-
   const otp = otpInputs.join("");
   return (
 
@@ -121,7 +91,7 @@ const OTPVerificationPopup: React.FC<OTPVerificationPopupProps> = ({ propEmail,a
       <p className="text-body font-regular space-y-2xl">กรุณาตรวจสอบรหัสจากอีเมลของท่าน</p>
     </section>
     <section className="flex flex-col space-y-xl">
-    <form onSubmit={handleSubmit} >
+    <form onSubmit={(event)=>onSubmit(event,otp)} >
       <main className="flex flex-col items-center space-y-md pb-6">
       <div className="flex space-x-4">
         {otpInputs.map((input, index) => (
@@ -140,7 +110,7 @@ const OTPVerificationPopup: React.FC<OTPVerificationPopupProps> = ({ propEmail,a
           />
         ))}
       </div>
-        <MemoErrorMessage error={message} hideContainer={false} />
+        <MemoErrorMessage error={error} hideContainer={false} />
       </main>
       <footer className="flex w-full flex-col space-y-md">
         <div className="flex justify-between">
@@ -157,11 +127,6 @@ const OTPVerificationPopup: React.FC<OTPVerificationPopupProps> = ({ propEmail,a
       </form>
     </section>
   </MemoCard>
-      <MemoPopUp show={showSuccessPopup} onClose={handleClosePopup} redirectUrl="/">
-        <LetterIcon className="space-x-xl w-48 h-56  " />
-        <h2 className="text-title font-bold mb-2">ลงทะเบียนผู้ใช้สำเร็จ</h2>
-        <p className='text-body mb-4 '>กลับไปยังหน้าเลือกผู้ใช้</p>
-      </MemoPopUp>
   </div>
    );
  };
