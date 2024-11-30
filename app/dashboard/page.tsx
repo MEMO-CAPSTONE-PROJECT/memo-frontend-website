@@ -4,7 +4,7 @@ import React from "react";
 export default function Dashboard() {
   return (
     <div className="flex h-screen">
-      {/* Sidebar */}
+
       <div className="w-64 bg-gray-800 text-white p-4">
         <h2 className="text-2xl font-semibold mb-6">Dashboard</h2>
         <ul>
@@ -23,9 +23,7 @@ export default function Dashboard() {
         </ul>
       </div>
 
-      {/* Main content area */}
       <div className="flex-1 bg-gray-100 p-6">
-        {/* Header */}
         <header className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-semibold text-gray-800">Welcome to the Dashboard</h1>
           <div className="flex items-center space-x-4">
@@ -34,7 +32,6 @@ export default function Dashboard() {
           </div>
         </header>
 
-        {/* Main Dashboard Content */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h3 className="text-xl font-semibold mb-4">Overview</h3>

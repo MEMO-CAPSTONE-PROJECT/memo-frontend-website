@@ -29,9 +29,8 @@ export default function AdminLogin() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setFieldErrors({ username: "", password: "" }); // Reset field errors
+    setFieldErrors({ username: "", password: "" }); 
 
-    // Validate the form
     const validation = loginSchema.safeParse({ username, password });
     if (!validation.success) {
       const errors = validation.error.formErrors.fieldErrors;
@@ -39,7 +38,7 @@ export default function AdminLogin() {
         username: errors.username ? errors.username[0] : "",
         password: errors.password ? errors.password[0] : "",
       });
-      return; // Don't proceed with the API call if validation fails
+      return; 
     }
 
     try {
@@ -57,16 +56,11 @@ export default function AdminLogin() {
 
       const data = await response.json();
       console.log("Login successful:", data);
-
-      // Redirect to the desired page after login
-      router.push("/dashboard"); // Replace with your desired path
+      router.push("/dashboard");
     } catch (err) {
-      // ตรวจสอบว่า err เป็น Error หรือไม่
       if (err instanceof Error) {
-        // ถ้าใช่ จะสามารถเข้าถึง err.message ได้
         setError(err.message);
       } else {
-        // ถ้าไม่ใช่ Error ก็แสดงข้อความข้อผิดพลาดทั่วไป
         setError("An unexpected error occurred.");
       }
     }
