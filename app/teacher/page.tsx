@@ -85,7 +85,7 @@ export default function TeacherRegistrationForm() {
         setErrors(fieldErrors)
       } else {
         console.error("Error submitting form:", error)
-        setSubmitStatus("อีเมล์นี้ถูกใช้งานแล้ว ลองใช้อีเมลอื่น")
+        setSubmitStatus("อีเมล์หรือเบอร์นี้ถูกใช้งานแล้ว ลองใช้อีเมลอื่น")
       }
     }
   }
@@ -117,7 +117,8 @@ export default function TeacherRegistrationForm() {
         setIsLoading(false)
         // console.log(data)
       }
-    } catch (_) {
+    } catch (error) {
+      console.log(error);
       setError('ไม่สามารถยืนยันรหัส OTP ได้ กรุณาลองใหม่อีกครั้ง')
       setIsLoading(false)
 
@@ -189,7 +190,7 @@ export default function TeacherRegistrationForm() {
             <MemoSelectHeader
               label="ตำแหน่ง"
               name="position"
-              options={["คุณครูประจำชั้น", "คุณครูฝ่ายปกครอง"]}
+              options={["ครูประจำชั้น", "ครูฝ่ายปกครอง"]}
               error={errors.position}
               value={formData.position}
               onChange={handleSelect}

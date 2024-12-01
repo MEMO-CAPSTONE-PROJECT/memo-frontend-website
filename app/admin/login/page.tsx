@@ -50,7 +50,8 @@ export default function AdminLogin() {
       }
       console.log("Login successful:", response.data);
       router.push("/dashboard");
-    } catch (_) {
+    } catch (error) {
+        console.log(error);
         setError("รหัสผ่านหรือชื่อผู้ใช้ไม่ถูกต้อง")
     }
   };

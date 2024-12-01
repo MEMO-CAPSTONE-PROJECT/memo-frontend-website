@@ -191,7 +191,8 @@ export default function StudentRegistrationForm() {
         setIsLoading(false);
         // console.log(data);
       }
-    } catch (_) {
+    } catch (error) {
+      console.log(error);
       setError('ไม่สามารถยืนยันรหัส OTP ได้ กรุณาลองใหม่อีกครั้ง');
       setIsLoading(false);
     }
