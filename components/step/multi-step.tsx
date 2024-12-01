@@ -10,7 +10,7 @@ export default function MultiStep({ step, steps }: Readonly<MultiStepProps>) {
         line: "before:ease-in before:duration-100"
     }
     return (
-        <ul className="steps py-2 w-full">
+        <ul className="z-0 steps py-2 w-full">
             {steps.map((title, index) => 
                 <li 
                     key={title}

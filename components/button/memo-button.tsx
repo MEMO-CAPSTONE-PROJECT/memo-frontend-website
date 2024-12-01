@@ -1,5 +1,4 @@
-import { log } from "console"
-import { ButtonHTMLAttributes, MouseEvent } from "react"
+import { ButtonHTMLAttributes } from "react"
 
 interface MemoButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     title: string

@@ -1,64 +1,66 @@
 "use client";
-import OTPVerificationPopup from '@/components/container/memo-otp';
 import BrandingBackground from "@/components/background/branding-background";
 import MemoButton from "@/components/button/memo-button";
+import MemoOTPPopup from '@/components/container/memo-otp';
+import MemoPopUp from '@/components/container/memo-popup';
 import MemoWhite from "@/components/container/memo-white";
 import MemoErrorMessage from "@/components/helper/memo-error-message";
-import MemoInputHeader from "@/components/input/memo-input-header";
-import MemoSelectHelper from 'components/input/memo-select-helper'
+import MemoInputHeader from "@/components/input/header/memo-input-header";
+import MemoSelectHeader from "@/components/input/header/memo-select-header";
 import MultiStep from "@/components/step/multi-step";
-import StudentIcon from "@/components/ui/icons/registration/student";
-import MemoPopUp from '@/components/container/memo-popup';
 import LetterIcon from '@/components/ui/icons/letter';
-import {MEMO_API} from '@/constants/apis';
+import StudentIcon from "@/components/ui/icons/registration/student";
+import { MEMO_API } from '@/constants/apis';
 import axios from "axios";
 import Link from "next/link";
-import { FormEvent , Fragment, useState } from "react";
+import { FormEvent, Fragment, useState } from "react";
 import { z } from "zod";
 
+const Step1Schema = z.object({
+  displayName: z.string().min(1, "กรุณากรอกชื่อนักเรียนที่แสดงในระบบ"),
+  emailStudent: z
+    .string()
+    .email("กรุณากรอกอีเมลในรูปแบบที่ถูกต้อง เช่น example@domain.com")
+    .min(1, "กรุณากรอกอีเมลของนักเรียน"),
+  phoneNumber: z
+    .string()
+    .regex(/^\d+$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข")
+    .length(10, "เบอร์โทรศัพท์ต้องมีจำนวน 10 หลัก")
+    .min(1, "กรุณากรอกเบอร์โทรศัพท์ของนักเรียน"),
+});
+
+const Step2Schema = z.object({
+  firstName: z.string().min(1, "กรุณากรอกชื่อของนักเรียน"),
+  lastName: z.string().min(1, "กรุณากรอกนามสกุลของนักเรียน"),
+  gender: z.string().min(1, "กรุณากรอกเพศของนักเรียน"),
+  classroom: z
+    .string()
+    .regex(/^\d+$/, "ห้องเรียนของนักเรียนต้องเป็นตัวเลข")
+    .min(1, "กรุณากรอกห้องเรียนของนักเรียน"),
+  classLevel: z
+    .string()
+    .regex(/^\d+$/, "ชั้นเรียนของนักเรียนต้องเป็นตัวเลข")
+    .min(1, "กรุณากรอกชั้นเรียนของนักเรียน"),
+});
+
+const Step3Schema = z.object({
+  phoneNumberParent: z
+    .string()
+    .regex(/^\d+$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข")
+    .length(10, "เบอร์โทรศัพท์ต้องมีจำนวน 10 หลัก")
+    .min(1, "กรุณากรอกเบอร์โทรศัพท์ของผู้ปกครอง"),
+  emailParent: z
+    .string()
+    .email("กรุณากรอกอีเมลในรูปแบบที่ถูกต้อง เช่น example@domain.com")
+    .min(1, "กรุณากรอกอีเมลของผู้ปกครอง"),
+  firstNameParent: z.string().min(1, "กรุณากรอกชื่อของผู้ปกครอง"),
+  lastNameParent: z.string().min(1, "กรุณากรอกนามสกุลของผู้ปกครอง"),
+  relation: z.string().min(1, "กรุณากรอกความสัมพันธ์ของผู้ปกครองกับนักเรียน"),
+});
+
+const MAX_STEP = 3;
+
 export default function StudentRegistrationForm() {
-  const step1Schema = z.object({
-    displayName: z.string().min(1, "กรุณากรอกชื่อนักเรียนที่แสดงในระบบ"),
-    emailStudent: z
-      .string()
-      .email("กรุณากรอกอีเมลในรูปแบบที่ถูกต้อง เช่น example@domain.com")
-      .min(1, "กรุณากรอกอีเมลของนักเรียน"),
-    phoneNumber: z
-      .string()
-      .regex(/^\d+$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข")
-      .length(10, "เบอร์โทรศัพท์ต้องมีจำนวน 10 หลัก")
-      .min(1, "กรุณากรอกเบอร์โทรศัพท์ของนักเรียน"),
-  });
-
-  const step2Schema = z.object({
-    firstName: z.string().min(1, "กรุณากรอกชื่อของนักเรียน"),
-    lastName: z.string().min(1, "กรุณากรอกนามสกุลของนักเรียน"),
-    gender: z.string().min(1, "กรุณากรอกเพศของนักเรียน"),
-    classroom: z
-      .string()
-      .regex(/^\d+$/, "ห้องเรียนของนักเรียนต้องเป็นตัวเลข")
-      .min(1, "กรุณากรอกห้องเรียนของนักเรียน"),
-    classLevel: z
-      .string()
-      .regex(/^\d+$/, "ชั้นเรียนของนักเรียนต้องเป็นตัวเลข")
-      .min(1, "กรุณากรอกชั้นเรียนของนักเรียน"),
-  });
-
-  const step3Schema = z.object({
-    phoneNumberParent: z
-      .string()
-      .regex(/^\d+$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข")
-      .length(10, "เบอร์โทรศัพท์ต้องมีจำนวน 10 หลัก")
-      .min(1, "กรุณากรอกเบอร์โทรศัพท์ของผู้ปกครอง"),
-    emailParent: z
-      .string()
-      .email("กรุณากรอกอีเมลในรูปแบบที่ถูกต้อง เช่น example@domain.com")
-      .min(1, "กรุณากรอกอีเมลของผู้ปกครอง"),
-    firstNameParent: z.string().min(1, "กรุณากรอกชื่อของผู้ปกครอง"),
-    lastNameParent: z.string().min(1, "กรุณากรอกนามสกุลของผู้ปกครอง"),
-    relation: z.string().min(1, "กรุณากรอกความสัมพันธ์ของผู้ปกครองกับนักเรียน"),
-  });
-
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [submitStatus, setSubmitStatus] = useState<string>("");
@@ -85,11 +87,11 @@ export default function StudentRegistrationForm() {
   const validateStep = () => {
     let result;
     if (step === 1) {
-      result = step1Schema.safeParse(student);
+      result = Step1Schema.safeParse(student);
     } else if (step === 2) {
-      result = step2Schema.safeParse(student);
+      result = Step2Schema.safeParse(student);
     } else if (step === 3) {
-      result = step3Schema.safeParse(parent);
+      result = Step3Schema.safeParse(parent);
     }
 
     if (result && !result.success) {
@@ -104,7 +106,6 @@ export default function StudentRegistrationForm() {
     setErrors({});
     return true;
   };
-  const MAX_STEP = 3;
   const handleNext = (event: FormEvent) => {
     event.preventDefault();
     if (validateStep()) {
@@ -141,7 +142,7 @@ export default function StudentRegistrationForm() {
       ],
     };
   };
-  
+
   const [showSuccessPopup, setShowSuccesPopup] = useState(false);
   const [error, setError] = useState('');
 
@@ -150,39 +151,36 @@ export default function StudentRegistrationForm() {
   };
 
   const submit = async () => {
-    const formData = getFormData();
-    console.log(formData)
-    
-    try {
-      const response = await fetch(MEMO_API.studentRegister, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+    // console.log(formData)
+    sendForm()
+  };
 
-      if (response.ok) {
-        const result = await response.json();
+  const sendForm = async () => {
+    try {
+      const response = await axios.post(MEMO_API.studentRegister, getFormData());
+
+      if (response.status === 200) {
         setShowOtpPopup(true)
-        console.log(formData);
+        // const result = await response.json();
+        // console.log(formData);
       } else {
-        const errorData = await response.json();
+        const errorData = response.data;
+
         console.error("Error registering students:", errorData);
-        setSubmitStatus("Failed to register students. Please try again.");
+        setSubmitStatus("ไม่สามารถสมัครอีเมลนักเรียนหรือผู้ปกครองซ้ำได้ ");
       }
     } catch (error) {
       console.error("Network error:", error);
-      setSubmitStatus("Network error. Please check your connection.");
-    }   
-  };
-  const handleSubmitOtp = async (event: React.FormEvent,otp:string) => {
+      setSubmitStatus("มีผู้ใช้อีเมลนักเรียนหรือผู้ปกครองนี้แล้ว");
+    }
+  }
+  const handleSubmitOtp = async (event: React.FormEvent, otp: string) => {
     event.preventDefault();
     setIsLoading(true);
 
     const data = {
       otp: otp,
-      emailStudent:student.emailStudent ,
+      emailStudent: student.emailStudent,
     };
 
     try {
@@ -191,29 +189,30 @@ export default function StudentRegistrationForm() {
         setShowOtpPopup(false)
         setShowSuccesPopup(true);
         setIsLoading(false);
-        console.log(data);
+        // console.log(data);
       }
-    } catch (error) {
+    } catch (_) {
       setError('ไม่สามารถยืนยันรหัส OTP ได้ กรุณาลองใหม่อีกครั้ง');
       setIsLoading(false);
-
     }
   };
+
+  const resendOtp = () => {
+    sendForm()
+  }
+
   return (
     <BrandingBackground>
       <section className="hidden lg:flex flex-1 h-screen ml-auto flex-col items-center justify-center space-y-xl">
         <StudentIcon className="space-x-xl w-96 h-96" />
       </section>
       <MemoWhite>
-        {showOtpPopup && (
-          <OTPVerificationPopup propEmail={student.emailStudent} api={MEMO_API.studentOtp} onCancel={() =>setShowOtpPopup(false)} onSubmit={handleSubmitOtp} isLoading={isLoading} error={error} />
-        )}
-
-      <MemoPopUp show={showSuccessPopup} onClose={handleClosePopup} redirectUrl="/">
-        <LetterIcon className="space-x-xl w-48 h-56  " />
-        <h2 className="text-title font-bold mb-2">ลงทะเบียนผู้ใช้สำเร็จ</h2>
-        <p className='text-body mb-4 '>กลับไปยังหน้าเลือกผู้ใช้</p>
-      </MemoPopUp>
+        {showOtpPopup && <MemoOTPPopup resend={resendOtp} onCancel={() => setShowOtpPopup(false)} onSubmit={handleSubmitOtp} isLoading={isLoading} error={error} />}
+        <MemoPopUp show={showSuccessPopup} onClose={handleClosePopup} redirectUrl="/">
+          <LetterIcon className="space-x-xl w-48 h-56  " />
+          <h2 className="text-title font-bold mb-2">ลงทะเบียนผู้ใช้สำเร็จ</h2>
+          <p className='text-body mb-4 '>กลับไปยังหน้าเลือกผู้ใช้</p>
+        </MemoPopUp>
 
         <div className="w-[30rem]">
           <MultiStep
@@ -221,7 +220,7 @@ export default function StudentRegistrationForm() {
             steps={["สร้างบัญชีนักเรียน", "ข้อมูลนักเรียน", "ข้อมูลผู้ปกครอง"]}
           />
         </div>
-        <form className="flex flex-col space-y-lg" onSubmit={handleNext}>
+        <form className="flex flex-col space-y-md w-96" onSubmit={handleNext}>
           {step === 1 && (
             <Fragment>
               <section className="flex flex-col items-center space-y-xl">
@@ -266,14 +265,14 @@ export default function StudentRegistrationForm() {
                   }
                 />
               </div>
-              <div className="space-x-4 flex pt-4">
+              <div className="space-x-lg flex pt-lg">
                 <div className="w-1/2">
                   <Link href="/">
                     <MemoButton title="หน้าเลือกผู้ใช้" variant="ghost" />
                   </Link>
                 </div>
                 <div className="w-1/2">
-                    <MemoButton type="submit" title="ถัดไป" />
+                  <MemoButton type="submit" title="ถัดไป" />
                 </div>
               </div>
             </Fragment>
@@ -287,67 +286,67 @@ export default function StudentRegistrationForm() {
               </section>
               <div className="flex flex-col space-y-lg">
                 <MemoInputHeader
-                    text="ชื่อ"
-                    type="text"
-                    name="firstName"
-                    placeholder="กรุณาพิมพ์ชื่อของคุณ"
-                    error={errors?.firstName}
-                    value={student.firstName}
-                    onChange={(e) =>
-                      setStudent({ ...student, firstName: e.target.value })
-                    }
-                  />
+                  text="ชื่อ"
+                  type="text"
+                  name="firstName"
+                  placeholder="กรุณาพิมพ์ชื่อของคุณ"
+                  error={errors?.firstName}
+                  value={student.firstName}
+                  onChange={(e) =>
+                    setStudent({ ...student, firstName: e.target.value })
+                  }
+                />
 
-                  <MemoInputHeader
-                    text="นามสกุล"
-                    type="text"
-                    name="lastName"
-                    placeholder="กรุณาพิมพ์นามสกุลของคุณ"
-                    error={errors?.lastName}
-                    value={student.lastName}
-                    onChange={(e) =>
-                      setStudent({ ...student, lastName: e.target.value })
-                    }
-                  />
+                <MemoInputHeader
+                  text="นามสกุล"
+                  type="text"
+                  name="lastName"
+                  placeholder="กรุณาพิมพ์นามสกุลของคุณ"
+                  error={errors?.lastName}
+                  value={student.lastName}
+                  onChange={(e) =>
+                    setStudent({ ...student, lastName: e.target.value })
+                  }
+                />
 
-                <label className="block text-lg font-medium text-body-1 mb-2">เพศ</label>
-                  <MemoSelectHelper 
-                    options={["ผู้หญิง", "ผู้ชาย"]} 
-                    name="gender" 
-                    placeholder="กรุณาเลือกเพศของคุณ" 
-                    value={student.gender} 
-                    error={errors?.gender} 
-                    size="full" 
-                    onChange={(e) =>
-                      setStudent({ ...student, gender: e.target.value })
-                    }/>
+                <MemoSelectHeader
+                  label="เพศ"
+                  options={["หญิง", "ชาย"]}
+                  name="gender"
+                  placeholder="กรุณาเลือกเพศของคุณ"
+                  value={student.gender}
+                  error={errors?.gender}
+                  size="full"
+                  onChange={(e) =>
+                    setStudent({ ...student, gender: e.target.value })
+                  } />
 
-                  <MemoInputHeader
-                    text="ห้องเรียน"
-                    type="text"
-                    name="classroom"
-                    placeholder="กรุณาพิมพ์เลขห้องเรียนของคุณ"
-                    error={errors?.classroom}
-                    value={student.classroom}
-                    onChange={(e) =>
-                      setStudent({ ...student, classroom: e.target.value })
-                    }
-                  />
+                <MemoInputHeader
+                  text="ห้องเรียน"
+                  type="text"
+                  name="classroom"
+                  placeholder="กรุณาพิมพ์เลขห้องเรียนของคุณ"
+                  error={errors?.classroom}
+                  value={student.classroom}
+                  onChange={(e) =>
+                    setStudent({ ...student, classroom: e.target.value })
+                  }
+                />
 
-                  <MemoInputHeader
-                    text="ชั้นเรียน"
-                    type="text"
-                    name="classLevel"
-                    placeholder="กรุณาพิมพ์เลขชั้นเรียนของคุณ"
-                    error={errors?.classLevel}
-                    value={student.classLevel}
-                    onChange={(e) =>
-                      setStudent({ ...student, classLevel: e.target.value })
-                    }
-                  />
+                <MemoInputHeader
+                  text="ชั้นเรียน"
+                  type="text"
+                  name="classLevel"
+                  placeholder="กรุณาพิมพ์เลขชั้นเรียนของคุณ"
+                  error={errors?.classLevel}
+                  value={student.classLevel}
+                  onChange={(e) =>
+                    setStudent({ ...student, classLevel: e.target.value })
+                  }
+                />
               </div>
-              <div className="flex space-x-4">
-                <MemoButton id="previous" type="button" onClick={handlePrevious} title="ย้อนกลับ" />
+              <div className="flex space-x-lg pt-lg">
+                <MemoButton id="previous" type="button" variant="ghost" onClick={handlePrevious} title="ย้อนกลับ" />
                 <MemoButton type="submit" title="ถัดไป" />
               </div>
             </Fragment>
@@ -360,71 +359,70 @@ export default function StudentRegistrationForm() {
                 </p>
               </section>
               <div className="flex flex-col space-y-lg">
-              <MemoInputHeader
-                    text="ชื่อผู้ปกครอง"
-                    type="text"
-                    name="firstNameParent"
-                    placeholder="กรุณาพิมพ์ชื่อผู้ปกครองของคุณ"
-                    error={errors?.firstNameParent}
-                    value={parent.firstNameParent}
-                    onChange={(e) =>
-                      setParent({ ...parent, firstNameParent: e.target.value })
-                    }
-                  />
+                <MemoInputHeader
+                  text="ชื่อผู้ปกครอง"
+                  type="text"
+                  name="firstNameParent"
+                  placeholder="กรุณาพิมพ์ชื่อผู้ปกครองของคุณ"
+                  error={errors?.firstNameParent}
+                  value={parent.firstNameParent}
+                  onChange={(e) =>
+                    setParent({ ...parent, firstNameParent: e.target.value })
+                  }
+                />
 
-                  <MemoInputHeader
-                    text="นามสกุลผู้ปกครอง"
-                    type="text"
-                    name="lastNameParent"
-                    placeholder="กรุณาพิมพ์นามสกุลผู้ปกครองของคุณ"
-                    error={errors?.lastNameParent}
-                    value={parent.lastNameParent}
-                    onChange={(e) =>
-                      setParent({ ...parent, lastNameParent: e.target.value })
-                    }
-                  />
+                <MemoInputHeader
+                  text="นามสกุลผู้ปกครอง"
+                  type="text"
+                  name="lastNameParent"
+                  placeholder="กรุณาพิมพ์นามสกุลผู้ปกครองของคุณ"
+                  error={errors?.lastNameParent}
+                  value={parent.lastNameParent}
+                  onChange={(e) =>
+                    setParent({ ...parent, lastNameParent: e.target.value })
+                  }
+                />
 
-                  <MemoInputHeader
-                    text="ความสัมพันธ์ของผู้ปกครอง"
-                    type="text"
-                    name="relation"
-                    placeholder="กรุณาพิมพ์ความสัมพันธ์ของผู้ปกครองกับคุณ"
-                    error={errors?.relation}
-                    value={parent.relation}
-                    onChange={(e) =>
-                      setParent({ ...parent, relation: e.target.value })
-                    }
-                  />
+                <MemoInputHeader
+                  text="ความสัมพันธ์ของผู้ปกครอง"
+                  type="text"
+                  name="relation"
+                  placeholder="กรุณาพิมพ์ความสัมพันธ์ของผู้ปกครองกับคุณ"
+                  error={errors?.relation}
+                  value={parent.relation}
+                  onChange={(e) =>
+                    setParent({ ...parent, relation: e.target.value })
+                  }
+                />
 
-                  <MemoInputHeader
-                    text="เบอร์โทรศัพท์ผู้ปกครอง"
-                    type="text"
-                    name="phoneNumberParent"
-                    placeholder="กรุณาพิมพ์เบอร์โทรศัพท์ผู้ปกครองของคุณ"
-                    error={errors?.phoneNumberParent}
-                    value={parent.phoneNumberParent}
-                    onChange={(e) =>
-                      setParent({ ...parent, phoneNumberParent: e.target.value })
-                    }
-                  />
+                <MemoInputHeader
+                  text="เบอร์โทรศัพท์ผู้ปกครอง"
+                  type="text"
+                  name="phoneNumberParent"
+                  placeholder="กรุณาพิมพ์เบอร์โทรศัพท์ผู้ปกครองของคุณ"
+                  error={errors?.phoneNumberParent}
+                  value={parent.phoneNumberParent}
+                  onChange={(e) =>
+                    setParent({ ...parent, phoneNumberParent: e.target.value })
+                  }
+                />
 
-                  <MemoInputHeader
-                    text="ความสัมพันธ์ผู้ปกครอง"
-                    type="email"
-                    name="emailParent"
-                    placeholder="example@domain.com"
-                    error={errors?.emailParent}
-                    value={parent.emailParent}
-                    onChange={(e) =>
-                      setParent({ ...parent, emailParent: e.target.value })
-                    }
-                  />
+                <MemoInputHeader
+                  text="อีเมล์ผู้ปกครอง"
+                  type="email"
+                  name="emailParent"
+                  placeholder="example@domain.com"
+                  error={errors?.emailParent}
+                  value={parent.emailParent}
+                  onChange={(e) =>
+                    setParent({ ...parent, emailParent: e.target.value })
+                  }
+                />
               </div>
               <MemoErrorMessage error={submitStatus} />
-
-              <div className="flex space-x-4">
-                <MemoButton onClick={handlePrevious} title="ก่อนหน้า" />
-                <MemoButton type="submit"  title="ลงทะเบียน" />
+              <div className="flex space-x-lg pt-lg">
+                <MemoButton onClick={handlePrevious}  variant="ghost" title="ก่อนหน้า" />
+                <MemoButton type="submit" title="ลงทะเบียน" />
               </div>
             </Fragment>
           )}

@@ -1,5 +1,5 @@
-import React from 'react';
 import MemoInputTextHelper from "@/components/input/memo-input-text-helper";
+import React from 'react';
 
 interface MemoInputHeaderProps {
   text: string;
@@ -21,7 +21,7 @@ const MemoInputHeader: React.FC<MemoInputHeaderProps> = ({
   onChange,
 }) => {
   return (
-    <div>
+    <div className="w-full">
       <label htmlFor={name} className="block text-lg font-medium text-body-1 mb-2">
         {text}
       </label>
@@ -32,6 +32,7 @@ const MemoInputHeader: React.FC<MemoInputHeaderProps> = ({
         error={error}
         value={value}
         onChange={onChange}
+        size="full"
       />
     </div>
   );

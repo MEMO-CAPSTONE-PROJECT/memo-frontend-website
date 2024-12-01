@@ -1,5 +1,6 @@
 // pages/dashboard.tsx
-import React from "react";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Dashboard() {
   return (
@@ -8,17 +9,17 @@ export default function Dashboard() {
       <div className="w-64 bg-gray-800 text-white p-4">
         <h2 className="text-2xl font-semibold mb-6">Dashboard</h2>
         <ul>
-          <li className="mb-4">
-            <a href="#" className="hover:text-gray-400">Home</a>
+          <li className="mb-4 hover:text-system-gray">
+            <Link href="#">Home</Link>
           </li>
-          <li className="mb-4">
-            <a href="#" className="hover:text-gray-400">Analytics</a>
+          <li className="mb-4 hover:text-system-gray">
+            <Link href="#">Analytics</Link>
           </li>
-          <li className="mb-4">
-            <a href="#" className="hover:text-gray-400">Reports</a>
+          <li className="mb-4 hover:text-system-gray">
+            <Link href="#">Reports</Link>
           </li>
-          <li className="mb-4">
-            <a href="#" className="hover:text-gray-400">Settings</a>
+          <li className="mb-4 hover:text-system-gray">
+            <Link href="#">Settings</Link>
           </li>
         </ul>
       </div>
@@ -28,14 +29,14 @@ export default function Dashboard() {
           <h1 className="text-3xl font-semibold text-gray-800">Welcome to the Dashboard</h1>
           <div className="flex items-center space-x-4">
             <span className="text-gray-700">User Name</span>
-            <img src="https://via.placeholder.com/40" alt="Profile" className="rounded-full" />
+            <Image src="https://via.placeholder.com/40" width={40} height={40} alt="Profile" className="rounded-full" />
           </div>
         </header>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h3 className="text-xl font-semibold mb-4">Overview</h3>
-            <p className="text-gray-700">General overview of the system's performance.</p>
+            <p className="text-gray-700">General overview of the system&apos;s performance.</p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h3 className="text-xl font-semibold mb-4">Analytics</h3>

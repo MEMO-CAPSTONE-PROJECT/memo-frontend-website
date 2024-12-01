@@ -1,5 +1,5 @@
 import { Color } from "@/constants/theme/color"
-import { Warning, CheckCircle } from "@phosphor-icons/react/dist/ssr"
+import { Warning } from "@phosphor-icons/react/dist/ssr"
 
 export interface MemoErrorMessageProps {
     hideContainer?: boolean

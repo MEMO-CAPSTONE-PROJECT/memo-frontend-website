@@ -15,7 +15,7 @@ export default function Home() {
         <MemoCard>
           <section className="text-center">
             <p className='text-body-1 text-header font-bold'>กรุณาเลือกประเภทผู้ใช้</p>
-            <p className='text-body-2 text-title font-semibold'>เลือกเพื่อใช้ในการเข้าสู่ระบบ</p>
+            <p className='text-body-2 text-title font-medium'>เลือกเพื่อใช้ในการเข้าสู่ระบบ</p>
           </section>
           <div className="flex flex-row gap-5xl">
             <Link href={"/admin/register"}>

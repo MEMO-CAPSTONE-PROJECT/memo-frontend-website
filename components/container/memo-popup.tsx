@@ -1,6 +1,6 @@
 
-import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import React, { useEffect } from 'react';
 
 interface MemoPopUpProps {
   children: React.ReactNode;
@@ -16,7 +16,7 @@ export default function MemoPopUp({
   show,
   onClose,
   redirectUrl,
-}: MemoPopUpProps) {
+}: Readonly<MemoPopUpProps>) {
   const router = useRouter();
 
   useEffect(() => {
@@ -37,10 +37,7 @@ export default function MemoPopUp({
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center bg-title-1 bg-opacity-50 ${className}`}
     >
-      <div
-        className="relative bg-system-white rounded-lg shadow-lg p-6 w-full max-w-md"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="relative bg-system-white rounded-lg shadow-lg p-6 w-full max-w-md">
         <div className="mb-4 flex flex-col items-center justify-center">{children}</div>
         <div className="flex justify-end space-x-4"></div>
       </div>
