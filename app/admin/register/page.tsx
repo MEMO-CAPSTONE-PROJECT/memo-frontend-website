@@ -3,7 +3,6 @@ import BrandingBackground from '@/components/background/branding-background'
 import MemoButton from '@/components/button/memo-button'
 import MemoWhite from '@/components/container/memo-white'
 import MemoErrorMessage from '@/components/helper/memo-error-message'
-import MemoInputTextHelper from '@/components/input/memo-input-text-helper'
 import MemoInputHeader from "@/components/input/memo-input-header";
 import AdminIcon from '@/components/ui/icons/registration/admin'
 import MemoSelectHelper from 'components/input/memo-select-helper'
@@ -108,7 +107,7 @@ export default function AdminRegistrationForm() {
 
 
         <section className="flex flex-col items-center space-y-xl">
-          <p className="text-body-1 text-header font-bold">ส่งคำร้องเพื่อลงทะเบียนระบบ</p>
+          <p className="text-body-1 text-header font-bold">ส่งคำร้องเพื่อลงทะเบียนระบบผู้ดูแล</p>
         </section>
         <form className="flex flex-col space-y-lg" onSubmit={handleSubmit}>
             
@@ -136,7 +135,7 @@ export default function AdminRegistrationForm() {
             text="ชื่อผู้ใช้"
             type="text"
             name="username"
-            placeholder="กรุณาพิมพ์ชื่อบัชชีผู้ใช้ของคุณ"
+            placeholder="กรุณาพิมพ์ชื่อบัญชีผู้ใช้ของคุณ"
             error={errors?.username}
             value={formData.username}
             onChange={handleChange}

@@ -234,7 +234,7 @@ export default function StudentRegistrationForm() {
                   text="ชื่อผู้ใช้"
                   type="text"
                   name="displayName"
-                  placeholder="กรุณาพิมพ์ชื่อผู้ใช้ของคุณ"
+                  placeholder="กรุณาพิมพ์ชื่อบัญชีผู้ใช้ของคุณ"
                   error={errors?.displayName}
                   value={student.displayName}
                   onChange={(e) =>

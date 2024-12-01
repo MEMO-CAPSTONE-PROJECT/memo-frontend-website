@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { z } from 'zod';
 
 const loginSchema = z.object({
-  username: z.string().min(1, { message: "กรุณากรอกชื่อบัชชีผู้ใช้ก่อนเข้าสู่ระบบ" }),
+  username: z.string().min(1, { message: "กรุณากรอกชื่อบัญชีผู้ใช้ก่อนเข้าสู่ระบบ" }),
   password: z.string().min(1, { message: "กรุณากรอกรหัสผ่านก่อนเข้าสู่ระบบ" }),
 });
 
@@ -78,11 +78,11 @@ export default function AdminLogin() {
         <form className="flex flex-col space-y-lg" onSubmit={handleLogin}>
 
 
-          <label className="block text-lg font-medium text-body-1 mb-2">ชื่อบัชชีผู้ใช้</label>
+          <label className="block text-lg font-medium text-body-1 mb-2">ชื่อบัญชีผู้ใช้</label>
             <MemoInputTextHelper
               type="text"
               name="username"
-              placeholder=" กรุณาพิมพ์ชื่อบัชชีผู้ใช้"
+              placeholder=" กรุณาพิมพ์ชื่อบัญชีผู้ใช้"
               error={fieldErrors.username}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
