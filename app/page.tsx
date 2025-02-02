@@ -1,4 +1,4 @@
-
+"use client";
 import BrandingBackground from '@/components/background/branding-background';
 import MemoCard from '@/components/container/memo-card';
 import MemoCharacterCard from '@/components/container/memo-character-card';
@@ -11,7 +11,12 @@ import './globals.css';
 
 export default function Home() {
   return (
+    
     <BrandingBackground>
+     <div style={{ display: "flex" }}>
+      <div style={{ marginLeft: "1rem" }}>
+      </div>
+    </div>
         <MemoCard>
           <section className="text-center">
             <p className='text-body-1 text-header font-bold'>กรุณาเลือกประเภทผู้ใช้</p>
