@@ -9,5 +9,10 @@ export const MEMO_API = {
 
     adminRegister: baseUrl + "/v1/admin/register",
     adminLogin: baseUrl + "/v1/admin/login",
-    adminOtp: baseUrl + "/v1/admin/otp/verify",
+    adminOtp: baseUrl + "/v1/admin/password/verify",
+    adminResetPassword: baseUrl + "/v1/admin/password/reset",
+
+    studentsList : baseUrl + "/v1/students",
+    parentsList : baseUrl + "/v1/parents",
+    teachersList : baseUrl + "/v1/teachers",
 }

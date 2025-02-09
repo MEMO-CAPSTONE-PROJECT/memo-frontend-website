@@ -5,9 +5,9 @@ import React, { useEffect } from 'react';
 interface MemoPopUpProps {
   children: React.ReactNode;
   className?: string;
-  onClose: () => void; // Make this required
-  show: boolean; // Make this required
-  redirectUrl?: string; // Add optional redirect URL
+  onClose: () => void; 
+  show: boolean; 
+  redirectUrl?: string;
 }
 
 export default function MemoPopUp({

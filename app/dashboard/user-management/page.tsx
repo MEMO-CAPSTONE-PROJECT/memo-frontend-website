@@ -1,83 +1,88 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Sidebar from "@/components/dashboard/sidebar";
 import TopbarButton from "@/components/button/memo-topbar";
 import SearchIcon from "@/components/ui/icons/dashboard/search-icon";
-import TableComponent from "@/components/dashboard/table";
-import { students as initialStudents } from "@/app/data/students";
+import { MEMO_API } from "@/constants/apis";
+import Table from "@/components/dashboard/table";
+import EditIcon from "@/components/ui/icons/dashboard/edit-icon";
+
+interface Teacher {
+  teacherId: string;
+  firstName: string;
+  lastName: string;
+  class?: { level?: number; room?: number };
+  email: string;
+  phoneNumber: string;
+}
+
+interface Student {
+  studentId: string;
+  firstName: string;
+  lastName: string;
+  classLevel: number;
+  classRoom: number;
+  emailStudent: string;
+  phoneNumber: string;
+}
 
 const Dashboard = () => {
   const [activeMenu, setActiveMenu] = useState<string>("รายชื่อครู");
-  const [showCheckboxes, setShowCheckboxes] = useState<boolean>(false);
-  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
-  const [selectAll, setSelectAll] = useState<boolean>(false);
-  const [isDeleteMode, setIsDeleteMode] = useState<boolean>(false);
-  const [students, setStudents] = useState(initialStudents);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const tableHeaders = ["รหัส", "ชื่อ", "นามสกุล", "ชั้น", "ข้อมูลผู้ปกครอง", "แอคชั่น"];
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        if (activeMenu === "รายชื่อครู") {
+          const response = await axios.get(MEMO_API.teachersList);
+          setTeachers(response.data.data.teachers || []);
+        } else if (activeMenu === "รายชื่อนักเรียน") {
+          const response = await axios.get(MEMO_API.parentsList);
+          const studentList = response.data.data.parents.flatMap((parent: { students?: Student[] }) => parent.students || []);
+          setStudents(studentList);
+        }
+      } catch (err) {
+        setError("ไม่สามารถโหลดข้อมูลได้");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, [activeMenu]);
 
-  const renderRow = (student: typeof students[0], isSelected: boolean) => {
-    const rowData = [
-      showCheckboxes ? (
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={() => handleCheckboxChange(student.id)}
-          className="w-4 h-4"
-        />
-      ) : (
-        <div className="w-4 h-4" />
-      ),
-      student.id,
-      student.firstName,
-      student.lastName,
-      student.grade,
-      <button className="underline text-system-button">{student.guardianInfo}</button>,
-      <button className="flex items-center bg-system-button text-system-white rounded-sm px-2 py-1">แก้ไข</button>
-    ];
-
-    return (
-      <>
-        {rowData.map((data, index) => (
-          <td key={index} className="px-4 py-2 border">{data}</td>
-        ))}
-      </>
-    );
+  const handleEdit = (id: string) => {
+    alert(`แก้ไขข้อมูล ID: ${id}`);
   };
-
-  const handleCheckboxChange = (id: string) => {
-    setSelectedRows((prevSelectedRows) => {
-      const newSelectedRows = new Set(prevSelectedRows);
-      newSelectedRows.has(id) ? newSelectedRows.delete(id) : newSelectedRows.add(id);
-      return newSelectedRows;
-    });
-  };
-
-  const toggleCheckboxes = () => {
-    setShowCheckboxes(true);
-    setSelectedRows(new Set());
-    setSelectAll(false);
-    setIsDeleteMode(true);
-  };
-
-  const cancelDelete = () => {
-    setShowCheckboxes(false);
-    setIsDeleteMode(false);
-    setSelectedRows(new Set());
-    setSelectAll(false);
-  };
-
-  const handleSelectAll = () => {
-    setSelectedRows(selectAll ? new Set() : new Set(students.map((student) => student.id)));
-    setSelectAll(!selectAll);
-  };
-
-  const handleDelete = () => {
-    setStudents(students.filter((student) => !selectedRows.has(student.id)));
-    setSelectedRows(new Set());
-    setIsDeleteMode(false);
-    setShowCheckboxes(false); // Hide checkboxes after delete
-  };
+  
+  const teacherColumns = [
+    { key: "teacherId", label: "รหัส", header: "รหัส" },
+    { key: "firstName", label: "ชื่อ", header: "ชื่อ" },
+    { key: "lastName", label: "นามสกุล", header: "นามสกุล" },
+    { key: "position", label: "ตำแหน่ง", header: "ตำแหน่ง" },
+    { key: "class", label: "ชั้น", header: "ชั้น" },
+    { key: "email", label: "อีเมล", header: "อีเมล" },
+    { key: "phoneNumber", label: "เบอร์โทร", header: "เบอร์โทร" },
+    { key: "action", label: "แอคชั่น", header: "แอคชั่น" },
+  ];
+  
+  const studentColumns = [
+    { key: "studentId", label: "รหัส", header: "รหัส" },
+    { key: "firstName", label: "ชื่อ", header: "ชื่อ" },
+    { key: "lastName", label: "นามสกุล", header: "นามสกุล" },
+    { key: "classLevel", label: "ชั้น", header: "ชั้น" },
+    { key: "emailStudent", label: "อีเมล", header: "อีเมล" },
+    { key: "phoneNumber", label: "เบอร์โทร", header: "เบอร์โทร" },
+    { key: "action", label: "แอคชั่น", header: "แอคชั่น" },
+  ];
 
   return (
     <div className="flex bg-system-white w-screen">
@@ -87,52 +92,74 @@ const Dashboard = () => {
           <TopbarButton name="รายชื่อครู" isActive={activeMenu === "รายชื่อครู"} onClick={() => setActiveMenu("รายชื่อครู")} />
           <TopbarButton name="รายชื่อนักเรียน" isActive={activeMenu === "รายชื่อนักเรียน"} onClick={() => setActiveMenu("รายชื่อนักเรียน")} />
         </div>
+
         <div className="pt-4">
           <p className="text-[20px] font-semibold">ระบบจัดการรายชื่อนักเรียน</p>
           <p className="text-[16px] text-body-2">ระบบจัดการรายชื่อนักเรียน</p>
         </div>
+
         <div className="relative flex pt-6 w-full mr-4 space-x-2">
           <div className="relative w-full">
             <input type="text" placeholder="ค้นหารายชื่อ" className="w-full pl-10 p-2 border-2xsm border-title-1 rounded-sm bg-system-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
             <SearchIcon className="w-6 h-6 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
           </div>
-          {isDeleteMode ? (
-            <>
-              <button onClick={handleDelete} disabled={selectedRows.size === 0} className={`rounded-sm w-32 text-system-white ${selectedRows.size === 0 ? 'bg-body-2 cursor-not-allowed' : 'bg-system-error-2'}`}>
-                ลบผู้ใช้ {selectedRows.size} ราย
-              </button>
-              <button onClick={cancelDelete} className="bg-system-success-2 rounded-sm w-32 text-system-white">ยกเลิก</button>
-            </>
-          ) : (
-            <>
-              <button onClick={toggleCheckboxes} className="bg-system-error-2 rounded-sm w-32 text-system-white">ถังขยะ</button>
-              <button className="bg-system-success-2 rounded-sm w-32 text-system-white">เพิ่มผู้ใช้</button>
-            </>
-          )}
+          <button className="bg-system-error-2 rounded-sm w-32 text-system-white">ถังขยะ</button>
+          <button className="bg-system-success-2 rounded-sm w-32 text-system-white">เพิ่มผู้ใช้</button>
         </div>
-        <TableComponent
-          data={students}
-          tableHead={
-            <thead>
-              <tr>
-                {showCheckboxes && (
-                  <th className="px-4 py-2 bg-primary-2 text-system-white text-left">
-                    <input type="checkbox" checked={selectAll} onChange={handleSelectAll} className="w-4 h-4" />
-                  </th>
-                )}
-                {tableHeaders.map((header, index) => (
-                  <th key={index} className="px-4 py-2 bg-primary-2 text-system-white text-left">{header}</th>
-                ))}
-              </tr>
-            </thead>
-          }
-          renderRow={renderRow}
-          selectedRows={selectedRows}
-          onRowSelect={handleCheckboxChange}
-        />
+
+        {activeMenu === "รายชื่อครู" && (
+          <Table 
+            data={teachers} 
+            columns={teacherColumns} 
+            renderRow={(teacher) => [
+              teacher.teacherId,
+              teacher.firstName,
+              teacher.lastName,
+              teacher.position,
+              `${teacher.class?.level ? `ป. ${teacher.class.level}` : "-"} ${teacher.class?.room ?`/ ${teacher.class.room}` : ""}`,
+              teacher.email,
+              teacher.phoneNumber,
+
+              <div className="flex justify-center">
+              <button className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2" onClick={() => handleEdit(teacher.teacherId)}>
+                <EditIcon className="h-6 w-6 "/>
+                <span>แก้ไข</span>
+              </button>
+              </div>
+            ]}
+            loading={loading}
+            error={error}
+          />
+        )}
+
+        {activeMenu === "รายชื่อนักเรียน" && (
+          <Table 
+            data={students} 
+            columns={studentColumns} 
+            renderRow={(student) => [
+              student.studentId,
+              student.firstName,
+              student.lastName,
+              `ป.${student.classLevel}/${student.classRoom}`,
+              student.emailStudent,
+              student.phoneNumber,
+              <div className="flex justify-center">
+              <button className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2" onClick={() => handleEdit(student.studentId)}>
+              <EditIcon className="h-6 w-6 "/>
+              <span>แก้ไข</span>
+            </button>
+            </div>
+            ]}
+            loading={loading}
+            error={error}
+          />
+        )}
       </div>
     </div>
   );
 };
 
 export default Dashboard;
+
+
+

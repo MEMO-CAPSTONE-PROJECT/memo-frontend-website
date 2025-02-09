@@ -1,42 +1,57 @@
-import React, { ReactNode, useState } from "react";
+import React from "react";
 
-interface TableProps<T> {
-  data: T[]; // Accept data of any type
-  tableHead: ReactNode; // รับ <thead> จาก parent
-  renderRow: (item: T, isSelected: boolean) => ReactNode; // Render function for rows, allowing flexibility
-  selectedRows: Set<string>; // รับค่าที่เป็น Set ของ id ที่ถูกเลือก
-  onRowSelect: (id: string) => void; // ฟังก์ชันที่ใช้ในการเลือกแถว
+interface Column {
+  header: string;
+  key: string;
+  className?: string;
 }
 
-const TableComponent = <T extends { id: string }>({
-  data,
-  tableHead,
-  renderRow,
-  selectedRows,
-  onRowSelect,
-}: TableProps<T>) => {
+interface TableProps {
+  columns: Column[];
+  data: any[];
+  renderRow: (item: any) => React.ReactNode[]; // ต้องคืนค่าเป็น array ของ ReactNode
+  loading?: boolean;
+  error?: string | null;
+}
+
+const Table: React.FC<TableProps> = ({ columns, data, renderRow, loading, error }) => {
   return (
-    <div className="pt-6">
-      <table className="min-w-full table-auto text-[16px]">
-        {tableHead}
-        <tbody>
-          {data.map((item) => {
-            const isSelected = selectedRows.has(item.id); 
-            return (
-              <tr
-                key={item.id}
-                className={`border-b-2xsm border-system-gray min-w-full table-auto text-[16px] ${
-                  isSelected ? "bg-system-light-purple border-primary-2 border-b-2xsm" : "" 
-                }`}
-              >
-                {renderRow(item, isSelected)}
+    <div className="w-full overflow-x-auto">
+      {loading && <p className="text-center p-4">กำลังโหลดข้อมูล...</p>}
+      {error && <p className="text-center text-secondary-3 p-4">{error}</p>}
+      
+      {!loading && !error && (
+        <table className="w-full border-collapse mt-4 ">
+          <thead>
+            <tr className=" bg-primary-2 text-system-white text-[16px]">
+              {columns.map((col) => (
+                <th key={col.key} className={`border p-3 font-semibold ${col.className || ""}`}>
+                  {col.header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.length > 0 ? (
+              data.map((item, index) => (
+                <tr key={index} className="border border-b-2xsm border-system-gray min-w-full table-auto text-[16px] text-center">
+                  {renderRow(item).map((cell, cellIndex) => (
+                    <td key={cellIndex} className="border p-2">{cell}</td>
+                  ))}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={columns.length} className="text-center p-4">
+                  ไม่พบข้อมูล
+                </td>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
 
-export default TableComponent;
+export default Table;
