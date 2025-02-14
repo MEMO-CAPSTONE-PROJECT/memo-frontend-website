@@ -57,6 +57,7 @@ export default function AdminLogin() {
       console.log("login success")
       router.push("/dashboard/user-management");
     } catch (error) {
+      console.error("Login error:", error);
       setErrorLogin("รหัสผ่านหรือชื่อผู้ใช้ไม่ถูกต้อง");
     }
   };

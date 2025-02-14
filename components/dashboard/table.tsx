@@ -6,15 +6,15 @@ interface Column {
   className?: string;
 }
 
-interface TableProps {
+interface TableProps<T> {
   columns: Column[];
-  data: any[];
-  renderRow: (item: any) => React.ReactNode[]; 
+  data: T[]; // ใช้ Generic แทน any[]
+  renderRow: (item: T) => React.ReactNode[]; // ใช้ Generic แทน any
   loading?: boolean;
   error?: string | null;
 }
 
-const Table: React.FC<TableProps> = ({ columns, data, renderRow, loading, error }) => {
+const Table = <T,>({ columns, data, renderRow, loading, error }: TableProps<T>) => {
   return (
     <div className="w-full overflow-x-auto">
       {loading && <p className="text-center p-4">กำลังโหลดข้อมูล...</p>}
@@ -23,7 +23,7 @@ const Table: React.FC<TableProps> = ({ columns, data, renderRow, loading, error 
       {!loading && !error && (
         <table className="w-full border-collapse mt-4">
           <thead>
-          <tr className=" bg-primary-2 text-system-white text-[16px]">
+            <tr className=" bg-primary-2 text-system-white text-[16px]">
               {columns.map((col) => (
                 <th key={col.key} className={`border p-3 font-semibold ${col.className || ""}`}>
                   {col.header}

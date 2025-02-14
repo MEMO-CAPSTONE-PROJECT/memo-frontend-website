@@ -31,6 +31,7 @@ interface Student {
   classRoom: number;
   emailStudent: string;
   phoneNumber: string;
+  gender: string;
   parents?: ParentInfo[];
 }
 
@@ -48,7 +49,7 @@ const Dashboard = () => {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<null | string>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedParents, setSelectedParents] = useState<ParentInfo[]>([]);
   const [showPopup, setShowPopup] = useState(false);
@@ -60,14 +61,16 @@ const Dashboard = () => {
       setError(null);
       try {
         if (activeMenu === "รายชื่อครู") {
-          const response = await axios.get(MEMO_API.teachersList);
-          setTeachers(response.data.data.teachers || []);
+          const response = await axios.get<{ data: { teachers: Teacher[] } }>(MEMO_API.teachersList);
+          setTeachers(response.data.data.teachers || []);          
         } else if (activeMenu === "รายชื่อนักเรียน") {
           const response = await axios.get(MEMO_API.parentsList);
           const studentList = response.data.data.parents.flatMap(
             (parent: { students?: Student[] }) =>
               parent.students?.map((student) => ({
                 ...student,
+                /* eslint-disable @typescript-eslint/no-explicit-any */
+
                 parents: response.data.data.parents.filter((p: any) =>
                   p.students?.some((s: any) => s.studentId === student.studentId)
                 ),
@@ -76,6 +79,7 @@ const Dashboard = () => {
           setStudents(studentList);
         }
       } catch (err) {
+        console.log(err)
         setError("ไม่สามารถโหลดข้อมูลได้");
       } finally {
         setLoading(false);
@@ -91,8 +95,9 @@ const Dashboard = () => {
     }
   };
 
-  const paginateData = (data: any[]) => data.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-
+  const paginateData = <T,>(data: T[]): T[] => 
+    data.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+  
   const handleEdit = (id: string) => {
     alert(`แก้ไขข้อมูล ID: ${id}`);
   };
@@ -126,6 +131,7 @@ const Dashboard = () => {
     { key: "action", label: "แอคชั่น", header: "แอคชั่น" },
   ];
 
+  
   return (
     <div className="flex bg-system-white w-screen">
       <Sidebar />
@@ -151,18 +157,20 @@ const Dashboard = () => {
 
         {activeMenu === "รายชื่อครู" && (
           <Table 
-          data={paginateData(teachers)} 
+            data={paginateData(teachers)} 
             columns={teacherColumns} 
             renderRow={(teacher) => [
-              teacher.teacherId,
-              teacher.firstName,
-              teacher.lastName,
-              teacher.gender,
-              teacher.position,
-              `${teacher.class?.level ? `ป. ${teacher.class.level}` : "-"}${teacher.class?.room ?`/${teacher.class.room}` : ""}`,
-              teacher.email,
-              teacher.phoneNumber,
-              <div className="flex justify-center">
+              <span key={`id-${teacher.teacherId}`}>{teacher.teacherId}</span>,
+              <span key={`fname-${teacher.teacherId}`}>{teacher.firstName}</span>,
+              <span key={`lname-${teacher.teacherId}`}>{teacher.lastName}</span>,
+              <span key={`gender-${teacher.teacherId}`}>{teacher.gender}</span>,
+              <span key={`position-${teacher.teacherId}`}>{teacher.position}</span>,
+              <span key={`class-${teacher.teacherId}`}>
+                {teacher.class?.level ? `ป. ${teacher.class.level}` : "-"}{teacher.class?.room ? `/${teacher.class.room}` : ""}
+              </span>,
+              <span key={`email-${teacher.teacherId}`}>{teacher.email}</span>,
+              <span key={`phone-${teacher.teacherId}`}>{teacher.phoneNumber}</span>,
+              <div key={`action-${teacher.teacherId}`} className="flex justify-center">
                 <button className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2" onClick={() => handleEdit(teacher.teacherId)}>
                   <EditIcon className="h-6 w-6" />
                   <span>แก้ไข</span>
@@ -172,33 +180,41 @@ const Dashboard = () => {
             loading={loading}
             error={error}
           />
-        )}
+          
+          )}
 
-        {activeMenu === "รายชื่อนักเรียน" && (
+          {activeMenu === "รายชื่อนักเรียน" && (
           <Table 
           data={paginateData(students)}
-            columns={studentColumns} 
-            renderRow={(student) => [
-              student.studentId,
-              student.firstName,
-              student.lastName,
-              student.gender,
-              `ป. ${student.classLevel}/${student.classRoom}`,
-              student.emailStudent,
-              student.phoneNumber,
-              <button className=" text-system-button underline" onClick={() => handleShowDetails(student.parents || [])}>
-                รายละเอียด
-              </button>,
-              <div className="flex justify-center">
-              <button className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2" onClick={() => handleEdit(student.studentId)}>
+          columns={studentColumns} 
+          renderRow={(student) => [
+            <span key={`${student.studentId}-id`}>{student.studentId}</span>,
+            <span key={`${student.studentId}-firstName`}>{student.firstName}</span>,
+            <span key={`${student.studentId}-lastName`}>{student.lastName}</span>,
+            <span key={`${student.studentId}-gender`}>{student.gender}</span>,
+            <span key={`${student.studentId}-class`}>ป. {student.classLevel}/{student.classRoom}</span>,
+            <span key={`${student.studentId}-email`}>{student.emailStudent}</span>,
+            <span key={`${student.studentId}-phone`}>{student.phoneNumber}</span>,
+            <button 
+              key={`${student.studentId}-details`} 
+              className="text-system-button underline" 
+              onClick={() => handleShowDetails(student.parents || [])}
+            >
+              รายละเอียด
+            </button>,
+            <div key={`${student.studentId}-actions`} className="flex justify-center">
+              <button 
+                className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2" 
+                onClick={() => handleEdit(student.studentId)}
+              >
                 <EditIcon className="h-6 w-6" />
                 <span>แก้ไข</span>
               </button>
             </div>,
-            ]}
-            loading={loading}
-            error={error}
-          />
+          ]}
+          loading={loading}
+          error={error}
+        />       
         )}
 
           <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex justify-center mt-4  bg-white p-3 pl-20 ">
