@@ -10,7 +10,7 @@ export default function AdminResetPassword() {
   return (
     <BrandingBackground>
       <section className='hidden lg:flex flex-1  h-screen ml-auto flex-col items-center justify-center space-y-xl'>
-        <KeyIcon size={400} />
+        <KeyIcon />
       </section>
       <MemoWhite>
         <section className="flex flex-col items-center space-y-xl">

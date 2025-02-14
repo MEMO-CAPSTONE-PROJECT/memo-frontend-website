@@ -1,7 +1,5 @@
-
-
 "use client";
-
+import MemoPopUp from '@/components/container/memo-popup';
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "@/components/dashboard/sidebar";
@@ -12,6 +10,7 @@ import Table from "@/components/dashboard/table";
 import EditIcon from "@/components/ui/icons/dashboard/edit-icon";
 import CaretLefttIcon from "@/components/ui/icons/dashboard/caret-left";
 import CaretRightIcon from "@/components/ui/icons/dashboard/caret-right";
+
 
 interface Teacher {
   teacherId: string;
@@ -40,7 +39,8 @@ interface ParentInfo {
   firstName: string;
   lastName: string;
   phoneNumber: string;
-  email: string;
+  emailParent: string;
+  relation: string;
 }
 
 const Dashboard = () => {
@@ -50,7 +50,9 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 3;
+  const [selectedParents, setSelectedParents] = useState<ParentInfo[]>([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const rowsPerPage = 10;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -96,18 +98,8 @@ const Dashboard = () => {
   };
 
   const handleShowDetails = (parents: ParentInfo[]) => {
-    if (parents.length > 0) {
-      alert(
-        parents
-          .map(
-            (parent) =>
-              `ชื่อ: ${parent.firstName} ${parent.lastName}\nอีเมล: ${parent.email}\nเบอร์โทร: ${parent.phoneNumber}`
-          )
-          .join("\n\n")
-      );
-    } else {
-      alert("ไม่มีข้อมูลผู้ปกครอง");
-    }
+    setSelectedParents(parents);
+    setShowPopup(true);
   };
 
   const teacherColumns = [
@@ -126,6 +118,7 @@ const Dashboard = () => {
     { key: "studentId", label: "รหัส", header: "รหัส" },
     { key: "firstName", label: "ชื่อ", header: "ชื่อ" },
     { key: "lastName", label: "นามสกุล", header: "นามสกุล" },
+    { key: "gender", label: "เพศ", header: "เพศ" },
     { key: "classLevel", label: "ชั้น", header: "ชั้น" },
     { key: "emailStudent", label: "อีเมล", header: "อีเมล" },
     { key: "phoneNumber", label: "เบอร์โทร", header: "เบอร์โทร" },
@@ -189,6 +182,7 @@ const Dashboard = () => {
               student.studentId,
               student.firstName,
               student.lastName,
+              student.gender,
               `ป. ${student.classLevel}/${student.classRoom}`,
               student.emailStudent,
               student.phoneNumber,
@@ -228,6 +222,31 @@ const Dashboard = () => {
             <CaretRightIcon className="h-6 w-6" />
             </button>
           </div>
+
+          {showPopup && (
+          <MemoPopUp show={showPopup} onClose={() => setShowPopup(false)}>
+          <div className='w-full'>
+            <h2 className="text-lg font-bold mb-2 text-center">ข้อมูลผู้ปกครอง</h2>
+            <div className="ml-6 text-left mt-4">
+              {selectedParents.length > 0 ? (
+                selectedParents.map((parent) => (
+                  <div key={parent.parentId} className="mb-2" >
+                    <p><span className='font-semibold '>ชื่อ : </span> {parent.firstName} {parent.lastName}</p>
+                    <p><span className='font-semibold '>อีเมล : </span> {parent.emailParent}</p>
+                    <p><span className='font-semibold '>เบอร์โทร : </span> {parent.phoneNumber}</p>
+                    <p><span className='font-semibold '>ความสัมพันธ์ : </span> {parent.relation}</p>
+                  </div>
+                ))
+              ) : (
+                <p>ไม่มีข้อมูลผู้ปกครอง</p>
+              )}
+            </div>
+          </div>
+        </MemoPopUp>
+
+
+
+        )}
 
       </div>
       </div>

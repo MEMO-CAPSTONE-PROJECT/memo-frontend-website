@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import LogoIcon from "@/components/ui/icons/logo";
 import UserlistIcon from "@/components/ui/icons/sidebar-icons/user-list";
 import UsersIcon from "@/components/ui/icons/sidebar-icons/users";
@@ -7,11 +7,14 @@ import TrashIcon from "@/components/ui/icons/sidebar-icons/trashIcon";
 import GearIcon from "@/components/ui/icons/sidebar-icons/gearIcon";
 import SignOutIcon from "@/components/ui/icons/sidebar-icons/sign-out";
 import SidebarButton from "@/components/button/memo-sidebar-button";
+import MemoPopUp from '@/components/container/memo-popup';
+import MemoButton from '@/components/button/memo-button'
 import { useRouter, usePathname } from "next/navigation";
 
 const Sidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
 
   const menuItems = [
     { name: "รายชื่อ", path: "/dashboard/user-management", icon: <UserlistIcon /> },
@@ -26,7 +29,6 @@ const Sidebar = () => {
   };
 
   const handleSignout = () => {
-    console.log("Signing out...");
     router.push("/");
   };
 
@@ -57,18 +59,23 @@ const Sidebar = () => {
       </div>
 
       <button
-          className={`
-            text-[14px] py-3 px-4 mb-2 w-full
-            rounded-[15px] flex items-center text-system-white
-            isActive ? "bg-primary-2-hover" : "bg-transparent "
-            hover:bg-system-white hover:bg-opacity-25
-            cursor-pointer transition-colors
-          `}
-        onClick={handleSignout}
+        className="text-[14px] py-3 px-4 mb-2 w-full rounded-[15px] flex items-center text-system-white bg-transparent hover:bg-system-white hover:bg-opacity-25 cursor-pointer transition-colors"
+        onClick={() => setShowLogoutPopup(true)}
       >
         <SignOutIcon className="w-6 h-6 mr-2" />
         ออกจากระบบ
       </button>
+
+      {showLogoutPopup && (
+        <MemoPopUp show={showLogoutPopup} onClose={() => setShowLogoutPopup(false)}>
+          <SignOutIcon className="w-44 h-40 mr-2 bg-title-1 mb-6 rounded-md mt-6" />
+          <p className="text-center text-[18px] font-bold">ต้องการออกจากระบบจัดการรายชื่อหรือไม่?</p>
+          <div className="flex justify-between mt-6 w-full space-x-2 [16px] pl-4 pr-4 mb-2">
+            <MemoButton title="ยกเลิก" variant="ghost" onClick={() => setShowLogoutPopup(false)}/>
+            <MemoButton title="ยืนยัน" onClick={handleSignout} />
+          </div>
+        </MemoPopUp>
+      )}
     </div>
   );
 };
