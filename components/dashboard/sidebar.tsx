@@ -29,6 +29,8 @@ const Sidebar = () => {
   };
 
   const handleSignout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userToken");
     router.push("/");
   };
 

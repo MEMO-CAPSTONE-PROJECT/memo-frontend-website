@@ -1,5 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { z } from "zod";
 import BrandingBackground from "@/components/background/branding-background";
 import MemoButton from "@/components/button/memo-button";
 import MemoWhite from "@/components/container/memo-white";
@@ -9,9 +12,6 @@ import AdminIcon from "@/components/ui/icons/registration/admin";
 import MemoEmailPopup from "@/components/container/memo-emailpopup";
 import MemoOTPPopup from "@/components/container/memo-otp";
 import { MEMO_API } from "@/constants/apis";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import { z } from "zod";
 
 const AdminLoginSchema = z.object({
   username: z.string().min(1, { message: "กรุณากรอกชื่อบัญชีผู้ใช้ก่อนเข้าสู่ระบบ" }),
@@ -29,6 +29,24 @@ export default function AdminLogin() {
   const [otpEmail, setOtpEmail] = useState("");
   const [otpError, setOtpError] = useState("");
   const router = useRouter();
+
+  const isTokenExpired = (token: string): boolean => {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.exp * 1000 < Date.now();
+    } catch (error) {
+      return true; 
+    }
+  };
+
+  useEffect(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userToken");
+    const token = localStorage.getItem("userToken");
+    if (token && !isTokenExpired(token)) {
+      router.push("/dashboard/user-management");
+    }
+  }, [router]);
 
   const handleHome = () => {
     router.push("/");
@@ -51,10 +69,11 @@ export default function AdminLogin() {
 
     try {
       const response = await axios.post(MEMO_API.adminLogin, { username, password });
-      if (response.status !== 200) {
+        console.log(JSON.stringify(response.data.data.token))
+      if (response.status !== 200 || !response.data.data.token) {
         throw new Error("Invalid username or password");
       }
-      console.log("login success")
+      localStorage.setItem("userToken", response.data.data.token);
       router.push("/dashboard/user-management");
     } catch (error) {
       console.error("Login error:", error);
@@ -68,7 +87,6 @@ export default function AdminLogin() {
       await axios.post(MEMO_API.adminResetPassword, { emailUser: email, newPassword });
       setShowEmailPopup(false);
       setOtpEmail(email);
-      console.log(newPassword)
       setShowOTPPopup(true);
     } catch (error) {
       console.error("Error resetting password:", error);
@@ -79,11 +97,11 @@ export default function AdminLogin() {
 
   const handleOTPSubmit = async (event: React.FormEvent, otp: string) => {
     event.preventDefault();
-    setOtpError(''); // เคลียร์ error ก่อนเริ่มใหม่
-  
+    setOtpError(""); 
+
     try {
       const response = await axios.post(MEMO_API.adminOtp, { otp, emailUser: otpEmail });
-  
+
       if (response.status === 200) {
         setShowOTPPopup(false);
         alert("OTP ยืนยันสำเร็จ! สามารถเข้าสู่ระบบได้แล้ว");
@@ -93,7 +111,6 @@ export default function AdminLogin() {
       console.error("Error verifying OTP:", error);
     }
   };
-  
 
   return (
     <BrandingBackground>
@@ -159,6 +176,3 @@ export default function AdminLogin() {
     </BrandingBackground>
   );
 }
-
-
-

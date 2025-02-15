@@ -1,6 +1,7 @@
 "use client";
 import MemoPopUp from '@/components/container/memo-popup';
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import Sidebar from "@/components/dashboard/sidebar";
 import TopbarButton from "@/components/button/memo-topbar";
@@ -44,6 +45,17 @@ interface ParentInfo {
   relation: string;
 }
 
+const checkAuth = () => {
+  const token = localStorage.getItem("userToken");
+  if (!token) return false;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1])); 
+    return payload.exp * 1000 > Date.now(); // ตรวจสอบว่าหมดอายุหรือยัง
+  } catch (e) {
+    return false;
+  }
+};
+
 const Dashboard = () => {
   const [activeMenu, setActiveMenu] = useState<string>("รายชื่อครู");
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -54,6 +66,17 @@ const Dashboard = () => {
   const [selectedParents, setSelectedParents] = useState<ParentInfo[]>([]);
   const [showPopup, setShowPopup] = useState(false);
   const rowsPerPage = 10;
+  const router = useRouter();
+  
+  localStorage.removeItem("token");
+  useEffect(() => {
+    if (!checkAuth()) {
+      alert("Token หมดอายุ กรุณา Login ใหม่");
+      router.push("/admin/login");
+      return; 
+    }
+  }, []);
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,7 +93,6 @@ const Dashboard = () => {
               parent.students?.map((student) => ({
                 ...student,
                 /* eslint-disable @typescript-eslint/no-explicit-any */
-
                 parents: response.data.data.parents.filter((p: any) =>
                   p.students?.some((s: any) => s.studentId === student.studentId)
                 ),
