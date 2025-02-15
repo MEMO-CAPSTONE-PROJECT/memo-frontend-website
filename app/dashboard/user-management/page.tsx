@@ -52,6 +52,7 @@ const checkAuth = () => {
     const payload = JSON.parse(atob(token.split(".")[1])); 
     return payload.exp * 1000 > Date.now(); // ตรวจสอบว่าหมดอายุหรือยัง
   } catch (e) {
+    console.log(e)
     return false;
   }
 };
@@ -75,7 +76,7 @@ const Dashboard = () => {
       router.push("/admin/login");
       return; 
     }
-  }, []);
+  }, [router]);
   
 
   useEffect(() => {
