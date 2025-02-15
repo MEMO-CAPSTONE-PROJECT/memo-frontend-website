@@ -69,10 +69,10 @@ const Dashboard = () => {
   const rowsPerPage = 10;
   const router = useRouter();
   
-  localStorage.removeItem("token");
   useEffect(() => {
     if (!checkAuth()) {
       alert("Token หมดอายุ กรุณา Login ใหม่");
+      localStorage.removeItem("token");
       router.push("/admin/login");
       return; 
     }
