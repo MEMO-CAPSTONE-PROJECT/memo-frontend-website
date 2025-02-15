@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import apiClient from "@/components/axios/axiosConfig";
 import { z } from "zod";
 import BrandingBackground from "@/components/background/branding-background";
 import MemoButton from "@/components/button/memo-button";
@@ -69,7 +69,7 @@ export default function AdminLogin() {
     }
 
     try {
-      const response = await axios.post(MEMO_API.adminLogin, { username, password });
+      const response = await apiClient.post(MEMO_API.adminLogin, { username, password });
         console.log(JSON.stringify(response.data.data.token))
       if (response.status !== 200 || !response.data.data.token) {
         throw new Error("Invalid username or password");
@@ -85,7 +85,7 @@ export default function AdminLogin() {
   const handleResetPassword = async (email: string, newPassword: string) => {
     setIsLoading(true);
     try {
-      await axios.post(MEMO_API.adminResetPassword, { emailUser: email, newPassword });
+      await apiClient.post(MEMO_API.adminResetPassword, { emailUser: email, newPassword });
       setShowEmailPopup(false);
       setOtpEmail(email);
       setShowOTPPopup(true);
@@ -101,7 +101,7 @@ export default function AdminLogin() {
     setOtpError(""); 
 
     try {
-      const response = await axios.post(MEMO_API.adminOtp, { otp, emailUser: otpEmail });
+      const response = await apiClient.post(MEMO_API.adminOtp, { otp, emailUser: otpEmail });
 
       if (response.status === 200) {
         setShowOTPPopup(false);

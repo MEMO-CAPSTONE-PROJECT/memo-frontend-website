@@ -2,7 +2,7 @@
 import MemoPopUp from '@/components/container/memo-popup';
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import apiClient from "@/components/axios/axiosConfig";
 import Sidebar from "@/components/dashboard/sidebar";
 import TopbarButton from "@/components/button/memo-topbar";
 import SearchIcon from "@/components/ui/icons/dashboard/search-icon";
@@ -85,10 +85,10 @@ const Dashboard = () => {
       setError(null);
       try {
         if (activeMenu === "รายชื่อครู") {
-          const response = await axios.get<{ data: { teachers: Teacher[] } }>(MEMO_API.teachersList);
+          const response = await apiClient .get<{ data: { teachers: Teacher[] } }>(MEMO_API.teachersList);
           setTeachers(response.data.data.teachers || []);          
         } else if (activeMenu === "รายชื่อนักเรียน") {
-          const response = await axios.get(MEMO_API.parentsList);
+          const response = await apiClient .get(MEMO_API.parentsList);
           const studentList = response.data.data.parents.flatMap(
             (parent: { students?: Student[] }) =>
               parent.students?.map((student) => ({
