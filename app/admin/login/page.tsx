@@ -91,6 +91,7 @@ export default function AdminLogin() {
       setShowEmailPopup(false);
       setOtpEmail(email);
       setShowOTPPopup(true);
+      /* eslint-disable @typescript-eslint/no-explicit-any */
     } catch (error: any) {
       if (error.response && error.response.status === 404) {
         setemailError("อีเมลนี้ไม่เคยลงทะเบียน"); // กำหนดข้อความ error
