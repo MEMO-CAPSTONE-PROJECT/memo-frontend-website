@@ -9,6 +9,7 @@ import SearchIcon from "@/components/ui/icons/dashboard/search-icon";
 import { MEMO_API } from "@/constants/apis";
 import Table from "@/components/dashboard/table";
 import EditIcon from "@/components/ui/icons/dashboard/edit-icon";
+import CancelIcon from "@/components/ui/icons/pop-up/cancel-icon"
 import CaretLefttIcon from "@/components/ui/icons/dashboard/caret-left";
 import CaretRightIcon from "@/components/ui/icons/dashboard/caret-right";
 
@@ -264,8 +265,9 @@ const Dashboard = () => {
 
           {showPopup && (
           <MemoPopUp show={showPopup} onClose={() => setShowPopup(false)}>
-          <div className='w-full'>
-            <h2 className="text-lg font-bold mb-2 text-center">ข้อมูลผู้ปกครอง</h2>
+          <div className="w-full relative">
+          <button className='absolute right-0 top-0' onClick={() => setShowPopup(false)}><CancelIcon className="h-6 w-6" /></button>
+            <h2 className="text-lg font-bold mb-2 text-center mt-2">ข้อมูลผู้ปกครอง</h2>
             <div className="ml-6 text-left mt-4">
               {selectedParents.length > 0 ? (
                 selectedParents.map((parent) => (

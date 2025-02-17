@@ -28,6 +28,7 @@ export default function AdminLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [otpEmail, setOtpEmail] = useState("");
   const [otpError, setOtpError] = useState("");
+  const [emailError, setemailError] = useState("");
   const router = useRouter();
 
   const isTokenExpired = (token: string): boolean => {
@@ -84,17 +85,24 @@ export default function AdminLogin() {
 
   const handleResetPassword = async (email: string, newPassword: string) => {
     setIsLoading(true);
+    setemailError(""); // ล้าง error ก่อน
     try {
       await axios.post(MEMO_API.adminResetPassword, { emailUser: email, newPassword });
       setShowEmailPopup(false);
       setOtpEmail(email);
       setShowOTPPopup(true);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response && error.response.status === 404) {
+        setemailError("อีเมลนี้ไม่เคยลงทะเบียน"); // กำหนดข้อความ error
+      } else {
+        setemailError("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+      }
       console.error("Error resetting password:", error);
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   const handleOTPSubmit = async (event: React.FormEvent, otp: string) => {
     event.preventDefault();
@@ -161,7 +169,7 @@ export default function AdminLogin() {
           onSubmit={handleResetPassword}
           onCancel={() => setShowEmailPopup(false)}
           isLoading={isLoading}
-          error={undefined}
+          error={emailError}
         />
       )}
 
