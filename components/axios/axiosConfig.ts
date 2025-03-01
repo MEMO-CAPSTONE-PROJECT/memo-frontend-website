@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "https://capstone24.sit.kmutt.ac.th/sy1/apis", // 🔥 ใส่ baseURL ของ API
+  baseURL: "https://capstone24.sit.kmutt.ac.th/sy1/apis", 
   headers: {
     "Content-Type": "application/json",
   },

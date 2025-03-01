@@ -26,25 +26,25 @@ interface Teacher {
 }
 
 interface Student {
-  studentId: string;
+  studentId: number; 
   firstName: string;
   lastName: string;
   classLevel: number;
   classRoom: number;
-  emailStudent: string;
-  phoneNumber: string;
   gender: string;
+  startDate: Date;
   parents?: ParentInfo[];
 }
 
 interface ParentInfo {
-  parentId: string;
+  parentId: number;
   firstName: string;
   lastName: string;
+  relation: string;
   phoneNumber: string;
   emailParent: string;
-  relation: string;
 }
+
 
 const checkAuth = () => {
   const token = localStorage.getItem("userToken");
@@ -86,31 +86,33 @@ const Dashboard = () => {
       setError(null);
       try {
         if (activeMenu === "รายชื่อครู") {
-          const response = await apiClient .get<{ data: { teachers: Teacher[] } }>(MEMO_API.teachersList);
-          setTeachers(response.data.data.teachers || []);          
-        } else if (activeMenu === "รายชื่อนักเรียน") {
-          const response = await apiClient .get(MEMO_API.parentsList);
-          const studentList = response.data.data.parents.flatMap(
-            (parent: { students?: Student[] }) =>
-              parent.students?.map((student) => ({
-                ...student,
-                /* eslint-disable @typescript-eslint/no-explicit-any */
-                parents: response.data.data.parents.filter((p: any) =>
-                  p.students?.some((s: any) => s.studentId === student.studentId)
-                ),
-              })) || []
+          const response = await apiClient.get<{ data: { teachers: Teacher[] } }>(
+            MEMO_API.teachersList
           );
+          setTeachers(response.data.data.teachers || []);
+        } else if (activeMenu === "รายชื่อนักเรียน") {
+          const response = await apiClient.get<{ data: { students: Student[] } }>(
+            MEMO_API.studentsList
+          );
+  
+          const studentList = response.data.data.students.map((student) => ({
+            ...student,
+            startDate: new Date(student.startDate), 
+          }));
+  
           setStudents(studentList);
         }
       } catch (err) {
-        console.log(err)
+        console.log(err);
         setError("ไม่สามารถโหลดข้อมูลได้");
       } finally {
         setLoading(false);
       }
     };
+  
     fetchData();
   }, [activeMenu]);
+  
 
   const totalPages = Math.ceil((activeMenu === "รายชื่อครู" ? teachers.length : students.length) / rowsPerPage);
   const handlePageChange = (newPage: number) => {
@@ -149,7 +151,6 @@ const Dashboard = () => {
     { key: "lastName", label: "นามสกุล", header: "นามสกุล" },
     { key: "gender", label: "เพศ", header: "เพศ" },
     { key: "classLevel", label: "ชั้น", header: "ชั้น" },
-    { key: "emailStudent", label: "อีเมล", header: "อีเมล" },
     { key: "phoneNumber", label: "เบอร์โทร", header: "เบอร์โทร" },
     { key: "details", label: "ข้อมูลเพิ่มเติม", header: "ข้อมูลเพิ่มเติม" },
     { key: "action", label: "แอคชั่น", header: "แอคชั่น" },
@@ -207,39 +208,42 @@ const Dashboard = () => {
           
           )}
 
-          {activeMenu === "รายชื่อนักเรียน" && (
-          <Table 
-          data={paginateData(students)}
-          columns={studentColumns} 
-          renderRow={(student) => [
-            <span key={`${student.studentId}-id`}>{student.studentId}</span>,
-            <span key={`${student.studentId}-firstName`}>{student.firstName}</span>,
-            <span key={`${student.studentId}-lastName`}>{student.lastName}</span>,
-            <span key={`${student.studentId}-gender`}>{student.gender}</span>,
-            <span key={`${student.studentId}-class`}>ป. {student.classLevel}/{student.classRoom}</span>,
-            <span key={`${student.studentId}-email`}>{student.emailStudent}</span>,
-            <span key={`${student.studentId}-phone`}>{student.phoneNumber}</span>,
-            <button 
-              key={`${student.studentId}-details`} 
-              className="text-system-button underline" 
-              onClick={() => handleShowDetails(student.parents || [])}
-            >
-              รายละเอียด
-            </button>,
-            <div key={`${student.studentId}-actions`} className="flex justify-center">
-              <button 
-                className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2" 
-                onClick={() => handleEdit(student.studentId)}
-              >
-                <EditIcon className="h-6 w-6" />
-                <span>แก้ไข</span>
-              </button>
-            </div>,
-          ]}
-          loading={loading}
-          error={error}
-        />       
-        )}
+{activeMenu === "รายชื่อนักเรียน" && (
+  <Table 
+    data={paginateData(students)}
+    columns={studentColumns} 
+    renderRow={(student) => [
+      <span key={`${student.studentId}-id`}>{student.studentId}</span>,
+      <span key={`${student.studentId}-firstName`}>{student.firstName}</span>,
+      <span key={`${student.studentId}-lastName`}>{student.lastName}</span>,
+      <span key={`${student.studentId}-gender`}>{student.gender}</span>,
+      <span key={`${student.studentId}-class`}>ป. {student.classLevel}/{student.classRoom}</span>,
+      <span key={`${student.studentId}-phone`}>
+        {student.parents?.[0]?.phoneNumber ?? "-"} 
+        {/* ใช้เบอร์โทรของผู้ปกครองหลัก หรือ "-" ถ้าไม่มีข้อมูล */}
+      </span>,
+      <button 
+        key={`${student.studentId}-details`} 
+        className="text-system-button underline" 
+        onClick={() => handleShowDetails(student.parents ?? [])}
+      >
+        รายละเอียด
+      </button>,
+      <div key={`${student.studentId}-actions`} className="flex justify-center">
+        <button 
+          className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2" 
+          onClick={() => handleEdit(student.studentId.toString())}
+        >
+          <EditIcon className="h-6 w-6" />
+          <span>แก้ไข</span>
+        </button>
+      </div>,
+    ]}
+    loading={loading}
+    error={error}
+  />       
+)}
+
 
           <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex justify-center mt-4  bg-white p-3 pl-20 ">
             <button 
