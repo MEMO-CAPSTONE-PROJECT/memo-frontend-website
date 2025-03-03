@@ -69,6 +69,9 @@ const Dashboard = () => {
   const [showPopup, setShowPopup] = useState(false);
   const rowsPerPage = 10;
   const router = useRouter();
+  const [searchType, setSearchType] = useState("ชื่อ"); // ประเภทการค้นหาเริ่มต้น
+const [searchText, setSearchText] = useState(""); // ข้อความค้นหา
+const [filteredTeachers, setFilteredTeachers] = useState<Teacher[]>([]);
   
   useEffect(() => {
     if (!checkAuth()) {
@@ -84,6 +87,7 @@ const Dashboard = () => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+  
       try {
         if (activeMenu === "รายชื่อครู") {
           const response = await apiClient.get<{ data: { teachers: Teacher[] } }>(
@@ -97,7 +101,7 @@ const Dashboard = () => {
   
           const studentList = response.data.data.students.map((student) => ({
             ...student,
-            startDate: new Date(student.startDate), 
+            startDate: new Date(student.startDate),
           }));
   
           setStudents(studentList);
@@ -112,6 +116,54 @@ const Dashboard = () => {
   
     fetchData();
   }, [activeMenu]);
+  
+  useEffect(() => {
+    let filtered = teachers;
+  
+    if (searchText.trim() !== "") {
+      const searchLower = searchText.toLowerCase();
+  
+      filtered = teachers.filter((teacher) => {
+        if (searchType === "teacherAll") {
+          return Object.entries(teacher).some(([key, value]) => {
+            if (key === "startDate") return false;
+            if (key === "class" && value?.level && value?.room) {
+              return `${value.level}/${value.room}`.toLowerCase().includes(searchLower);
+            }
+            return String(value).toLowerCase().includes(searchLower);
+          });
+        }
+  
+        switch (searchType) {
+          case "teacherId":
+            return teacher.teacherId?.toString().toLowerCase().includes(searchLower);
+          case "teacherFirstName":
+            return teacher.firstName?.toLowerCase().includes(searchLower);
+          case "teacherLastName":
+            return teacher.lastName?.toLowerCase().includes(searchLower);
+          case "teacherGender":
+            return teacher.gender?.toLowerCase().includes(searchLower);
+          case "teacherPosition":
+            return teacher.position?.toLowerCase().includes(searchLower);
+          case "teacherClassLevel":
+            return teacher.class?.level?.toString().includes(searchText);
+          case "teacherClassRoom":
+            return teacher.class?.room?.toString().includes(searchText);
+          case "teacherEmail":
+            return teacher.email?.toLowerCase().includes(searchLower);
+          case "teacherPhoneNumber":
+            return teacher.phoneNumber?.includes(searchText);
+          default:
+            return true;
+        }
+      });
+    }
+  
+    setFilteredTeachers(filtered);
+  }, [searchText, searchType, teachers]);
+  
+  
+  
   
 
   const totalPages = Math.ceil((activeMenu === "รายชื่อครู" ? teachers.length : students.length) / rowsPerPage);
@@ -159,8 +211,10 @@ const Dashboard = () => {
   
   return (
     <div className="flex bg-system-white w-screen">
+
+    
       <Sidebar />
-      <div className="ml-4 pt-6 p-6 text-title-1 w-full">
+      <div className="ml-4 pt-6 p-6 text-title-1 w-full bg-system-white">
       <div className="flex ">
           <TopbarButton name="รายชื่อครู" isActive={activeMenu === "รายชื่อครู"} onClick={() => { setActiveMenu("รายชื่อครู"); setCurrentPage(1); }} />
           <TopbarButton name="รายชื่อนักเรียน" isActive={activeMenu === "รายชื่อนักเรียน"} onClick={() => { setActiveMenu("รายชื่อนักเรียน"); setCurrentPage(1); }} />
@@ -172,39 +226,73 @@ const Dashboard = () => {
         </div>
 
         <div className="relative flex pt-6 w-full mr-4 space-x-2">
-          <div className="relative w-full">
-            <input type="text" placeholder="ค้นหารายชื่อ" className="w-full pl-10 p-2 border-2xsm border-title-1 rounded-sm bg-system-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            <SearchIcon className="w-6 h-6 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
-          </div>
+        {activeMenu === "รายชื่อครู" && (
+          <>
+            <div className="relative w-full">
+              <input 
+                type="text" 
+                placeholder={`ค้นหาโดย ${searchType}`} 
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                className="w-full pl-10 p-2 border-2xsm border-title-1 rounded-sm bg-system-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <SearchIcon className="w-6 h-6 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+              
+            </div>
+          
+          <select 
+            value={searchType}
+            onChange={(e) => setSearchType(e.target.value)}
+            className="p-2  bg-system-white border-2xsm border-title-1 rounded-sm w-48 font-semibold"
+          >
+            <option value="teacherAll">ทั้งหมด</option>
+            <option value="teacherId">รหัส</option>
+            <option value="teacherFirstName">ชื่อ</option>
+            <option value="teacherLastName">นามสกุล</option>
+            <option value="teacherGender">เพศ</option>
+            <option value="teacherPosition">ตำแหน่ง</option>
+            <option value="teacherClassLevel">ชั้นเรียน</option>
+            <option value="teacherClassRoom">ห้องเรียน</option>
+            <option value="teacherEmail">อีเมล</option>
+            <option value="teacherPhoneNumber">เบอร์</option>
+          </select>
+          </>
+         )}
           <button className="bg-system-error-2 rounded-sm w-32 text-system-white">ถังขยะ</button>
           <button className="bg-system-success-2 rounded-sm w-32 text-system-white">เพิ่มผู้ใช้</button>
         </div>
+      
 
         {activeMenu === "รายชื่อครู" && (
-          <Table 
-            data={paginateData(teachers)} 
-            columns={teacherColumns} 
-            renderRow={(teacher) => [
-              <span key={`id-${teacher.teacherId}`}>{teacher.teacherId}</span>,
-              <span key={`fname-${teacher.teacherId}`}>{teacher.firstName}</span>,
-              <span key={`lname-${teacher.teacherId}`}>{teacher.lastName}</span>,
-              <span key={`gender-${teacher.teacherId}`}>{teacher.gender}</span>,
-              <span key={`position-${teacher.teacherId}`}>{teacher.position}</span>,
-              <span key={`class-${teacher.teacherId}`}>
-                {teacher.class?.level ? `ป. ${teacher.class.level}` : "-"}{teacher.class?.room ? `/${teacher.class.room}` : ""}
-              </span>,
-              <span key={`email-${teacher.teacherId}`}>{teacher.email}</span>,
-              <span key={`phone-${teacher.teacherId}`}>{teacher.phoneNumber}</span>,
-              <div key={`action-${teacher.teacherId}`} className="flex justify-center">
-                <button className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2" onClick={() => handleEdit(teacher.teacherId)}>
-                  <EditIcon className="h-6 w-6" />
-                  <span>แก้ไข</span>
-                </button>
-              </div>,
-            ]}
-            loading={loading}
-            error={error}
-          />
+<Table 
+  data={paginateData(filteredTeachers)}  // ใช้ filteredTeachers แทน
+  columns={teacherColumns} 
+  renderRow={(teacher) => [
+    <span key={`id-${teacher.teacherId}`}>{teacher.teacherId}</span>,
+    <span key={`fname-${teacher.teacherId}`}>{teacher.firstName}</span>,
+    <span key={`lname-${teacher.teacherId}`}>{teacher.lastName}</span>,
+    <span key={`gender-${teacher.teacherId}`}>{teacher.gender}</span>,
+    <span key={`position-${teacher.teacherId}`}>{teacher.position}</span>,
+    <span key={`class-${teacher.teacherId}`}>
+      {teacher.class?.level ? `ป. ${teacher.class.level}` : "-"}
+      {teacher.class?.room ? `/${teacher.class.room}` : ""}
+    </span>,
+    <span key={`email-${teacher.teacherId}`}>{teacher.email}</span>,
+    <span key={`phone-${teacher.teacherId}`}>{teacher.phoneNumber}</span>,
+    <div key={`action-${teacher.teacherId}`} className="flex justify-center">
+      <button 
+        className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2" 
+        onClick={() => handleEdit(teacher.teacherId)}
+      >
+        <EditIcon className="h-6 w-6" />
+        <span>แก้ไข</span>
+      </button>
+    </div>,
+  ]}
+  loading={loading}
+  error={error}
+/>
+
           
           )}
 
