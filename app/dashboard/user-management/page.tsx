@@ -1,13 +1,16 @@
 "use client";
-import MemoPopUp from '@/components/container/memo-popup';
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+
+import { MEMO_API } from "@/constants/apis";
 import apiClient from "@/components/axios/axiosConfig";
+import Table from "@/components/dashboard/table";
+import Filterbutton from "@/components/dashboard/filterbutton";
+import Searchbar from "@/components/dashboard/searchbar";
 import Sidebar from "@/components/dashboard/sidebar";
 import TopbarButton from "@/components/button/memo-topbar";
-import SearchIcon from "@/components/ui/icons/dashboard/search-icon";
-import { MEMO_API } from "@/constants/apis";
-import Table from "@/components/dashboard/table";
+import MemoPopUp from '@/components/container/memo-popup';
+
 import EditIcon from "@/components/ui/icons/dashboard/edit-icon";
 import CancelIcon from "@/components/ui/icons/pop-up/cancel-icon"
 import CaretLefttIcon from "@/components/ui/icons/dashboard/caret-left";
@@ -58,6 +61,28 @@ const checkAuth = () => {
   }
 };
 
+const teacherFilterOptions = [
+  { value: "all", label: "ทั้งหมด" },
+  { value: "teacherId", label: "รหัสครู" },  
+  { value: "firstName", label: "ชื่อ" },
+  { value: "lastName", label: "นามสกุล" },
+  { value: "gender", label: "เพศ" },
+  { value: "position", label: "ตำแหน่ง" },
+  { value: "class", label: "ระดับชั้น" },
+  { value: "email", label: "อีเมล" },  
+  { value: "phoneNumber", label: "เบอร์โทร" },
+];
+
+const studentFilterOptions = [
+  { value: "all", label: "ทั้งหมด" },
+  { value: "studentId", label: "รหัสนักเรียน" },
+  { value: "firstName", label: "ชื่อ" },
+  { value: "lastName", label: "นามสกุล" },
+  { value: "gender", label: "เพศ" },
+  { value: "classLevel", label: "ระดับชั้น" },
+  { value: "classRoom", label: "ห้องเรียน" },
+];
+
 const Dashboard = () => {
   const [activeMenu, setActiveMenu] = useState<string>("รายชื่อครู");
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -69,10 +94,13 @@ const Dashboard = () => {
   const [showPopup, setShowPopup] = useState(false);
   const rowsPerPage = 10;
   const router = useRouter();
-  const [searchType, setSearchType] = useState("ชื่อ"); // ประเภทการค้นหาเริ่มต้น
-const [searchText, setSearchText] = useState(""); // ข้อความค้นหา
-const [filteredTeachers, setFilteredTeachers] = useState<Teacher[]>([]);
-  
+
+  const [filteredTeachers, setFilteredTeachers] = useState<Teacher[]>([]);
+  const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
+  const [searchType, setSearchType] = useState("ทั้งหมด");
+  const [searchText, setSearchText] = useState(""); 
+  const filterOptions = activeMenu === "รายชื่อครู" ? teacherFilterOptions : studentFilterOptions;
+
   useEffect(() => {
     if (!checkAuth()) {
       alert("Token หมดอายุ กรุณา Login ใหม่");
@@ -117,50 +145,50 @@ const [filteredTeachers, setFilteredTeachers] = useState<Teacher[]>([]);
     fetchData();
   }, [activeMenu]);
   
-  useEffect(() => {
+
+useEffect(() => {
+  if (activeMenu === "รายชื่อครู") {
+    // console.log(Object.keys(teachers[0])); 
+
     let filtered = teachers;
-  
+
     if (searchText.trim() !== "") {
       const searchLower = searchText.toLowerCase();
-  
+
       filtered = teachers.filter((teacher) => {
-        if (searchType === "teacherAll") {
-          return Object.entries(teacher).some(([key, value]) => {
-            if (key === "startDate") return false;
-            if (key === "class" && value?.level && value?.room) {
-              return `${value.level}/${value.room}`.toLowerCase().includes(searchLower);
-            }
-            return String(value).toLowerCase().includes(searchLower);
-          });
+        if (searchType === "ทั้งหมด" || searchType === "all") {
+          return Object.values(teacher).some(value =>
+            typeof value === "string" && value.toLowerCase().includes(searchLower)
+          );
         }
-  
-        switch (searchType) {
-          case "teacherId":
-            return teacher.teacherId?.toString().toLowerCase().includes(searchLower);
-          case "teacherFirstName":
-            return teacher.firstName?.toLowerCase().includes(searchLower);
-          case "teacherLastName":
-            return teacher.lastName?.toLowerCase().includes(searchLower);
-          case "teacherGender":
-            return teacher.gender?.toLowerCase().includes(searchLower);
-          case "teacherPosition":
-            return teacher.position?.toLowerCase().includes(searchLower);
-          case "teacherClassLevel":
-            return teacher.class?.level?.toString().includes(searchText);
-          case "teacherClassRoom":
-            return teacher.class?.room?.toString().includes(searchText);
-          case "teacherEmail":
-            return teacher.email?.toLowerCase().includes(searchLower);
-          case "teacherPhoneNumber":
-            return teacher.phoneNumber?.includes(searchText);
-          default:
-            return true;
-        }
+
+        return String(teacher[searchType as keyof Teacher] ?? "").toLowerCase().includes(searchLower);
+
       });
     }
-  
+
     setFilteredTeachers(filtered);
-  }, [searchText, searchType, teachers]);
+  } else {
+    let filtered = students;
+  //  console.log(Object.keys(students[0]));
+
+    if (searchText.trim() !== "") {
+      const searchLower = searchText.toLowerCase();
+
+      filtered = students.filter((student) => {
+        if (searchType === "ทั้งหมด" || searchType === "all") {
+          return Object.values(student).some(value =>
+            typeof value === "string" && value.toLowerCase().includes(searchLower)
+          );
+        }
+
+        return String(student[searchType as keyof Student]?? "").toLowerCase().includes(searchLower);
+      });
+    }
+
+    setFilteredStudents(filtered);
+  }
+}, [searchText, searchType, activeMenu, teachers, students]);
   
   
   
@@ -225,39 +253,12 @@ const [filteredTeachers, setFilteredTeachers] = useState<Teacher[]>([]);
           <p className="text-[16px] text-body-2">รายชื่อ{activeMenu === "รายชื่อครู" ? "คุณครู" : "นักเรียน"}ที่สมัครเข้าใช้งานระบบ Memo</p>
         </div>
 
-        <div className="relative flex pt-6 w-full mr-4 space-x-2">
-        {activeMenu === "รายชื่อครู" && (
-          <>
-            <div className="relative w-full">
-              <input 
-                type="text" 
-                placeholder={`ค้นหาโดย ${searchType}`} 
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                className="w-full pl-10 p-2 border-2xsm border-title-1 rounded-sm bg-system-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <SearchIcon className="w-6 h-6 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
-              
+        <div className="relative flex pt-6 w-full space-x-2">
+           <div className="relative w-full flex">
+              <Searchbar onSearch={setSearchText} />
+              <Filterbutton options={filterOptions} selectedFilter={searchType} onChange={setSearchType} />
+             
             </div>
-          
-          <select 
-            value={searchType}
-            onChange={(e) => setSearchType(e.target.value)}
-            className="p-2  bg-system-white border-2xsm border-title-1 rounded-sm w-48 font-semibold"
-          >
-            <option value="teacherAll">ทั้งหมด</option>
-            <option value="teacherId">รหัส</option>
-            <option value="teacherFirstName">ชื่อ</option>
-            <option value="teacherLastName">นามสกุล</option>
-            <option value="teacherGender">เพศ</option>
-            <option value="teacherPosition">ตำแหน่ง</option>
-            <option value="teacherClassLevel">ชั้นเรียน</option>
-            <option value="teacherClassRoom">ห้องเรียน</option>
-            <option value="teacherEmail">อีเมล</option>
-            <option value="teacherPhoneNumber">เบอร์</option>
-          </select>
-          </>
-         )}
           <button className="bg-system-error-2 rounded-sm w-32 text-system-white">ถังขยะ</button>
           <button className="bg-system-success-2 rounded-sm w-32 text-system-white">เพิ่มผู้ใช้</button>
         </div>
@@ -265,7 +266,7 @@ const [filteredTeachers, setFilteredTeachers] = useState<Teacher[]>([]);
 
         {activeMenu === "รายชื่อครู" && (
 <Table 
-  data={paginateData(filteredTeachers)}  // ใช้ filteredTeachers แทน
+  data={paginateData(filteredTeachers)}  
   columns={teacherColumns} 
   renderRow={(teacher) => [
     <span key={`id-${teacher.teacherId}`}>{teacher.teacherId}</span>,
@@ -298,7 +299,7 @@ const [filteredTeachers, setFilteredTeachers] = useState<Teacher[]>([]);
 
 {activeMenu === "รายชื่อนักเรียน" && (
   <Table 
-    data={paginateData(students)}
+  data={paginateData(filteredStudents)}  
     columns={studentColumns} 
     renderRow={(student) => [
       <span key={`${student.studentId}-id`}>{student.studentId}</span>,
@@ -308,7 +309,6 @@ const [filteredTeachers, setFilteredTeachers] = useState<Teacher[]>([]);
       <span key={`${student.studentId}-class`}>ป. {student.classLevel}/{student.classRoom}</span>,
       <span key={`${student.studentId}-phone`}>
         {student.parents?.[0]?.phoneNumber ?? "-"} 
-        {/* ใช้เบอร์โทรของผู้ปกครองหลัก หรือ "-" ถ้าไม่มีข้อมูล */}
       </span>,
       <button 
         key={`${student.studentId}-details`} 
