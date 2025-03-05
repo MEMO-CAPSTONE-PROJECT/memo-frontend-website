@@ -68,7 +68,8 @@ const teacherFilterOptions = [
   { value: "lastName", label: "นามสกุล" },
   { value: "gender", label: "เพศ" },
   { value: "position", label: "ตำแหน่ง" },
-  { value: "class", label: "ระดับชั้น" },
+  { value: "classLevel", label: "ระดับชั้น" },
+  { value: "classRoom", label: "ห้องเรียน" },
   { value: "email", label: "อีเมล" },  
   { value: "phoneNumber", label: "เบอร์โทร" },
 ];
@@ -115,7 +116,6 @@ const Dashboard = () => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
-  
       try {
         if (activeMenu === "รายชื่อครู") {
           const response = await apiClient.get<{ data: { teachers: Teacher[] } }>(
@@ -146,49 +146,51 @@ const Dashboard = () => {
   }, [activeMenu]);
   
 
-useEffect(() => {
-  if (activeMenu === "รายชื่อครู") {
-    // console.log(Object.keys(teachers[0])); 
-
-    let filtered = teachers;
-
-    if (searchText.trim() !== "") {
-      const searchLower = searchText.toLowerCase();
-
-      filtered = teachers.filter((teacher) => {
-        if (searchType === "ทั้งหมด" || searchType === "all") {
-          return Object.values(teacher).some(value =>
-            typeof value === "string" && value.toLowerCase().includes(searchLower)
-          );
-        }
-
-        return String(teacher[searchType as keyof Teacher] ?? "").toLowerCase().includes(searchLower);
-
-      });
+  useEffect(() => {
+    if (activeMenu === "รายชื่อครู") {
+      let filtered = teachers;
+      if (searchText.trim() !== "") {
+        const searchLower = searchText.toLowerCase();
+        filtered = teachers.filter((teacher) => {
+          if (searchType === "ทั้งหมด" || searchType === "all") {
+            return [
+              ...Object.entries(teacher)
+                .filter(([key]) => key !== "startDate"), 
+              ["classRoom", teacher.class?.room], 
+              ["classLevel", teacher.class?.level] 
+            ].some(([_, value]) => String(value ?? "").toLowerCase().includes(searchLower));
+          }
+          if (searchType === "classRoom") {
+            return String(teacher.class?.room ?? "").toLowerCase().includes(searchLower);
+          }
+          if (searchType === "classLevel") {
+            return String(teacher.class?.level ?? "").toLowerCase().includes(searchLower);
+          }
+          return String(teacher[searchType as keyof Teacher] ?? "").toLowerCase().includes(searchLower);
+        });
+      }
+  
+      setFilteredTeachers(filtered);
+    } else {
+      let filtered = students;
+  
+      if (searchText.trim() !== "") {
+        const searchLower = searchText.toLowerCase();
+  
+        filtered = students.filter((student) => {
+          if (searchType === "ทั้งหมด" || searchType === "all") {
+            return Object.entries(student)
+              .filter(([key]) => key !== "startDate") 
+              .some(([_, value]) => String(value ?? "").toLowerCase().includes(searchLower));
+          }
+  
+          return String(student[searchType as keyof Student] ?? "").toLowerCase().includes(searchLower);
+        });
+      }
+      setFilteredStudents(filtered);
     }
-
-    setFilteredTeachers(filtered);
-  } else {
-    let filtered = students;
-  //  console.log(Object.keys(students[0]));
-
-    if (searchText.trim() !== "") {
-      const searchLower = searchText.toLowerCase();
-
-      filtered = students.filter((student) => {
-        if (searchType === "ทั้งหมด" || searchType === "all") {
-          return Object.values(student).some(value =>
-            typeof value === "string" && value.toLowerCase().includes(searchLower)
-          );
-        }
-
-        return String(student[searchType as keyof Student]?? "").toLowerCase().includes(searchLower);
-      });
-    }
-
-    setFilteredStudents(filtered);
-  }
-}, [searchText, searchType, activeMenu, teachers, students]);
+  }, [searchText, searchType, activeMenu, teachers, students]);
+  
   
   
   
@@ -231,7 +233,6 @@ useEffect(() => {
     { key: "lastName", label: "นามสกุล", header: "นามสกุล" },
     { key: "gender", label: "เพศ", header: "เพศ" },
     { key: "classLevel", label: "ชั้น", header: "ชั้น" },
-    { key: "phoneNumber", label: "เบอร์โทร", header: "เบอร์โทร" },
     { key: "details", label: "ข้อมูลเพิ่มเติม", header: "ข้อมูลเพิ่มเติม" },
     { key: "action", label: "แอคชั่น", header: "แอคชั่น" },
   ];
@@ -265,36 +266,34 @@ useEffect(() => {
       
 
         {activeMenu === "รายชื่อครู" && (
-<Table 
-  data={paginateData(filteredTeachers)}  
-  columns={teacherColumns} 
-  renderRow={(teacher) => [
-    <span key={`id-${teacher.teacherId}`}>{teacher.teacherId}</span>,
-    <span key={`fname-${teacher.teacherId}`}>{teacher.firstName}</span>,
-    <span key={`lname-${teacher.teacherId}`}>{teacher.lastName}</span>,
-    <span key={`gender-${teacher.teacherId}`}>{teacher.gender}</span>,
-    <span key={`position-${teacher.teacherId}`}>{teacher.position}</span>,
-    <span key={`class-${teacher.teacherId}`}>
-      {teacher.class?.level ? `ป. ${teacher.class.level}` : "-"}
-      {teacher.class?.room ? `/${teacher.class.room}` : ""}
-    </span>,
-    <span key={`email-${teacher.teacherId}`}>{teacher.email}</span>,
-    <span key={`phone-${teacher.teacherId}`}>{teacher.phoneNumber}</span>,
-    <div key={`action-${teacher.teacherId}`} className="flex justify-center">
-      <button 
-        className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2" 
-        onClick={() => handleEdit(teacher.teacherId)}
-      >
-        <EditIcon className="h-6 w-6" />
-        <span>แก้ไข</span>
-      </button>
-    </div>,
-  ]}
-  loading={loading}
-  error={error}
-/>
-
-          
+          <Table 
+            data={paginateData(filteredTeachers)}  
+            columns={teacherColumns} 
+            renderRow={(teacher) => [
+              <span key={`id-${teacher.teacherId}`}>{teacher.teacherId}</span>,
+              <span key={`fname-${teacher.teacherId}`}>{teacher.firstName}</span>,
+              <span key={`lname-${teacher.teacherId}`}>{teacher.lastName}</span>,
+              <span key={`gender-${teacher.teacherId}`}>{teacher.gender}</span>,
+              <span key={`position-${teacher.teacherId}`}>{teacher.position}</span>,
+              <span key={`class-${teacher.teacherId}`}>
+                {teacher.class?.level ? `ป. ${teacher.class.level}` : "-"}
+                {teacher.class?.room ? `/${teacher.class.room}` : ""}
+              </span>,
+              <span key={`email-${teacher.teacherId}`}>{teacher.email}</span>,
+              <span key={`phone-${teacher.teacherId}`}>{teacher.phoneNumber}</span>,
+              <div key={`action-${teacher.teacherId}`} className="flex justify-center">
+                <button 
+                  className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2" 
+                  onClick={() => handleEdit(teacher.teacherId)}
+                >
+                  <EditIcon className="h-6 w-6" />
+                  <span>แก้ไข</span>
+                </button>
+              </div>,
+            ]}
+            loading={loading}
+            error={error}
+          />
           )}
 
 {activeMenu === "รายชื่อนักเรียน" && (
@@ -307,9 +306,6 @@ useEffect(() => {
       <span key={`${student.studentId}-lastName`}>{student.lastName}</span>,
       <span key={`${student.studentId}-gender`}>{student.gender}</span>,
       <span key={`${student.studentId}-class`}>ป. {student.classLevel}/{student.classRoom}</span>,
-      <span key={`${student.studentId}-phone`}>
-        {student.parents?.[0]?.phoneNumber ?? "-"} 
-      </span>,
       <button 
         key={`${student.studentId}-details`} 
         className="text-system-button underline" 
