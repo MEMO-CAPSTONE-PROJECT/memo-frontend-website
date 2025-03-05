@@ -7,7 +7,7 @@ import TrashIcon from "@/components/ui/icons/sidebar-icons/trashIcon";
 import GearIcon from "@/components/ui/icons/sidebar-icons/gearIcon";
 import SignOutIcon from "@/components/ui/icons/sidebar-icons/sign-out";
 import SidebarButton from "@/components/button/memo-sidebar-button";
-import MemoPopUp from '@/components/container/memo-popup';
+import MemoPopUp from '@/components/container/memo-popup-notime';
 import MemoButton from '@/components/button/memo-button'
 import { useRouter, usePathname } from "next/navigation";
 
@@ -70,11 +70,11 @@ const Sidebar = () => {
 
       {showLogoutPopup && (
         <MemoPopUp show={showLogoutPopup} onClose={() => setShowLogoutPopup(false)}>
-          <SignOutIcon className="w-44 h-40 mr-2 bg-title-1 mb-6 rounded-md mt-6" />
+          <SignOutIcon className="w-44 h-44 p-6 pr-4 mr-2 bg-system-error-2 mb-6 rounded-full mt-6" />
           <p className="text-center text-[18px] font-bold">ต้องการออกจากระบบจัดการรายชื่อหรือไม่?</p>
           <div className="flex justify-between mt-6 w-full space-x-2 [16px] pl-4 pr-4 mb-2">
-            <MemoButton title="ยกเลิก" variant="ghost" onClick={() => setShowLogoutPopup(false)}/>
-            <MemoButton title="ยืนยัน" onClick={handleSignout} />
+            <MemoButton title="ยกเลิก" variant="cancleghost" onClick={() => setShowLogoutPopup(false)}/>
+            <MemoButton  title="ยืนยัน" variant="cancle" onClick={handleSignout} />
           </div>
         </MemoPopUp>
       )}

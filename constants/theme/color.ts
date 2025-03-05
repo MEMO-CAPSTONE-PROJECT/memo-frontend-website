@@ -23,6 +23,7 @@ export const Color = {
     "system-light-blue" : "#E1F2FF",
     "system-brown" : "#694F45",
     "system-error-2": "#D33C3C",
+    "system-error-2-hover": "#B23232",
     "system-success-2": "#24BB6A",
     "system-button": "#3F3DA3",
     "system-light-purple": "#EBDBF1",

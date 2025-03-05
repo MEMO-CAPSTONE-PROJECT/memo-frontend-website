@@ -9,7 +9,8 @@ import Filterbutton from "@/components/dashboard/filterbutton";
 import Searchbar from "@/components/dashboard/searchbar";
 import Sidebar from "@/components/dashboard/sidebar";
 import TopbarButton from "@/components/button/memo-topbar";
-import MemoPopUp from '@/components/container/memo-popup';
+import MemoPopUp from '@/components/container/memo-popup-notime';
+import MemoButton from '@/components/button/memo-button'
 
 import EditIcon from "@/components/ui/icons/dashboard/edit-icon";
 import CancelIcon from "@/components/ui/icons/pop-up/cancel-icon"
@@ -353,10 +354,8 @@ const Dashboard = () => {
 
           {showPopup && (
           <MemoPopUp show={showPopup} onClose={() => setShowPopup(false)}>
-          <div className="w-full relative">
-          <button className='absolute right-0 top-0' onClick={() => setShowPopup(false)}><CancelIcon className="h-6 w-6" /></button>
-            <h2 className="text-lg font-bold mb-2 text-center mt-2">ข้อมูลผู้ปกครอง</h2>
-            <div className="ml-6 text-left mt-4">
+          <div className="w-full relative pl-4 pr-4">
+            <h2 className="text-lg font-bold mb-2 mt-2">ข้อมูลผู้ปกครอง</h2>
               {selectedParents.length > 0 ? (
                 selectedParents.map((parent) => (
                   <div key={parent.parentId} className="mb-2" >
@@ -365,12 +364,13 @@ const Dashboard = () => {
                     <p><span className='font-semibold '>เบอร์โทร : </span> {parent.phoneNumber}</p>
                     <p><span className='font-semibold '>ความสัมพันธ์ : </span> {parent.relation}</p>
                   </div>
+                  
                 ))
               ) : (
                 <p>ไม่มีข้อมูลผู้ปกครอง</p>
-              )}
+              )} <MemoButton  title="ย้อนกลับ" onClick={() => setShowPopup(false)} />
             </div>
-          </div>
+
         </MemoPopUp>
 
 
