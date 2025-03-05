@@ -66,6 +66,13 @@ export default function StudentRegistrationForm() {
   const [submitStatus, setSubmitStatus] = useState<string>("");
   const [showOtpPopup, setShowOtpPopup] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [parent, setParent] = useState({
+    phoneNumberParent: "",
+    emailParent: "",
+    firstNameParent: "",
+    lastNameParent: "",
+    relation: "",
+  });
   const [student, setStudent] = useState({
     displayName: "",
     emailStudent: "",
@@ -75,13 +82,6 @@ export default function StudentRegistrationForm() {
     gender: "",
     classroom: "",
     classLevel: "",
-  });
-  const [parent, setParent] = useState({
-    phoneNumberParent: "",
-    emailParent: "",
-    firstNameParent: "",
-    lastNameParent: "",
-    relation: "",
   });
 
   const validateStep = () => {
@@ -123,31 +123,25 @@ export default function StudentRegistrationForm() {
 
   const getFormData = () => {
     return {
-      emailParent: parent.emailParent,
-      phoneNumber: parent.phoneNumberParent,
-      firstName: parent.firstNameParent,
-      lastName: parent.lastNameParent,
-      relation: parent.relation,
-      students: [
-        {
-          displayName: student.displayName,
-          emailStudent: student.emailStudent,
-          phoneNumber: student.phoneNumber,
-          firstName: student.firstName,
-          lastName: student.lastName,
-          gender: student.gender,
-          classRoom: student.classroom,
-          classLevel: student.classLevel,
-        },
-      ],
+      parent: {
+        phoneNumber: parent.phoneNumberParent,
+        emailParent: parent.emailParent,
+        firstName: parent.firstNameParent,
+        lastName: parent.lastNameParent,
+        relation: parent.relation,
+      },
+      student: {
+        classRoom: student.classroom,
+        classLevel: student.classLevel,
+        displayName: student.displayName,
+        firstName: student.firstName,
+        lastName: student.lastName,
+        gender: student.gender,
+        emailStudent: student.emailStudent,
+        phoneNumber: student.phoneNumber,
+        parentPhoneNumber: parent.phoneNumberParent,
+      }
     };
-  };
-
-  const [showSuccessPopup, setShowSuccesPopup] = useState(false);
-  const [error, setError] = useState('');
-
-  const handleClosePopup = () => {
-    setShowSuccesPopup(false);
   };
 
   const submit = async () => {
@@ -161,19 +155,24 @@ export default function StudentRegistrationForm() {
 
       if (response.status === 200) {
         setShowOtpPopup(true)
-        // const result = await response.json();
-        // console.log(formData);
       } else {
         const errorData = response.data;
-
         console.error("Error registering students:", errorData);
         setSubmitStatus("ไม่สามารถสมัครอีเมลนักเรียนหรือผู้ปกครองซ้ำได้ ");
+
       }
     } catch (error) {
       console.error("Network error:", error);
       setSubmitStatus("มีผู้ใช้อีเมลนักเรียนหรือผู้ปกครองนี้แล้ว");
     }
   }
+
+  const [showSuccessPopup, setShowSuccesPopup] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleClosePopup = () => {
+    setShowSuccesPopup(false);
+  };
   const handleSubmitOtp = async (event: React.FormEvent, otp: string) => {
     event.preventDefault();
     setIsLoading(true);
