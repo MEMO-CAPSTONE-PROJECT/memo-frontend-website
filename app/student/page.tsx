@@ -1,4 +1,10 @@
 "use client";
+import axios from "axios";
+import Link from "next/link";
+import { FormEvent, Fragment, useState } from "react";
+import { z } from "zod";
+
+import { MEMO_API } from '@/constants/apis';
 import BrandingBackground from "@/components/background/branding-background";
 import MemoButton from "@/components/button/memo-button";
 import MemoOTPPopup from '@/components/container/memo-otp';
@@ -8,13 +14,11 @@ import MemoErrorMessage from "@/components/helper/memo-error-message";
 import MemoInputHeader from "@/components/input/header/memo-input-header";
 import MemoSelectHeader from "@/components/input/header/memo-select-header";
 import MultiStep from "@/components/step/multi-step";
+
 import LetterIcon from '@/components/ui/icons/letter';
 import StudentIcon from "@/components/ui/icons/registration/student";
-import { MEMO_API } from '@/constants/apis';
-import axios from "axios";
-import Link from "next/link";
-import { FormEvent, Fragment, useState } from "react";
-import { z } from "zod";
+
+
 
 const Step1Schema = z.object({
   displayName: z.string().min(1, "กรุณากรอกชื่อนักเรียนที่แสดงในระบบ"),

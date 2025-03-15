@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+// import { motion, AnimatePresence } from "framer-motion";
 
 import { MEMO_API } from "@/constants/apis";
 import apiClient from "@/components/axios/axiosConfig";
@@ -13,9 +15,9 @@ import MemoPopUp from '@/components/container/memo-popup-notime';
 import MemoButton from '@/components/button/memo-button'
 
 import EditIcon from "@/components/ui/icons/dashboard/edit-icon";
-import CancelIcon from "@/components/ui/icons/pop-up/cancel-icon"
 import CaretLefttIcon from "@/components/ui/icons/dashboard/caret-left";
 import CaretRightIcon from "@/components/ui/icons/dashboard/caret-right";
+import TrashIcon from "@/components/ui/icons/dashboard/trash-icon";
 
 
 interface Teacher {
@@ -30,7 +32,7 @@ interface Teacher {
 }
 
 interface Student {
-  studentId: number; 
+  studentId: string; 
   firstName: string;
   lastName: string;
   classLevel: number;
@@ -94,6 +96,7 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedParents, setSelectedParents] = useState<ParentInfo[]>([]);
   const [showPopup, setShowPopup] = useState(false);
+  const [showPopupDelete, setshowPopupDelete] = useState(false);
   const rowsPerPage = 10;
   const router = useRouter();
 
@@ -128,10 +131,11 @@ const Dashboard = () => {
             MEMO_API.studentsList
           );
   
-          const studentList = response.data.data.students.map((student) => ({
+          const studentList = response.data.data.students?.map((student) => ({
             ...student,
             startDate: new Date(student.startDate),
-          }));
+          })) || [];
+          
   
           setStudents(studentList);
         }
@@ -184,7 +188,6 @@ const Dashboard = () => {
               .filter(([key]) => key !== "startDate") 
               .some(([_, value]) => String(value ?? "").toLowerCase().includes(searchLower));
           }
-  
           return String(student[searchType as keyof Student] ?? "").toLowerCase().includes(searchLower);
         });
       }
@@ -192,11 +195,6 @@ const Dashboard = () => {
     }
   }, [searchText, searchType, activeMenu, teachers, students]);
   
-  
-  
-  
-  
-
   const totalPages = Math.ceil((activeMenu === "รายชื่อครู" ? teachers.length : students.length) / rowsPerPage);
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -216,7 +214,90 @@ const Dashboard = () => {
     setShowPopup(true);
   };
 
+  const [deletingMode, setDeletingMode] = useState(false);
+  const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
+  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+  
+  const handleToggleDeleteMode = () => {
+    setDeletingMode(!deletingMode);
+  
+    if (activeMenu === "รายชื่อครู") {
+      setSelectedTeachers([]);
+    } else if (activeMenu === "รายชื่อนักเรียน") {
+      setSelectedStudents([]);
+    }
+  };
+  
+  const handleSelectTeacher = (teacherId: string) => {
+    setSelectedTeachers((prev) =>
+      prev.includes(teacherId) ? prev.filter((id) => id !== teacherId) : [...prev, teacherId]
+    );
+  };
+  
+  const handleSelectStudent = (studentId: string) => {
+    setSelectedStudents((prev) =>
+      prev.includes(studentId) ? prev.filter((id) => id !== studentId) : [...prev, studentId]
+    );
+  };
+  
+  const handleDeleteSelected = async () => {
+    setshowPopupDelete(true);
+  
+    if (activeMenu === "รายชื่อครู" && selectedTeachers.length === 0) return;
+    if (activeMenu === "รายชื่อนักเรียน" && selectedStudents.length === 0) return;
+  
+    try {
+      let apiUrl = "";
+      let selectedIds: string[] = []; 
+  
+      if (activeMenu === "รายชื่อครู") {
+        selectedIds = selectedTeachers;
+        apiUrl = MEMO_API.teacherDelete.replace("{teacherIds}", selectedIds.join(","));
+      } else if (activeMenu === "รายชื่อนักเรียน") {
+        selectedIds = selectedStudents;
+        apiUrl = MEMO_API.studentDelete.replace("{studentIds}", selectedIds.join(","));
+      }
+
+      console.log("Deleting:", selectedIds);
+      console.log("API URL:", apiUrl);
+      const response = await axios.delete(apiUrl);
+      
+      if (response.status === 200) {
+        console.log("ลบสำเร็จ:", selectedIds);
+        handleCancelDelete();
+        setDeletingMode(false);
+
+        // อัปเดต state โดยกรองเอารายการที่ถูกลบออก
+        if (activeMenu === "รายชื่อครู") {
+          setTeachers(prev => prev.filter(teacher => !selectedIds.includes(teacher.teacherId)));
+          setSelectedTeachers([]); // เคลียร์รายการที่เลือก
+        } else if (activeMenu === "รายชื่อนักเรียน") {
+          setStudents(prev => prev.filter(student => !selectedIds.includes(student.studentId)));
+          setSelectedStudents([]);
+        }
+      }
+    } catch (error) {
+      console.error("เกิดข้อผิดพลาดในการลบ:", error);
+    } 
+};
+
+
+  const handleDeleteConfirm = () => {
+    setshowPopupDelete(false); 
+    handleDeleteSelected(); 
+  };
+
+  const handleCancelDelete = () => {
+    setSelectedTeachers([]);
+    setshowPopupDelete(false); 
+    setDeletingMode(false); 
+  };
+  
+
   const teacherColumns = [
+    ...(deletingMode
+      ? [{ key: "select", label: "", header: "เลือก" }]
+      : []),
     { key: "teacherId", label: "รหัส", header: "รหัส" },
     { key: "firstName", label: "ชื่อ", header: "ชื่อ" },
     { key: "lastName", label: "นามสกุล", header: "นามสกุล" },
@@ -227,8 +308,12 @@ const Dashboard = () => {
     { key: "phoneNumber", label: "เบอร์โทร", header: "เบอร์โทร" },
     { key: "action", label: "แอคชั่น", header: "แอคชั่น" },
   ];
-
+  
+  
   const studentColumns = [
+    ...(deletingMode
+      ? [{ key: "select", label: "", header: "เลือก" }]
+      : []),
     { key: "studentId", label: "รหัส", header: "รหัส" },
     { key: "firstName", label: "ชื่อ", header: "ชื่อ" },
     { key: "lastName", label: "นามสกุล", header: "นามสกุล" },
@@ -238,11 +323,9 @@ const Dashboard = () => {
     { key: "action", label: "แอคชั่น", header: "แอคชั่น" },
   ];
 
-  
   return (
     <div className="flex bg-system-white w-screen">
 
-    
       <Sidebar />
       <div className="ml-4 pt-6 p-6 text-title-1 w-full bg-system-white">
       <div className="flex ">
@@ -259,18 +342,42 @@ const Dashboard = () => {
            <div className="relative w-full flex">
               <Searchbar onSearch={setSearchText} />
               <Filterbutton options={filterOptions} selectedFilter={searchType} onChange={setSearchType} />
-             
             </div>
-          <button className="bg-system-error-2 rounded-sm w-32 text-system-white">ถังขยะ</button>
-          <button className="bg-system-success-2 rounded-sm w-32 text-system-white">เพิ่มผู้ใช้</button>
-        </div>
-      
 
+        <button 
+          className={`bg-system-error-2 rounded-sm w-32 text-system-white ${
+            deletingMode && (activeMenu === "รายชื่อครู" ? selectedTeachers.length === 0 : selectedStudents.length === 0) 
+              ? "opacity-50 cursor-not-allowed" 
+              : "" 
+          }`}
+          onClick={deletingMode ? () => setshowPopupDelete(true) : handleToggleDeleteMode}
+          disabled={deletingMode && (activeMenu === "รายชื่อครู" ? selectedTeachers.length === 0 : selectedStudents.length === 0)}
+        > 
+          {deletingMode 
+            ? `ลบจำนวน ${activeMenu === "รายชื่อครู" ? selectedTeachers.length : selectedStudents.length}` 
+            : "ถังขยะ"}
+        </button>
+
+        {deletingMode && (
+          <button className="bg-system-gray rounded-sm w-32 text-system-white" onClick={handleToggleDeleteMode}>ยกเลิก</button>
+        )}
+
+        {!deletingMode && (
+          <button className="bg-system-success-2 rounded-sm w-32 text-system-white">เพิ่มผู้ใช้</button>
+        )}
+      </div>
+      
         {activeMenu === "รายชื่อครู" && (
           <Table 
             data={paginateData(filteredTeachers)}  
             columns={teacherColumns} 
             renderRow={(teacher) => [
+              ...(deletingMode ? [
+                    <input key={`checkbox-${teacher.teacherId}`} type="checkbox"
+                      checked={selectedTeachers.includes(teacher.teacherId)}
+                      onChange={() => handleSelectTeacher(teacher.teacherId)}
+                    />,] : []),
+                  
               <span key={`id-${teacher.teacherId}`}>{teacher.teacherId}</span>,
               <span key={`fname-${teacher.teacherId}`}>{teacher.firstName}</span>,
               <span key={`lname-${teacher.teacherId}`}>{teacher.lastName}</span>,
@@ -302,6 +409,11 @@ const Dashboard = () => {
   data={paginateData(filteredStudents)}  
     columns={studentColumns} 
     renderRow={(student) => [
+      ...(deletingMode ? [
+            <input key={`checkbox-${student.studentId}`} type="checkbox"
+              checked={selectedStudents.includes(student.studentId)}
+              onChange={() => handleSelectStudent(student.studentId)}
+            />,] : []),
       <span key={`${student.studentId}-id`}>{student.studentId}</span>,
       <span key={`${student.studentId}-firstName`}>{student.firstName}</span>,
       <span key={`${student.studentId}-lastName`}>{student.lastName}</span>,
@@ -372,10 +484,18 @@ const Dashboard = () => {
             </div>
 
         </MemoPopUp>
-
-
-
         )}
+
+        {showPopupDelete && (
+              <MemoPopUp show={showPopupDelete} onClose={() => setshowPopupDelete(false)}>
+                <TrashIcon className="w-44 h-44 p-6 mr-2 bg-system-error-2 mb-6 rounded-full mt-6" />
+                <p className="text-center text-[18px] font-bold">ต้องการลบรายชื่อที่เลือกหรือไม่?</p>
+                <div className="flex justify-between mt-6 w-full space-x-2 pl-4 pr-4 mb-2">
+                  <MemoButton title="ยกเลิก" variant="cancleghost" onClick={handleCancelDelete} />
+                  <MemoButton title="ยืนยัน" variant="cancle" onClick={handleDeleteConfirm} />
+                </div>
+              </MemoPopUp>
+         )}
 
       </div>
       </div>
