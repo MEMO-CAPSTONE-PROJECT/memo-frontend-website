@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-// import { motion, AnimatePresence } from "framer-motion";
 
 import { MEMO_API } from "@/constants/apis";
 import apiClient from "@/components/axios/axiosConfig";
@@ -13,6 +12,7 @@ import Sidebar from "@/components/dashboard/sidebar";
 import TopbarButton from "@/components/button/memo-topbar";
 import MemoPopUp from '@/components/container/memo-popup-notime';
 import MemoButton from '@/components/button/memo-button'
+import PopUpAddTeacherList from "@/components/dashboard/add-user/PopUpAddTeacherList";
 
 import EditIcon from "@/components/ui/icons/dashboard/edit-icon";
 import CaretLefttIcon from "@/components/ui/icons/dashboard/caret-left";
@@ -51,7 +51,7 @@ interface ParentInfo {
   emailParent: string;
 }
 
-
+// token
 const checkAuth = () => {
   const token = localStorage.getItem("userToken");
   if (!token) return false;
@@ -213,7 +213,8 @@ const Dashboard = () => {
     setSelectedParents(parents);
     setShowPopup(true);
   };
-
+ 
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [deletingMode, setDeletingMode] = useState(false);
   const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
@@ -242,44 +243,50 @@ const Dashboard = () => {
   
   const handleDeleteSelected = async () => {
     setshowPopupDelete(true);
-  
+
     if (activeMenu === "รายชื่อครู" && selectedTeachers.length === 0) return;
     if (activeMenu === "รายชื่อนักเรียน" && selectedStudents.length === 0) return;
-  
+
     try {
-      let apiUrl = "";
-      let selectedIds: string[] = []; 
-  
-      if (activeMenu === "รายชื่อครู") {
-        selectedIds = selectedTeachers;
-        apiUrl = MEMO_API.teacherDelete.replace("{teacherIds}", selectedIds.join(","));
-      } else if (activeMenu === "รายชื่อนักเรียน") {
-        selectedIds = selectedStudents;
-        apiUrl = MEMO_API.studentDelete.replace("{studentIds}", selectedIds.join(","));
-      }
+        let apiUrl = "";
+        let selectedIds: string[] = [];
 
-      console.log("Deleting:", selectedIds);
-      console.log("API URL:", apiUrl);
-      const response = await axios.delete(apiUrl);
-      
-      if (response.status === 200) {
-        console.log("ลบสำเร็จ:", selectedIds);
-        handleCancelDelete();
-        setDeletingMode(false);
-
-        // อัปเดต state โดยกรองเอารายการที่ถูกลบออก
         if (activeMenu === "รายชื่อครู") {
-          setTeachers(prev => prev.filter(teacher => !selectedIds.includes(teacher.teacherId)));
-          setSelectedTeachers([]); // เคลียร์รายการที่เลือก
+            selectedIds = selectedTeachers;
+            apiUrl = MEMO_API.teacherDelete;
         } else if (activeMenu === "รายชื่อนักเรียน") {
-          setStudents(prev => prev.filter(student => !selectedIds.includes(student.studentId)));
-          setSelectedStudents([]);
+            selectedIds = selectedStudents;
+            apiUrl = MEMO_API.studentDelete;
         }
-      }
+        const payload = JSON.stringify({ ids: selectedIds.map(String) });
+        console.log("Payload ที่ส่งไปยัง API:", payload);
+        console.log("Deleting:", selectedIds);
+        console.log("API URL:", apiUrl);
+
+        const response = await axios.delete(apiUrl, {
+            headers: {"Content-Type": "application/json",},
+            data: payload, 
+        });
+
+        if (response.status === 200) {
+            console.log("ลบสำเร็จ:", selectedIds);
+            handleCancelDelete();
+            setDeletingMode(false);
+
+            if (activeMenu === "รายชื่อครู") {
+                setTeachers(prev => prev.filter(teacher => !selectedIds.includes(teacher.teacherId)));
+                setSelectedTeachers([]); 
+            } else if (activeMenu === "รายชื่อนักเรียน") {
+                setStudents(prev => prev.filter(student => !selectedIds.includes(student.studentId)));
+                setSelectedStudents([]);
+            }
+        }
     } catch (error) {
-      console.error("เกิดข้อผิดพลาดในการลบ:", error);
-    } 
+        console.error("เกิดข้อผิดพลาดในการลบ:", error);
+    }
 };
+
+
 
 
   const handleDeleteConfirm = () => {
@@ -359,11 +366,11 @@ const Dashboard = () => {
         </button>
 
         {deletingMode && (
-          <button className="bg-system-gray rounded-sm w-32 text-system-white" onClick={handleToggleDeleteMode}>ยกเลิก</button>
+          <button className="bg-body-2 rounded-sm w-32 text-system-white" onClick={handleToggleDeleteMode}>ยกเลิก</button>
         )}
 
         {!deletingMode && (
-          <button className="bg-system-success-2 rounded-sm w-32 text-system-white">เพิ่มผู้ใช้</button>
+          <button onClick={() => setIsPopupOpen(true)} className="bg-system-success-2 rounded-sm w-32 text-system-white">เพิ่มผู้ใช้</button>
         )}
       </div>
       
@@ -496,6 +503,8 @@ const Dashboard = () => {
                 </div>
               </MemoPopUp>
          )}
+
+      <PopUpAddTeacherList isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)}  />
 
       </div>
       </div>

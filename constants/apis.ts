@@ -16,8 +16,8 @@ export const MEMO_API = {
     parentsList : baseUrl + "/v1/parents",
     teachersList : baseUrl + "/v1/teachers",
 
-    studentDelete : baseUrl + "/v1/student/{studentIds}",
-    teacherDelete : baseUrl + "/v1/teacher/{teacherIds}",
+    studentDelete : baseUrl + "/v1/student/ids",
+    teacherDelete : baseUrl + "/v1/teacher/ids",
 
     studentAddForm : baseUrl + "/v1/student/form",
     teacherAddForm : baseUrl + "/v1/teacher/form",
