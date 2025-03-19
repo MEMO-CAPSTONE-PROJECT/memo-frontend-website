@@ -110,7 +110,8 @@ export default function AdminRegistrationForm() {
         <section className="flex flex-col items-center space-y-xl">
           <p className="text-body-1 text-header text-center font-bold">ส่งคำร้องเพื่อลงทะเบียนระบบผู้ดูแล</p>
         </section>
-        <form className="flex flex-col space-y-md w-96" onSubmit={handleSubmit}>
+        <form className="flex flex-col space-y-md w-auto" onSubmit={handleSubmit}>
+        <div className='flex flex-row gap-x-lg '>
           <MemoInputHeader
             text="ชื่อ"
             type="text"
@@ -129,11 +130,13 @@ export default function AdminRegistrationForm() {
             value={formData.lastName}
             onChange={handleChange}
           />
+          </div>
+          <div className='flex flex-row gap-x-lg '>
           <MemoInputHeader
             text="ชื่อผู้ใช้"
             type="text"
             name="username"
-            placeholder="กรุณาพิมพ์ชื่อบัญชีผู้ใช้ของคุณ"
+            placeholder="กรุณาพิมพ์ชื่อบัญชีผู้ใช้"
             error={errors?.username}
             value={formData.username}
             onChange={handleChange}
@@ -141,12 +144,13 @@ export default function AdminRegistrationForm() {
           <MemoSelectHeader
             name="role"
             label="ตำแหน่ง"
-            options={["ครูประจำชั้น", "ครูฝ่ายปกครอง"]}
+            options={["ครูธุรการ", "ครูฝ่ายปกครอง"]}
             onChange={handleSelect}
-            placeholder="กรุณาเลือกตำแหน่งของคุณ"
+            placeholder="กรุณาเลือกตำแหน่ง"
             value={formData.role}
             error={errors.role}
           />
+          </div>
           <MemoInputHeader
             text="อีเมล"
             type="email"
