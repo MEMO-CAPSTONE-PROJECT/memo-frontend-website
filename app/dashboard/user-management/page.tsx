@@ -13,6 +13,7 @@ import TopbarButton from "@/components/button/memo-topbar";
 import MemoPopUp from '@/components/container/memo-popup-notime';
 import MemoButton from '@/components/button/memo-button'
 import PopUpAddTeacherList from "@/components/dashboard/add-user/PopUpAddTeacherList";
+import PopUpAddStudentList from "@/components/dashboard/add-user/PopUpAddStudentList";
 
 import EditIcon from "@/components/ui/icons/dashboard/edit-icon";
 import CaretLefttIcon from "@/components/ui/icons/dashboard/caret-left";
@@ -116,39 +117,39 @@ const Dashboard = () => {
   }, [router]);
   
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        if (activeMenu === "รายชื่อครู") {
-          const response = await apiClient.get<{ data: { teachers: Teacher[] } }>(
-            MEMO_API.teachersList
-          );
-          setTeachers(response.data.data.teachers || []);
-        } else if (activeMenu === "รายชื่อนักเรียน") {
-          const response = await apiClient.get<{ data: { students: Student[] } }>(
-            MEMO_API.studentsList
-          );
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      if (activeMenu === "รายชื่อครู") {
+        const response = await apiClient.get<{ data: { teachers: Teacher[] } }>(
+          MEMO_API.teachersList
+        );
+        setTeachers(response.data.data.teachers || []);
+      } else if (activeMenu === "รายชื่อนักเรียน") {
+        const response = await apiClient.get<{ data: { students: Student[] } }>(
+          MEMO_API.studentsList
+        );
   
-          const studentList = response.data.data.students?.map((student) => ({
-            ...student,
-            startDate: new Date(student.startDate),
-          })) || [];
-          
+        const studentList = response.data.data.students?.map((student) => ({
+          ...student,
+          startDate: new Date(student.startDate),
+        })) || [];
   
-          setStudents(studentList);
-        }
-      } catch (err) {
-        console.log(err);
-        setError("ไม่สามารถโหลดข้อมูลได้");
-      } finally {
-        setLoading(false);
+        setStudents(studentList);
       }
-    };
+    } catch (err) {
+      console.log(err);
+      setError("ไม่สามารถโหลดข้อมูลได้");
+    } finally {
+      setLoading(false);
+    }
+  };
   
+  useEffect(() => {
     fetchData();
-  }, [activeMenu]);
+  }, [activeMenu]); 
+  
   
 
   useEffect(() => {
@@ -202,8 +203,15 @@ const Dashboard = () => {
     }
   };
 
-  const paginateData = <T,>(data: T[]): T[] => 
-    data.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+  const paginateData = <T,>(data: T[]): T[] => {
+    if (!Array.isArray(data)) {
+      console.error("paginateData: data is not an array!", data);
+      return [];
+    }
+    return data.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+  };
+  
+  
   
   const handleEdit = (id: string) => {
     alert(`แก้ไขข้อมูล ID: ${id}`);
@@ -286,9 +294,6 @@ const Dashboard = () => {
     }
 };
 
-
-
-
   const handleDeleteConfirm = () => {
     setshowPopupDelete(false); 
     handleDeleteSelected(); 
@@ -300,7 +305,6 @@ const Dashboard = () => {
     setDeletingMode(false); 
   };
   
-
   const teacherColumns = [
     ...(deletingMode
       ? [{ key: "select", label: "", header: "เลือก" }]
@@ -504,7 +508,19 @@ const Dashboard = () => {
               </MemoPopUp>
          )}
 
-      <PopUpAddTeacherList isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)}  />
+{activeMenu === "รายชื่อครู" ? (
+  <PopUpAddTeacherList
+    isOpen={isPopupOpen}
+    onClose={() => setIsPopupOpen(false)}
+    onAddSuccess={() => fetchData()} // ✅ โหลดข้อมูลใหม่เมื่อเพิ่มสำเร็จ
+  />
+) : (
+  <PopUpAddStudentList
+    isOpen={isPopupOpen}
+    onClose={() => setIsPopupOpen(false)}
+    onAddSuccess={() => fetchData()} // ✅ โหลดข้อมูลใหม่เมื่อเพิ่มสำเร็จ
+  />
+)}
 
       </div>
       </div>

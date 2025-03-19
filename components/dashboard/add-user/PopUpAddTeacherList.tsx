@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import axios from "axios";
 import { z } from "zod";
+
 
 import { MEMO_API } from "@/constants/apis";
 import MemoInputHeader from "@/components/input/header/memo-input-header"; 
@@ -37,14 +38,16 @@ const teacherSchema = z.object({
 interface PopUpAddTeacherListProps {
   isOpen: boolean;
   onClose: () => void;
+  onAddSuccess: () => void; 
 }
 
-const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClose }) => {
+
+const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClose,onAddSuccess }) => {
   const initialFormData = {
     firstName: "",
     lastName: "",
     position: "",
-    gender: "ชาย",
+    gender: "",
     email: "",
     phoneNumber: "",
   };
@@ -54,13 +57,15 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClo
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const resetForm = () => {
-    setFormData(initialFormData);
-    setErrors({});
-  };
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData(initialFormData);
+      setErrors({});
+    }
+  }, [isOpen]);
+
   
   const handleClose = () => {
-    resetForm();
     onClose();
   };
 
@@ -88,7 +93,7 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClo
   
     try {
       await axios.post(MEMO_API.teacherAddForm, formData);
-     
+      onAddSuccess();
       setTimeout(() => { 
         setLoading(false); 
         setIsSuccess(true); 
@@ -97,13 +102,20 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClo
       setTimeout(() => {
         setIsSuccess(false);
         handleClose();
-      }, 3000); 
+ 
+      }, 3000);
+      
 
   
     } catch (err) {
-      setError(err instanceof Error ? err.message : "เกิดข้อผิดพลาด");
+      if (axios.isAxiosError(err) && err.response) {
+        setError(err.response.data.message || "อีเมล์หรือเบอร์นี้ถูกใช้งานแล้ว ลองใช้อีเมลอื่น");
+      } else {
+        setError("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+      }
       setLoading(false);
     }
+    
   };
   
   if (!isOpen) return null;
@@ -147,16 +159,15 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClo
           />
         </div>
         <div className="w-full md:w-[48%]">
-          <MemoSelectHeader
-            label="เพศ"
-            options={["หญิง", "ชาย"]}
-            name="gender"
-            placeholder="กรุณาเลือกเพศของคุณครู"
-            value={formData.gender}
-            error={errors?.gender}
-            size="full"
-            onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-          />
+        <MemoSelectHeader
+                  label="เพศ"
+                  options={["หญิง", "ชาย"]}
+                  name="gender"
+                  placeholder="กรุณาเลือกเพศของคุณ"
+                  value={formData.gender}
+                  error={errors?.gender}
+                  size="full"
+                  onChange={handleChange} />
         </div>
         {/* <div className="w-full md:w-[48%]">
           <MemoInputHeader
@@ -207,7 +218,7 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClo
       
       <div className="flex space-x-4 ">
         <MemoButton title="ยกเลิก" variant="ghost" onClick={handleClose} />
-        <MemoButton title={loading ? "กำลังเพิ่ม..." : "เพิ่ม"} variant="primary" disabled={loading} />
+        <MemoButton title="เพิ่ม" variant="primary" disabled={loading} type="submit" />
       </div>
 
       {(loading || isSuccess) && (
