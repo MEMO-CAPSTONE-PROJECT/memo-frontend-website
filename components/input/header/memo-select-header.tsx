@@ -9,7 +9,7 @@ interface MemoSelectHeaderProps extends MemoSelectHelperProps {
 const MemoSelectHeader: React.FC<MemoSelectHeaderProps> = ({ name, label, ...props }) => {
   return (
     <div className="w-full">
-      <label htmlFor={name} className="block text-lg font-medium text-body-1 mb-2">
+      <label htmlFor={name} className="block text-lg font-medium text-body-1 mb-2 ">
         {label}
       </label>
       <MemoSelectHelper size="full" name={name} {...props} />

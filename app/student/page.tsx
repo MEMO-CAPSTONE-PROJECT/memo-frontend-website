@@ -324,7 +324,18 @@ export default function StudentRegistrationForm() {
                   onChange={(e) =>
                     setStudent({ ...student, gender: e.target.value })
                   } />
-
+                <MemoInputHeader
+                  text="ชั้นเรียน"
+                  type="text"
+                  name="classLevel"
+                  placeholder="กรุณาพิมพ์เลขชั้นเรียนของคุณ"
+                  error={errors?.classLevel}
+                  value={student.classLevel}
+                  onChange={(e) =>
+                    setStudent({ ...student, classLevel: e.target.value })
+                  }
+                />
+                
                 <MemoInputHeader
                   text="ห้องเรียน"
                   type="text"
@@ -337,17 +348,7 @@ export default function StudentRegistrationForm() {
                   }
                 />
 
-                <MemoInputHeader
-                  text="ชั้นเรียน"
-                  type="text"
-                  name="classLevel"
-                  placeholder="กรุณาพิมพ์เลขชั้นเรียนของคุณ"
-                  error={errors?.classLevel}
-                  value={student.classLevel}
-                  onChange={(e) =>
-                    setStudent({ ...student, classLevel: e.target.value })
-                  }
-                />
+
               </div>
               <div className="flex space-x-lg pt-lg">
                 <MemoButton id="previous" type="button" variant="ghost" onClick={handlePrevious} title="ย้อนกลับ" />

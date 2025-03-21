@@ -110,10 +110,11 @@ export default function TeacherRegistrationForm() {
       [name]: value,
       class: value === "ครูประจำชั้น" ? prev.class : { level: "", room: "" }, 
     }));
-
+    
   };
 
   const sendForm = async () => {
+    
     try {
       const payload =
         formData.position === "ครูประจำชั้น"
@@ -122,20 +123,22 @@ export default function TeacherRegistrationForm() {
   
       formSchema.parse(payload);
       setErrors(undefined)
-      setSubmitStatus("")
       await axios.post(MEMO_API.teacherRegister, payload);
       setShowOtpPopup(true);
       console.log("ผ่าน");
       console.log(payload);
+      setSubmitStatus("")
 
-    } catch (error) {
+    }catch (error) {
       if (error instanceof z.ZodError) {
-        setErrors(error.format())
-        console.log("ไม่ผ่าน");
-        console.log(error);
+        console.log("Validation ไม่ผ่าน:", error.format());
+        setErrors(error.format());
+      } else if (axios.isAxiosError(error) && error.response) {
+        console.log("API Response Error:", error.response.data);
+        setSubmitStatus("อีเมล์หรือเบอร์นี้ถูกใช้งานแล้ว ลองใช้อีเมลอื่น")
+        setErrors(error.response.data.message);
       } else {
-        console.error("Error submitting form:", error);
-        setSubmitStatus("อีเมล์หรือเบอร์นี้ถูกใช้งานแล้ว ลองใช้อีเมลอื่น");
+        console.error("เกิดข้อผิดพลาด:", error);
       }
     }
   };
@@ -148,11 +151,13 @@ export default function TeacherRegistrationForm() {
   const [showSuccessPopup, setShowSuccesPopup] = useState(false)
 
   const handleClosePopup = () => {
-    setShowSuccesPopup(false)
-  }
+    setShowSuccesPopup(false);
+    setError("");
+  };
+  
 
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState("")
   const handleSubmitOtp = async (event: React.FormEvent, otp: string) => {
     event.preventDefault()
     setIsLoading(true)
@@ -166,19 +171,21 @@ export default function TeacherRegistrationForm() {
         setShowOtpPopup(false)
         setShowSuccesPopup(true)
         setIsLoading(false)
-        // console.log(data)
+
       }
     } catch (error) {
       console.log(error);
-      setError('ไม่สามารถยืนยันรหัส OTP ได้ กรุณาลองใหม่อีกครั้ง')
+      setError("ไม่สามารถยืนยันรหัส OTP ได้ กรุณาลองใหม่อีกครั้ง")
       setIsLoading(false)
 
     }
   }
 
   const resendOtp = () => {
-    sendForm()
-  }
+    setError(""); 
+    sendForm();
+  };
+  
 
   return (
     <BrandingBackground>
@@ -187,7 +194,7 @@ export default function TeacherRegistrationForm() {
       </section>
 
       <MemoWhite>
-        {showOtpPopup && <MemoOTPPopup resend={resendOtp} onCancel={() => setShowOtpPopup(false)} onSubmit={handleSubmitOtp} isLoading={isLoading} error={error} />}
+        {showOtpPopup && <MemoOTPPopup resend={resendOtp} onCancel={() => { setShowOtpPopup(false); setError(""); }} onSubmit={handleSubmitOtp} isLoading={isLoading} error={error} />}
         <MemoPopUp show={showSuccessPopup} onClose={handleClosePopup} redirectUrl="/">
           <LetterIcon className="space-x-xl w-48 h-56  " />
           <h2 className="text-title font-bold mb-2">ลงทะเบียนผู้ใช้สำเร็จ</h2>
