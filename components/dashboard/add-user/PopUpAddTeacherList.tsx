@@ -1,6 +1,6 @@
 import { useState,useEffect } from "react";
 import axios from "axios";
-import { z } from "zod";
+import { z, type ZodFormattedError } from "zod";
 
 
 import { MEMO_API } from "@/constants/apis";
@@ -12,28 +12,60 @@ import MemoPopUp from '@/components/container/memo-popup-time';
 import SuccessIcon from "@/components/ui/icons/pop-up/success-icon";
 import { FaSpinner } from "react-icons/fa";
 
-const teacherSchema = z.object({
-  firstName: z
-  .string()
-  .min(1, "กรุณากรอกชื่อ"),
-  lastName: z
-  .string()
-  .min(1, "กรุณากรอกนามสกุล"),
-  position: z      
-  .string()
-  .min(1, "เลือกตำแหน่งของคุณ"),
-  gender: z
-  .enum(["ชาย", "หญิง"], { errorMap: () => ({ message: "กรุณาเลือกเพศ" }) }),
-  email: z
-  .string()
-  .email("กรุณากรอกอีเมลในรูปแบบที่ถูกต้อง เช่น example@example.com")
-  .min(1, "กรุณากรอกอีเมลของคุณครู"),
-  phoneNumber: z
-  .string()
-  .regex(/^\d+$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข")
-  .length(10, "เบอร์โทรศัพท์ต้องมีจำนวน 10 หลัก")
-  .min(1, "กรุณากรอกเบอร์โทรศัพท์ของคุณครู"),
-});
+const teacherSchema = z
+  .object({
+    firstName: z.string().min(1, "กรุณากรอกชื่อ"),
+    lastName: z.string().min(1, "กรุณากรอกนามสกุล"),
+    position: z.string().min(1, "เลือกตำแหน่งของคุณ"),
+    gender: z.enum(["ชาย", "หญิง"], { errorMap: () => ({ message: "กรุณาเลือกเพศ" }) }),
+    class: z
+      .object({
+        level: z.string().min(1, "กรุณากรอกชั้นเรียน"),
+        room: z.string().min(1, "กรุณากรอกห้องเรียน"),
+      })
+      .optional() 
+      .nullable(),
+    email: z
+      .string()
+      .email("กรุณากรอกอีเมลในรูปแบบที่ถูกต้อง เช่น example@example.com")
+      .min(1, "กรุณากรอกอีเมลของคุณครู"),
+    phoneNumber: z
+      .string()
+      .regex(/^\d+$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข")
+      .length(10, "เบอร์โทรศัพท์ต้องมีจำนวน 10 หลัก")
+      .min(1, "กรุณากรอกเบอร์โทรศัพท์ของคุณครู"),
+  })
+  .refine(
+    (data) => {
+      if (data.position === "ครูประจำชั้น") {
+        return !!data.class?.level && !!data.class?.room;
+      }
+      return true;
+    },
+    {
+      message: "กรุณากรอกข้อมูลชั้นเรียนและห้องเรียน",
+      path: ["class"],
+    }
+  );
+
+  const DisciplinaryTeacherSchema = z
+  .object({
+    firstName: z.string().min(1, "กรุณากรอกชื่อ"),
+    lastName: z.string().min(1, "กรุณากรอกนามสกุล"),
+    position: z.string().min(1, "เลือกตำแหน่งของคุณ"),
+    gender: z.enum(["ชาย", "หญิง"], { errorMap: () => ({ message: "กรุณาเลือกเพศ" }) }),
+    email: z
+      .string()
+      .email("กรุณากรอกอีเมลในรูปแบบที่ถูกต้อง เช่น example@example.com")
+      .min(1, "กรุณากรอกอีเมลของคุณครู"),
+    phoneNumber: z
+      .string()
+      .regex(/^\d+$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข")
+      .length(10, "เบอร์โทรศัพท์ต้องมีจำนวน 10 หลัก")
+      .min(1, "กรุณากรอกเบอร์โทรศัพท์ของคุณครู"),
+  })
+
+
 
 interface PopUpAddTeacherListProps {
   isOpen: boolean;
@@ -48,11 +80,15 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClo
     lastName: "",
     position: "",
     gender: "",
+    class:{
+      room: "",
+      level:"" 
+  },
     email: "",
     phoneNumber: "",
   };
   const [formData, setFormData] = useState(initialFormData);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<ZodFormattedError<z.infer<typeof teacherSchema>, string> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -60,40 +96,70 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClo
   useEffect(() => {
     if (!isOpen) {
       setFormData(initialFormData);
-      setErrors({});
+      setErrors(null);
     }
   }, [isOpen]);
 
   
   const handleClose = () => {
+    setError(null);
     onClose();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors((prev) => ({ ...prev, [e.target.name]: "" })); // ล้าง error เมื่อแก้ไข
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    
-    const result = teacherSchema.safeParse(formData);
-    if (!result.success) {
-      const fieldErrors: Record<string, string> = {};
-      result.error.errors.forEach((err) => {
-        if (err.path.length) fieldErrors[err.path[0]] = err.message;
-      });
-      setErrors(fieldErrors);
-      return;
+    const { name, value } = e.target;
+  
+    if (name === "classLevel" || name === "classRoom") {
+      setFormData((prev) => ({
+        ...prev,
+        class: {
+          ...(prev.class ?? { level: "", room: "" }), // ถ้าไม่มี class ให้กำหนดค่าเริ่มต้น
+          [name === "classLevel" ? "level" : "room"]: value,
+        },
+      }));
+    } else {
+      setFormData({ ...formData, [name]: value });
     }
   
-    setLoading(true);  
-    setIsSuccess(false); 
+    setErrors((prev) => (prev ? { ...prev, [name]: undefined } : null));
+  };
   
+  const handleSubmit = async (e: React.FormEvent) => {
+    console.log("📌 handleSubmit ถูกเรียกแล้ว!");
+    e.preventDefault();
+    console.log("📋 Form Data ก่อน validate:", formData);
+    let result = teacherSchema.safeParse(formData);
+
+    if(formData.position==='ครูฝ่ายปกครอง'){
+      result = DisciplinaryTeacherSchema.safeParse(formData)
+      console.log(formData.position)
+    }
+
+    console.log("🧐 ผลลัพธ์ของ safeParse:", result);
+    if (!result.success) {
+      console.log("❌ Validation Errors:", result.error.format()); 
+      console.log(result.error.format()); 
+      setErrors(result.error.format());
+      return;
+    }
+    
+    setLoading(true);
+    setIsSuccess(false);
+    const filteredFormData = formData.position === "ครูประจำชั้น"
+    ? formData
+    : (({ class: _, ...rest }) => rest)(formData);
+    console.log("หลังลบ", formData); // ✅ Debug
+  
+    
+    
     try {
-      await axios.post(MEMO_API.teacherAddForm, formData);
+      await axios.post(MEMO_API.teacherAddForm, filteredFormData);
+      setError(null);
+      console.log("✅ ส่ง API สำเร็จ!"); // ✅ Debug ถ้าส่งผ่าน
       onAddSuccess();
+      setLoading(false);
+      setIsSuccess(true);
+  console.log(formData)
       setTimeout(() => { 
         setLoading(false); 
         setIsSuccess(true); 
@@ -102,20 +168,18 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClo
       setTimeout(() => {
         setIsSuccess(false);
         handleClose();
- 
       }, 3000);
-      
-
   
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        setError(err.response.data.message || "อีเมล์หรือเบอร์นี้ถูกใช้งานแล้ว ลองใช้อีเมลอื่น");
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.log("❌ Zod Validation Error:", error.format());
+        setErrors(error.format());
       } else {
-        setError("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+        console.error("เกิดข้อผิดพลาดในการส่งข้อมูล:", error);
+        setError("อีเมล์หรือเบอร์นี้ถูกใช้งานแล้ว ลองใช้อีเมลอื่น");
       }
       setLoading(false);
-    }
-    
+    }      
   };
   
   if (!isOpen) return null;
@@ -131,7 +195,7 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClo
             type="text"
             name="firstName"
             placeholder="กรุณาพิมพ์ชื่อของคุณครู"
-            error={errors?.firstName}
+            error={errors?.firstName?._errors[0]}
             value={formData.firstName}
             onChange={handleChange}
           />
@@ -142,21 +206,21 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClo
             type="text"
             name="lastName"
             placeholder="กรุณาพิมพ์นามสกุลของคุณครู"
-            error={errors?.lastName}
+            error={errors?.lastName?._errors[0]}
             value={formData.lastName}
             onChange={handleChange}
           />
         </div>
         <div className="w-full md:w-[48%]">
-          <MemoInputHeader
-            text="ตำแหน่ง"
-            type="text"
-            name="position"
-            placeholder="กรุณาพิมพ์ตำแหน่งของคุณครู"
-            error={errors?.position}
-            value={formData.position}
-            onChange={handleChange}
-          />
+        <MemoSelectHeader
+              label="ตำแหน่ง"
+              name="position"
+              options={["ครูประจำชั้น", "ครูฝ่ายปกครอง"]}
+              error={errors?.position?._errors[0]}
+              value={formData.position}
+              onChange={handleChange}
+              placeholder="เลือกตำแหน่ง"
+            />
         </div>
         <div className="w-full md:w-[48%]">
         <MemoSelectHeader
@@ -165,18 +229,19 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClo
                   name="gender"
                   placeholder="กรุณาเลือกเพศของคุณ"
                   value={formData.gender}
-                  error={errors?.gender}
+                  error={errors?.gender?._errors[0]}
                   size="full"
                   onChange={handleChange} />
         </div>
-        {/* <div className="w-full md:w-[48%]">
+        {formData.position === "ครูประจำชั้น" && (<>
+        <div className="w-full md:w-[48%]">
           <MemoInputHeader
             text="ระดับชั้น"
             type="text"
             name="classLevel"
-            placeholder="กรุณาพิมพ์ตำระดับชั้นของคุณครู"
-            error={errors?.classLevel}
-            value={formData.classLevel}
+            placeholder="กรุณาพิมพ์ระดับชั้นของคุณครู"
+            error={errors?.class?.level?._errors[0]}
+            value={formData.class.level}
             onChange={handleChange}
           />
         </div>
@@ -186,18 +251,19 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClo
             type="text"
             name="classRoom"
             placeholder="กรุณาพิมพ์ห้องเรียนของคุณครู"
-            error={errors?.classRoom}
-            value={formData.classRoom}
+            error={errors?.class?.room?._errors[0]}
+            value={formData.class.room}
             onChange={handleChange}
           />
-        </div> */}
+        </div></>
+        )}
         <div className="w-full">
           <MemoInputHeader
             text="อีเมล"
             type="email"
             name="email"
             placeholder="กรุณาพิมพ์อีเมลของคุณครู"
-            error={errors?.email}
+            error={errors?.email?._errors[0]}
             value={formData.email}
             onChange={handleChange}
           />
@@ -208,7 +274,7 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClo
             type="text"
             name="phoneNumber"
             placeholder="กรุณาพิมพ์เบอร์โทรศัพท์ของคุณครู"
-            error={errors?.phoneNumber}
+            error={errors?.phoneNumber?._errors[0]}
             value={formData.phoneNumber}
             onChange={handleChange}
           />
