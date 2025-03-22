@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
+
 import { MEMO_API } from "@/constants/apis";
 import apiClient from "@/components/axios/axiosConfig";
 import Table from "@/components/dashboard/table";
@@ -10,16 +11,17 @@ import Filterbutton from "@/components/dashboard/filterbutton";
 import Searchbar from "@/components/dashboard/searchbar";
 import Sidebar from "@/components/dashboard/sidebar";
 import TopbarButton from "@/components/button/memo-topbar";
-import MemoPopUp from '@/components/container/memo-popup-notime';
-import MemoButton from '@/components/button/memo-button'
+import MemoPopUp from "@/components/container/memo-popup-notime";
+import MemoButton from "@/components/button/memo-button";
 import PopUpAddTeacherList from "@/components/dashboard/add-user/PopUpAddTeacherList";
 import PopUpAddStudentList from "@/components/dashboard/add-user/PopUpAddStudentList";
+import UploadTeacherExcel from "@/components/dashboard/add-user-excel/UploadTeacherExcel";
+import UploadStudentExcel from "@/components/dashboard/add-user-excel/UploadStudentExcel";
 
 import EditIcon from "@/components/ui/icons/dashboard/edit-icon";
 import CaretLefttIcon from "@/components/ui/icons/dashboard/caret-left";
 import CaretRightIcon from "@/components/ui/icons/dashboard/caret-right";
 import TrashIcon from "@/components/ui/icons/dashboard/trash-icon";
-
 
 interface Teacher {
   teacherId: string;
@@ -33,7 +35,7 @@ interface Teacher {
 }
 
 interface Student {
-  studentId: string; 
+  studentId: string;
   firstName: string;
   lastName: string;
   classLevel: number;
@@ -57,24 +59,24 @@ const checkAuth = () => {
   const token = localStorage.getItem("userToken");
   if (!token) return false;
   try {
-    const payload = JSON.parse(atob(token.split(".")[1])); 
+    const payload = JSON.parse(atob(token.split(".")[1]));
     return payload.exp * 1000 > Date.now(); // ตรวจสอบว่าหมดอายุหรือยัง
   } catch (e) {
-    console.log(e)
+    console.log(e);
     return false;
   }
 };
 
 const teacherFilterOptions = [
   { value: "all", label: "ทั้งหมด" },
-  { value: "teacherId", label: "รหัสครู" },  
+  { value: "teacherId", label: "รหัสครู" },
   { value: "firstName", label: "ชื่อ" },
   { value: "lastName", label: "นามสกุล" },
   { value: "gender", label: "เพศ" },
   { value: "position", label: "ตำแหน่ง" },
   { value: "classLevel", label: "ระดับชั้น" },
   { value: "classRoom", label: "ห้องเรียน" },
-  { value: "email", label: "อีเมล" },  
+  { value: "email", label: "อีเมล" },
   { value: "phoneNumber", label: "เบอร์โทร" },
 ];
 
@@ -100,22 +102,23 @@ const Dashboard = () => {
   const [showPopupDelete, setshowPopupDelete] = useState(false);
   const rowsPerPage = 10;
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
 
   const [filteredTeachers, setFilteredTeachers] = useState<Teacher[]>([]);
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
   const [searchType, setSearchType] = useState("ทั้งหมด");
-  const [searchText, setSearchText] = useState(""); 
-  const filterOptions = activeMenu === "รายชื่อครู" ? teacherFilterOptions : studentFilterOptions;
+  const [searchText, setSearchText] = useState("");
+  const filterOptions =
+    activeMenu === "รายชื่อครู" ? teacherFilterOptions : studentFilterOptions;
 
   useEffect(() => {
     if (!checkAuth()) {
       alert("Token หมดอายุ กรุณา Login ใหม่");
       localStorage.removeItem("token");
       router.push("/admin/login");
-      return; 
+      return;
     }
   }, [router]);
-  
 
   const fetchData = async () => {
     setLoading(true);
@@ -130,12 +133,13 @@ const Dashboard = () => {
         const response = await apiClient.get<{ data: { students: Student[] } }>(
           MEMO_API.studentsList
         );
-  
-        const studentList = response.data.data.students?.map((student) => ({
-          ...student,
-          startDate: new Date(student.startDate),
-        })) || [];
-  
+
+        const studentList =
+          response.data.data.students?.map((student) => ({
+            ...student,
+            startDate: new Date(student.startDate),
+          })) || [];
+
         setStudents(studentList);
       }
     } catch (err) {
@@ -145,12 +149,10 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchData();
-  }, [activeMenu]); 
-  
-  
+  }, [activeMenu]);
 
   useEffect(() => {
     if (activeMenu === "รายชื่อครู") {
@@ -160,43 +162,61 @@ const Dashboard = () => {
         filtered = teachers.filter((teacher) => {
           if (searchType === "ทั้งหมด" || searchType === "all") {
             return [
-              ...Object.entries(teacher)
-                .filter(([key]) => key !== "startDate"), 
-              ["classRoom", teacher.class?.room], 
-              ["classLevel", teacher.class?.level] 
-            ].some(([_, value]) => String(value ?? "").toLowerCase().includes(searchLower));
+              ...Object.entries(teacher).filter(([key]) => key !== "startDate"),
+              ["classRoom", teacher.class?.room],
+              ["classLevel", teacher.class?.level],
+            ].some(([_, value]) =>
+              String(value ?? "")
+                .toLowerCase()
+                .includes(searchLower)
+            );
           }
           if (searchType === "classRoom") {
-            return String(teacher.class?.room ?? "").toLowerCase().includes(searchLower);
+            return String(teacher.class?.room ?? "")
+              .toLowerCase()
+              .includes(searchLower);
           }
           if (searchType === "classLevel") {
-            return String(teacher.class?.level ?? "").toLowerCase().includes(searchLower);
+            return String(teacher.class?.level ?? "")
+              .toLowerCase()
+              .includes(searchLower);
           }
-          return String(teacher[searchType as keyof Teacher] ?? "").toLowerCase().includes(searchLower);
+          return String(teacher[searchType as keyof Teacher] ?? "")
+            .toLowerCase()
+            .includes(searchLower);
         });
       }
-  
+
       setFilteredTeachers(filtered);
     } else {
       let filtered = students;
-  
+
       if (searchText.trim() !== "") {
         const searchLower = searchText.toLowerCase();
-  
+
         filtered = students.filter((student) => {
           if (searchType === "ทั้งหมด" || searchType === "all") {
             return Object.entries(student)
-              .filter(([key]) => key !== "startDate") 
-              .some(([_, value]) => String(value ?? "").toLowerCase().includes(searchLower));
+              .filter(([key]) => key !== "startDate")
+              .some(([_, value]) =>
+                String(value ?? "")
+                  .toLowerCase()
+                  .includes(searchLower)
+              );
           }
-          return String(student[searchType as keyof Student] ?? "").toLowerCase().includes(searchLower);
+          return String(student[searchType as keyof Student] ?? "")
+            .toLowerCase()
+            .includes(searchLower);
         });
       }
       setFilteredStudents(filtered);
     }
   }, [searchText, searchType, activeMenu, teachers, students]);
-  
-  const totalPages = Math.ceil((activeMenu === "รายชื่อครู" ? teachers.length : students.length) / rowsPerPage);
+
+  const totalPages = Math.ceil(
+    (activeMenu === "รายชื่อครู" ? teachers.length : students.length) /
+      rowsPerPage
+  );
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
@@ -208,11 +228,12 @@ const Dashboard = () => {
       console.error("paginateData: data is not an array!", data);
       return [];
     }
-    return data.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+    return data.slice(
+      (currentPage - 1) * rowsPerPage,
+      currentPage * rowsPerPage
+    );
   };
-  
-  
-  
+
   const handleEdit = (id: string) => {
     alert(`แก้ไขข้อมูล ID: ${id}`);
   };
@@ -221,94 +242,101 @@ const Dashboard = () => {
     setSelectedParents(parents);
     setShowPopup(true);
   };
- 
+
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [deletingMode, setDeletingMode] = useState(false);
   const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
-  
+
   const handleToggleDeleteMode = () => {
     setDeletingMode(!deletingMode);
-  
+
     if (activeMenu === "รายชื่อครู") {
       setSelectedTeachers([]);
     } else if (activeMenu === "รายชื่อนักเรียน") {
       setSelectedStudents([]);
     }
   };
-  
+
   const handleSelectTeacher = (teacherId: string) => {
     setSelectedTeachers((prev) =>
-      prev.includes(teacherId) ? prev.filter((id) => id !== teacherId) : [...prev, teacherId]
+      prev.includes(teacherId)
+        ? prev.filter((id) => id !== teacherId)
+        : [...prev, teacherId]
     );
   };
-  
+
   const handleSelectStudent = (studentId: string) => {
     setSelectedStudents((prev) =>
-      prev.includes(studentId) ? prev.filter((id) => id !== studentId) : [...prev, studentId]
+      prev.includes(studentId)
+        ? prev.filter((id) => id !== studentId)
+        : [...prev, studentId]
     );
   };
-  
+
   const handleDeleteSelected = async () => {
     setshowPopupDelete(true);
 
     if (activeMenu === "รายชื่อครู" && selectedTeachers.length === 0) return;
-    if (activeMenu === "รายชื่อนักเรียน" && selectedStudents.length === 0) return;
+    if (activeMenu === "รายชื่อนักเรียน" && selectedStudents.length === 0)
+      return;
 
     try {
-        let apiUrl = "";
-        let selectedIds: string[] = [];
+      let apiUrl = "";
+      let selectedIds: string[] = [];
+
+      if (activeMenu === "รายชื่อครู") {
+        selectedIds = selectedTeachers;
+        apiUrl = MEMO_API.teacherDelete;
+      } else if (activeMenu === "รายชื่อนักเรียน") {
+        selectedIds = selectedStudents;
+        apiUrl = MEMO_API.studentDelete;
+      }
+      const payload = JSON.stringify({ ids: selectedIds.map(String) });
+      console.log("Payload ที่ส่งไปยัง API:", payload);
+      console.log("Deleting:", selectedIds);
+      console.log("API URL:", apiUrl);
+
+      const response = await axios.delete(apiUrl, {
+        headers: { "Content-Type": "application/json" },
+        data: payload,
+      });
+
+      if (response.status === 200) {
+        console.log("ลบสำเร็จ:", selectedIds);
+        handleCancelDelete();
+        setDeletingMode(false);
 
         if (activeMenu === "รายชื่อครู") {
-            selectedIds = selectedTeachers;
-            apiUrl = MEMO_API.teacherDelete;
+          setTeachers((prev) =>
+            prev.filter((teacher) => !selectedIds.includes(teacher.teacherId))
+          );
+          setSelectedTeachers([]);
         } else if (activeMenu === "รายชื่อนักเรียน") {
-            selectedIds = selectedStudents;
-            apiUrl = MEMO_API.studentDelete;
+          setStudents((prev) =>
+            prev.filter((student) => !selectedIds.includes(student.studentId))
+          );
+          setSelectedStudents([]);
         }
-        const payload = JSON.stringify({ ids: selectedIds.map(String) });
-        console.log("Payload ที่ส่งไปยัง API:", payload);
-        console.log("Deleting:", selectedIds);
-        console.log("API URL:", apiUrl);
-
-        const response = await axios.delete(apiUrl, {
-            headers: {"Content-Type": "application/json",},
-            data: payload, 
-        });
-
-        if (response.status === 200) {
-            console.log("ลบสำเร็จ:", selectedIds);
-            handleCancelDelete();
-            setDeletingMode(false);
-
-            if (activeMenu === "รายชื่อครู") {
-                setTeachers(prev => prev.filter(teacher => !selectedIds.includes(teacher.teacherId)));
-                setSelectedTeachers([]); 
-            } else if (activeMenu === "รายชื่อนักเรียน") {
-                setStudents(prev => prev.filter(student => !selectedIds.includes(student.studentId)));
-                setSelectedStudents([]);
-            }
-        }
+      }
     } catch (error) {
-        console.error("เกิดข้อผิดพลาดในการลบ:", error);
+      console.error("เกิดข้อผิดพลาดในการลบ:", error);
     }
-};
+  };
 
   const handleDeleteConfirm = () => {
-    setshowPopupDelete(false); 
-    handleDeleteSelected(); 
+    setshowPopupDelete(false);
+    handleDeleteSelected();
   };
 
   const handleCancelDelete = () => {
     setSelectedTeachers([]);
-    setshowPopupDelete(false); 
-    setDeletingMode(false); 
+    setshowPopupDelete(false);
+    setDeletingMode(false);
   };
-  
+
   const teacherColumns = [
-    ...(deletingMode
-      ? [{ key: "select", label: "", header: "เลือก" }]
-      : []),
+    ...(deletingMode ? [{ key: "select", label: "", header: "เลือก" }] : []),
     { key: "teacherId", label: "รหัส", header: "รหัส" },
     { key: "firstName", label: "ชื่อ", header: "ชื่อ" },
     { key: "lastName", label: "นามสกุล", header: "นามสกุล" },
@@ -319,12 +347,9 @@ const Dashboard = () => {
     { key: "phoneNumber", label: "เบอร์โทร", header: "เบอร์โทร" },
     { key: "action", label: "แอคชั่น", header: "แอคชั่น" },
   ];
-  
-  
+
   const studentColumns = [
-    ...(deletingMode
-      ? [{ key: "select", label: "", header: "เลือก" }]
-      : []),
+    ...(deletingMode ? [{ key: "select", label: "", header: "เลือก" }] : []),
     { key: "studentId", label: "รหัส", header: "รหัส" },
     { key: "firstName", label: "ชื่อ", header: "ชื่อ" },
     { key: "lastName", label: "นามสกุล", header: "นามสกุล" },
@@ -334,75 +359,162 @@ const Dashboard = () => {
     { key: "action", label: "แอคชั่น", header: "แอคชั่น" },
   ];
 
+  const [isOpenPopUpExcel, setIsOpenPopUpExcel] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState<string | null>(null); // ✅ State เก็บข้อความสำเร็จหรือ error
+
+  const handleSuccess = (message: string) => {
+    setUploadMessage(`✅ ${message}`);
+    setIsOpenPopUpExcel(false);
+  };
+
+  const handleError = (errorMessage: string) => {
+    setUploadMessage(`❌ ${errorMessage}`);
+  };
+
   return (
     <div className="flex bg-system-white w-screen">
-
       <Sidebar />
       <div className="ml-4 pt-6 p-6 text-title-1 w-full bg-system-white">
-      <div className="flex ">
-          <TopbarButton name="รายชื่อครู" isActive={activeMenu === "รายชื่อครู"} onClick={() => { setActiveMenu("รายชื่อครู"); setCurrentPage(1); }} />
-          <TopbarButton name="รายชื่อนักเรียน" isActive={activeMenu === "รายชื่อนักเรียน"} onClick={() => { setActiveMenu("รายชื่อนักเรียน"); setCurrentPage(1); }} />
+        <div className="flex ">
+
+
+        {uploadMessage && <p className="mt-2">{uploadMessage}</p>} {/* ✅ แสดงข้อความอัปโหลดสำเร็จหรือ error */}
+
+
+
+     
+          <TopbarButton
+            name="รายชื่อครู"
+            isActive={activeMenu === "รายชื่อครู"}
+            onClick={() => {
+              setActiveMenu("รายชื่อครู");
+              setCurrentPage(1);
+            }}
+          />
+          <TopbarButton
+            name="รายชื่อนักเรียน"
+            isActive={activeMenu === "รายชื่อนักเรียน"}
+            onClick={() => {
+              setActiveMenu("รายชื่อนักเรียน");
+              setCurrentPage(1);
+            }}
+          />
         </div>
 
         <div className="pt-8">
-          <p className="text-[20px] font-semibold">ระบบจัดการรายชื่อ{activeMenu === "รายชื่อครู" ? "คุณครู" : "นักเรียน"}</p>
-          <p className="text-[16px] text-body-2">รายชื่อ{activeMenu === "รายชื่อครู" ? "คุณครู" : "นักเรียน"}ที่สมัครเข้าใช้งานระบบ Memo</p>
+          <p className="text-[20px] font-semibold">
+            ระบบจัดการรายชื่อ
+            {activeMenu === "รายชื่อครู" ? "คุณครู" : "นักเรียน"}
+          </p>
+          <p className="text-[16px] text-body-2">
+            รายชื่อ{activeMenu === "รายชื่อครู" ? "คุณครู" : "นักเรียน"}
+            ที่สมัครเข้าใช้งานระบบ Memo
+          </p>
         </div>
 
         <div className="relative flex pt-6 w-full space-x-2">
-           <div className="relative w-full flex">
-              <Searchbar onSearch={setSearchText} />
-              <Filterbutton options={filterOptions} selectedFilter={searchType} onChange={setSearchType} />
-            </div>
+          <div className="relative w-full flex">
+            <Searchbar onSearch={setSearchText} />
+            <Filterbutton
+              options={filterOptions}
+              selectedFilter={searchType}
+              onChange={setSearchType}
+            />
+          </div>
 
-        <button 
-          className={`bg-system-error-2 rounded-sm w-32 text-system-white ${
-            deletingMode && (activeMenu === "รายชื่อครู" ? selectedTeachers.length === 0 : selectedStudents.length === 0) 
-              ? "opacity-50 cursor-not-allowed" 
-              : "" 
-          }`}
-          onClick={deletingMode ? () => setshowPopupDelete(true) : handleToggleDeleteMode}
-          disabled={deletingMode && (activeMenu === "รายชื่อครู" ? selectedTeachers.length === 0 : selectedStudents.length === 0)}
-        > 
-          {deletingMode 
-            ? `ลบจำนวน ${activeMenu === "รายชื่อครู" ? selectedTeachers.length : selectedStudents.length}` 
-            : "ถังขยะ"}
-        </button>
+          <button
+            className={`bg-system-error-2 rounded-sm w-32 text-system-white ${
+              deletingMode &&
+              (activeMenu === "รายชื่อครู"
+                ? selectedTeachers.length === 0
+                : selectedStudents.length === 0)
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+            }`}
+            onClick={
+              deletingMode
+                ? () => setshowPopupDelete(true)
+                : handleToggleDeleteMode
+            }
+            disabled={
+              deletingMode &&
+              (activeMenu === "รายชื่อครู"
+                ? selectedTeachers.length === 0
+                : selectedStudents.length === 0)
+            }
+          >
+            {deletingMode
+              ? `ลบจำนวน ${
+                  activeMenu === "รายชื่อครู"
+                    ? selectedTeachers.length
+                    : selectedStudents.length
+                }`
+              : "ถังขยะ"}
+          </button>
 
-        {deletingMode && (
-          <button className="bg-body-2 rounded-sm w-32 text-system-white" onClick={handleToggleDeleteMode}>ยกเลิก</button>
+          {deletingMode && (
+            <button
+              className="bg-body-2 rounded-sm w-32 text-system-white"
+              onClick={handleToggleDeleteMode}
+            >
+              ยกเลิก
+            </button>
+          )}
+
+          {/* {!deletingMode && (
+            <button
+              onClick={() => setIsPopupOpen(true)}
+              className="bg-system-success-2 rounded-sm w-32 text-system-white"
+            >
+              เพิ่มผู้ใช้
+            </button>
+          )} */}
+       <div className="relative inline-block">
+          {!deletingMode && ( 
+            <button onClick={() => setIsOpen(!isOpen)} className="bg-system-success-2 rounded-sm w-32 text-system-white p-2">เพิ่มผู้ใช้ ▼</button>
+          )}
+
+        {isOpen && (
+           <div className="absolute right-0 mt-2 w-48 bg-system-white border rounded shadow-md z-10">
+            <button onClick={() => { setIsPopupOpen(true); setIsOpen(false);}} className="block w-full text-left px-4 py-2 hover:bg-body-1">
+              เพิ่มผู้ใช้จาก Form
+            </button>
+            <button onClick={() => setIsOpenPopUpExcel(true)} className="block w-full text-left px-4 py-2 hover:bg-body-1">
+              เพิ่มผู้ใช้จาก Excel
+            </button>
+          </div>
         )}
+          </div>
+        </div>
 
-        {!deletingMode && (
-          <button onClick={() => setIsPopupOpen(true)} className="bg-system-success-2 rounded-sm w-32 text-system-white">เพิ่มผู้ใช้</button>
-        )}
-      </div>
-      
         {activeMenu === "รายชื่อครู" && (
-          <Table 
-            data={paginateData(filteredTeachers)}  
-            columns={teacherColumns} 
+          <Table
+            data={paginateData(filteredTeachers)}
+            columns={teacherColumns}
             renderRow={(teacher) => [
-              ...(deletingMode ? [
-                    <input key={`checkbox-${teacher.teacherId}`} type="checkbox"
+              ...(deletingMode
+                ? [
+                    <input
+                      key={`checkbox-${teacher.teacherId}`}
+                      type="checkbox"
                       checked={selectedTeachers.includes(teacher.teacherId)}
                       onChange={() => handleSelectTeacher(teacher.teacherId)}
-                    />,] : []),
-                  
+                    />,
+                  ]
+                : []),
+
               <span key={`id-${teacher.teacherId}`}>{teacher.teacherId}</span>,
               <span key={`fname-${teacher.teacherId}`}>{teacher.firstName}</span>,
-              <span key={`lname-${teacher.teacherId}`}>{teacher.lastName}</span>,
+              <span key={`lname-${teacher.teacherId}`}>{teacher.lastName}
+              </span>,
               <span key={`gender-${teacher.teacherId}`}>{teacher.gender}</span>,
               <span key={`position-${teacher.teacherId}`}>{teacher.position}</span>,
-              <span key={`class-${teacher.teacherId}`}>
-                {teacher.class?.level ? `ป. ${teacher.class.level}` : "-"}
-                {teacher.class?.room ? `/${teacher.class.room}` : ""}
-              </span>,
+              <span key={`class-${teacher.teacherId}`}>{teacher.class?.level ? `ป. ${teacher.class.level}` : "-"}{teacher.class?.room ? `/${teacher.class.room}` : ""}</span>,
               <span key={`email-${teacher.teacherId}`}>{teacher.email}</span>,
               <span key={`phone-${teacher.teacherId}`}>{teacher.phoneNumber}</span>,
               <div key={`action-${teacher.teacherId}`} className="flex justify-center">
-                <button 
-                  className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2" 
+                <button
+                  className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2"
                   onClick={() => handleEdit(teacher.teacherId)}
                 >
                   <EditIcon className="h-6 w-6" />
@@ -413,122 +525,167 @@ const Dashboard = () => {
             loading={loading}
             error={error}
           />
-          )}
+        )}
 
-{activeMenu === "รายชื่อนักเรียน" && (
-  <Table 
-  data={paginateData(filteredStudents)}  
-    columns={studentColumns} 
-    renderRow={(student) => [
-      ...(deletingMode ? [
-            <input key={`checkbox-${student.studentId}`} type="checkbox"
-              checked={selectedStudents.includes(student.studentId)}
-              onChange={() => handleSelectStudent(student.studentId)}
-            />,] : []),
-      <span key={`${student.studentId}-id`}>{student.studentId}</span>,
-      <span key={`${student.studentId}-firstName`}>{student.firstName}</span>,
-      <span key={`${student.studentId}-lastName`}>{student.lastName}</span>,
-      <span key={`${student.studentId}-gender`}>{student.gender}</span>,
-      <span key={`${student.studentId}-class`}>ป. {student.classLevel}/{student.classRoom}</span>,
-      <button 
-        key={`${student.studentId}-details`} 
-        className="text-system-button underline" 
-        onClick={() => handleShowDetails(student.parents ?? [])}
-      >
-        รายละเอียด
-      </button>,
-      <div key={`${student.studentId}-actions`} className="flex justify-center">
-        <button 
-          className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2" 
-          onClick={() => handleEdit(student.studentId.toString())}
-        >
-          <EditIcon className="h-6 w-6" />
-          <span>แก้ไข</span>
-        </button>
-      </div>,
-    ]}
-    loading={loading}
-    error={error}
-  />       
-)}
+        {activeMenu === "รายชื่อนักเรียน" && (
+          <Table
+            data={paginateData(filteredStudents)}
+            columns={studentColumns}
+            renderRow={(student) => [
+              ...(deletingMode
+                ? [
+                    <input
+                      key={`checkbox-${student.studentId}`}
+                      type="checkbox"
+                      checked={selectedStudents.includes(student.studentId)}
+                      onChange={() => handleSelectStudent(student.studentId)}
+                    />,
+                  ]
+                : []),
+              <span key={`${student.studentId}-id`}>{student.studentId}</span>,
+              <span key={`${student.studentId}-firstName`}>
+                {student.firstName}
+              </span>,
+              <span key={`${student.studentId}-lastName`}>
+                {student.lastName}
+              </span>,
+              <span key={`${student.studentId}-gender`}>{student.gender}</span>,
+              <span key={`${student.studentId}-class`}>
+                ป. {student.classLevel}/{student.classRoom}
+              </span>,
+              <button
+                key={`${student.studentId}-details`}
+                className="text-system-button underline"
+                onClick={() => handleShowDetails(student.parents ?? [])}
+              >
+                รายละเอียด
+              </button>,
+              <div
+                key={`${student.studentId}-actions`}
+                className="flex justify-center"
+              >
+                <button
+                  className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2"
+                  onClick={() => handleEdit(student.studentId.toString())}
+                >
+                  <EditIcon className="h-6 w-6" />
+                  <span>แก้ไข</span>
+                </button>
+              </div>,
+            ]}
+            loading={loading}
+            error={error}
+          />
+        )}
 
-
-          <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex justify-center mt-4  bg-white p-3 pl-20 ">
-            <button 
-              className="flex items-center space-x-2 border-x-2xsm border-y-2xsm  border-system-gray text-white rounded disabled:opacity-50 p-2" 
-              onClick={() => handlePageChange(currentPage - 1)} 
-              disabled={currentPage === 1}
-            >
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex justify-center mt-4  bg-white p-3 pl-20 ">
+          <button
+            className="flex items-center space-x-2 border-x-2xsm border-y-2xsm  border-system-gray text-white rounded disabled:opacity-50 p-2"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
             <CaretLefttIcon className="h-6 w-6" />
-            </button>
+          </button>
 
-              <div className="flex">
-                <div className="px-4 py-2 font-semibold text-primary-2 text-[16px] border-x-2xsm border-y-2xsm  border-system-gray">{currentPage} / {totalPages}</div> 
-              </div>
-
-            <button 
-              className="flex items-center space-x-2 border-x-2xsm border-y-2xsm  border-system-gray text-white rounded disabled:opacity-50 p-2" 
-              onClick={() => handlePageChange(currentPage + 1)} 
-              disabled={currentPage === totalPages}
-            >
-            <CaretRightIcon className="h-6 w-6" />
-            </button>
+          <div className="flex">
+            <div className="px-4 py-2 font-semibold text-primary-2 text-[16px] border-x-2xsm border-y-2xsm  border-system-gray">
+              {currentPage} / {totalPages}
+            </div>
           </div>
 
-          {showPopup && (
+          <button
+            className="flex items-center space-x-2 border-x-2xsm border-y-2xsm  border-system-gray text-white rounded disabled:opacity-50 p-2"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            <CaretRightIcon className="h-6 w-6" />
+          </button>
+        </div>
+
+        {showPopup && (
           <MemoPopUp show={showPopup} onClose={() => setShowPopup(false)}>
-          <div className="w-full relative pl-4 pr-4">
-            <h2 className="text-lg font-bold mb-2 mt-2">ข้อมูลผู้ปกครอง</h2>
+            <div className="w-full relative pl-4 pr-4">
+              <h2 className="text-lg font-bold mb-2 mt-2">ข้อมูลผู้ปกครอง</h2>
               {selectedParents.length > 0 ? (
                 selectedParents.map((parent) => (
-                  <div key={parent.parentId} className="mb-2" >
-                    <p><span className='font-semibold '>ชื่อ : </span> {parent.firstName} {parent.lastName}</p>
-                    <p><span className='font-semibold '>อีเมล : </span> {parent.emailParent}</p>
-                    <p><span className='font-semibold '>เบอร์โทร : </span> {parent.phoneNumber}</p>
-                    <p><span className='font-semibold '>ความสัมพันธ์ : </span> {parent.relation}</p>
+                  <div key={parent.parentId} className="mb-2">
+                    <p>
+                      <span className="font-semibold ">ชื่อ : </span>{" "}
+                      {parent.firstName} {parent.lastName}
+                    </p>
+                    <p>
+                      <span className="font-semibold ">อีเมล : </span>{" "}
+                      {parent.emailParent}
+                    </p>
+                    <p>
+                      <span className="font-semibold ">เบอร์โทร : </span>{" "}
+                      {parent.phoneNumber}
+                    </p>
+                    <p>
+                      <span className="font-semibold ">ความสัมพันธ์ : </span>{" "}
+                      {parent.relation}
+                    </p>
                   </div>
-                  
                 ))
               ) : (
                 <p>ไม่มีข้อมูลผู้ปกครอง</p>
-              )} <MemoButton  title="ย้อนกลับ" onClick={() => setShowPopup(false)} />
+              )}{" "}
+              <MemoButton
+                title="ย้อนกลับ"
+                onClick={() => setShowPopup(false)}
+              />
             </div>
-
-        </MemoPopUp>
+          </MemoPopUp>
         )}
 
         {showPopupDelete && (
-              <MemoPopUp show={showPopupDelete} onClose={() => setshowPopupDelete(false)}>
-                <TrashIcon className="w-44 h-44 p-6 mr-2 bg-system-error-2 mb-6 rounded-full mt-6" />
-                <p className="text-center text-[18px] font-bold">ต้องการลบรายชื่อที่เลือกหรือไม่?</p>
-                <div className="flex justify-between mt-6 w-full space-x-2 pl-4 pr-4 mb-2">
-                  <MemoButton title="ยกเลิก" variant="cancleghost" onClick={handleCancelDelete} />
-                  <MemoButton title="ยืนยัน" variant="cancle" onClick={handleDeleteConfirm} />
-                </div>
-              </MemoPopUp>
-         )}
+          <MemoPopUp
+            show={showPopupDelete}
+            onClose={() => setshowPopupDelete(false)}
+          >
+            <TrashIcon className="w-44 h-44 p-6 mr-2 bg-system-error-2 mb-6 rounded-full mt-6" />
+            <p className="text-center text-[18px] font-bold">
+              ต้องการลบรายชื่อที่เลือกหรือไม่?
+            </p>
+            <div className="flex justify-between mt-6 w-full space-x-2 pl-4 pr-4 mb-2">
+              <MemoButton
+                title="ยกเลิก"
+                variant="cancleghost"
+                onClick={handleCancelDelete}
+              />
+              <MemoButton
+                title="ยืนยัน"
+                variant="cancle"
+                onClick={handleDeleteConfirm}
+              />
+            </div>
+          </MemoPopUp>
+        )}
 
-{activeMenu === "รายชื่อครู" ? (
-  <PopUpAddTeacherList
-    isOpen={isPopupOpen}
-    onClose={() => setIsPopupOpen(false)}
-    onAddSuccess={() => fetchData()} // ✅ โหลดข้อมูลใหม่เมื่อเพิ่มสำเร็จ
-  />
-) : (
-  <PopUpAddStudentList
-    isOpen={isPopupOpen}
-    onClose={() => setIsPopupOpen(false)}
-    onAddSuccess={() => fetchData()} // ✅ โหลดข้อมูลใหม่เมื่อเพิ่มสำเร็จ
-  />
-)}
+        {activeMenu === "รายชื่อครู" ? (
+          <PopUpAddTeacherList
+            isOpen={isPopupOpen}
+            onClose={() => setIsPopupOpen(false)}
+            onAddSuccess={() => fetchData()} // ✅ โหลดข้อมูลใหม่เมื่อเพิ่มสำเร็จ
+          />
+        ) : (
+          <PopUpAddStudentList
+            isOpen={isPopupOpen}
+            onClose={() => setIsPopupOpen(false)}
+            onAddSuccess={() => fetchData()} // ✅ โหลดข้อมูลใหม่เมื่อเพิ่มสำเร็จ
+          />
+        )}
 
+{isOpenPopUpExcel && (
+        activeMenu === "รายชื่อครู" ? (
+          <UploadTeacherExcel onSuccess={handleSuccess} onError={handleError} onClose={() => setIsOpenPopUpExcel(false)} />
+        ) : (
+          <UploadStudentExcel onSuccess={handleSuccess} onError={handleError} onClose={() => setIsOpenPopUpExcel(false)} />
+        )
+      )}
       </div>
-      </div>
+    </div>
   );
 };
 
 export default Dashboard;
-
-
-
-
