@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-
 import { MEMO_API } from "@/constants/apis";
 import apiClient from "@/components/axios/axiosConfig";
 import Table from "@/components/dashboard/table";
@@ -13,6 +12,7 @@ import Sidebar from "@/components/dashboard/sidebar";
 import TopbarButton from "@/components/button/memo-topbar";
 import MemoPopUp from "@/components/container/memo-popup-notime";
 import MemoButton from "@/components/button/memo-button";
+import AuthGuard from "@/components/AuthGuard/AuthGuard";
 import PopUpAddTeacherList from "@/components/dashboard/add-user/PopUpAddTeacherList";
 import PopUpAddStudentList from "@/components/dashboard/add-user/PopUpAddStudentList";
 import UploadTeacherExcel from "@/components/dashboard/add-user-excel/UploadTeacherExcel";
@@ -54,18 +54,6 @@ interface ParentInfo {
   emailParent: string;
 }
 
-// token
-const checkAuth = () => {
-  const token = localStorage.getItem("userToken");
-  if (!token) return false;
-  try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    return payload.exp * 1000 > Date.now(); // ตรวจสอบว่าหมดอายุหรือยัง
-  } catch (e) {
-    console.log(e);
-    return false;
-  }
-};
 
 const teacherFilterOptions = [
   { value: "all", label: "ทั้งหมด" },
@@ -90,7 +78,7 @@ const studentFilterOptions = [
   { value: "classRoom", label: "ห้องเรียน" },
 ];
 
-const Dashboard = () => {
+const UserManagement = () => {
   const [activeMenu, setActiveMenu] = useState<string>("รายชื่อครู");
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
@@ -111,14 +99,6 @@ const Dashboard = () => {
   const filterOptions =
     activeMenu === "รายชื่อครู" ? teacherFilterOptions : studentFilterOptions;
 
-  useEffect(() => {
-    if (!checkAuth()) {
-      alert("Token หมดอายุ กรุณา Login ใหม่");
-      localStorage.removeItem("token");
-      router.push("/admin/login");
-      return;
-    }
-  }, [router]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -372,16 +352,13 @@ const Dashboard = () => {
   };
 
   return (
+    <AuthGuard>
     <div className="flex bg-system-white w-screen">
       <Sidebar />
       <div className="ml-4 pt-6 p-6 text-title-1 w-full bg-system-white">
         <div className="flex ">
 
-
-        {uploadMessage && <p className="mt-2">{uploadMessage}</p>} {/* ✅ แสดงข้อความอัปโหลดสำเร็จหรือ error */}
-
-
-
+        {uploadMessage && <p className="mt-2">{uploadMessage}</p>} 
      
           <TopbarButton
             name="รายชื่อครู"
@@ -408,7 +385,7 @@ const Dashboard = () => {
           </p>
           <p className="text-[16px] text-body-2">
             รายชื่อ{activeMenu === "รายชื่อครู" ? "คุณครู" : "นักเรียน"}
-            ที่สมัครเข้าใช้งานระบบ Memo
+            ที่ใช้งานระบบ Memo 
           </p>
         </div>
 
@@ -461,14 +438,6 @@ const Dashboard = () => {
             </button>
           )}
 
-          {/* {!deletingMode && (
-            <button
-              onClick={() => setIsPopupOpen(true)}
-              className="bg-system-success-2 rounded-sm w-32 text-system-white"
-            >
-              เพิ่มผู้ใช้
-            </button>
-          )} */}
        <div className="relative inline-block">
           {!deletingMode && ( 
             <button onClick={() => setIsOpen(!isOpen)} className="bg-system-success-2 rounded-sm w-32 text-system-white p-2">เพิ่มผู้ใช้ ▼</button>
@@ -565,7 +534,7 @@ const Dashboard = () => {
                 className="flex justify-center"
               >
                 <button
-                  className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2"
+                  className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2 "
                   onClick={() => handleEdit(student.studentId.toString())}
                 >
                   <EditIcon className="h-6 w-6" />
@@ -685,7 +654,8 @@ const Dashboard = () => {
       )}
       </div>
     </div>
+    </AuthGuard>
   );
 };
 
-export default Dashboard;
+export default UserManagement;

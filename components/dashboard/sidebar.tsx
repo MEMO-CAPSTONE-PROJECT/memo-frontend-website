@@ -19,7 +19,7 @@ const Sidebar = () => {
   const menuItems = [
     { name: "รายชื่อ", path: "/dashboard/user-management", icon: <UserlistIcon /> },
     { name: "จัดการผู้ดูแลระบบ", path: "/dashboard/admin-management", icon: <UsersIcon /> },
-    { name: "คำขอสร้างบัญชี", path: "/dashboard/report", icon: <WarningIcon /> },
+    { name: "คำขอสร้างบัญชี", path: "/dashboard/requests", icon: <WarningIcon /> },
     { name: "ถังขยะ", path: "/dashboard/user-delete", icon: <TrashIcon /> },
     { name: "จัดการโปรไฟล์", path: "/dashboard/setting", icon: <GearIcon /> },
   ];

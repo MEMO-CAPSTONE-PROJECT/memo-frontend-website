@@ -26,5 +26,7 @@ export const Color = {
     "system-error-2-hover": "#B23232",
     "system-success-2": "#24BB6A",
     "system-button": "#3F3DA3",
+    "system-blue": "#E1F2FF",
     "system-light-purple": "#EBDBF1",
+
 }

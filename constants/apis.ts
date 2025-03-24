@@ -1,11 +1,11 @@
 const baseUrl = "https://capstone24.sit.kmutt.ac.th/sy1/apis"
 
 export const MEMO_API = {
-    studentRegister: baseUrl + "/v1/student/register",
-    studentOtp: baseUrl + "/v1/student/otp/verify",
+    studentRegister: baseUrl + "/v1/register/student/otp",
+    studentOtp: baseUrl + "/v1/register/student/verify",
 
-    teacherRegister: baseUrl + "/v1/teacher/register",
-    teacherOtp: baseUrl + "/v1/teacher/otp/verify",
+    teacherRegister: baseUrl + "/v1/register/teacher/otp",
+    teacherOtp: baseUrl + "/v1/register/teacher/verify",
 
     adminRegister: baseUrl + "/v1/admin/register",
     adminLogin: baseUrl + "/v1/admin/login",
@@ -23,5 +23,11 @@ export const MEMO_API = {
     teacherAddForm : baseUrl + "/v1/teacher/form",
     studentAddExcel : baseUrl + "/v1/student/excel",
     teacherAddExcel : baseUrl + "/v1/teacher/excel",
+
+    //Approve user
+    allUserRequests : baseUrl +"/v1/registers",
+    teacherApprove : baseUrl +"/v1/register/teacher/approve",
+    studentApprove : baseUrl +"/v1/register/student/approve",
+    allUserDecline : baseUrl + "/v1/register/decline"
 
 }

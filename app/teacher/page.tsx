@@ -19,21 +19,22 @@ export default function TeacherRegistrationForm() {
   const [showOtpPopup, setShowOtpPopup] = useState(false)
   const formSchema = z
   .object({
-    position: z.string().min(1, "เลือกตำแหน่งของคุณ"),
-    email: z
-      .string()
-      .email("กรุณากรอกอีเมลในรูปแบบที่ถูกต้อง เช่น example@example.com")
-      .min(1, "กรุณากรอกอีเมลของคุณครู"),
-    firstName: z.string().min(1, "กรุณากรอกชื่อของคุณครู"),
-    lastName: z.string().min(1, "กรุณากรอกนามสกุลของคุณครู"),
-    gender: z.string().min(1, "เลือกเพศของคุณ"),
-    phoneNumber: z
-      .string()
-      .regex(/^\d+$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข")
-      .length(10, "เบอร์โทรศัพท์ต้องมีจำนวน 10 หลัก")
-      .min(1, "กรุณากรอกเบอร์โทรศัพท์ของคุณครู"),
-    class: z
-      .object({
+    role: z.literal("teacher"),
+    registerTeacherData: z.object({
+      position: z.string().min(1, "เลือกตำแหน่งของคุณ"),
+      email: z
+        .string()
+        .email("กรุณากรอกอีเมลในรูปแบบที่ถูกต้อง เช่น example@example.com")
+        .min(1, "กรุณากรอกอีเมลของคุณครู"),
+      firstName: z.string().min(1, "กรุณากรอกชื่อของคุณครู"),
+      lastName: z.string().min(1, "กรุณากรอกนามสกุลของคุณครู"),
+      gender: z.string().min(1, "เลือกเพศของคุณ"),
+      phoneNumber: z
+        .string()
+        .regex(/^\d+$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข")
+        .length(10, "เบอร์โทรศัพท์ต้องมีจำนวน 10 หลัก")
+        .min(1, "กรุณากรอกเบอร์โทรศัพท์ของคุณครู"),
+      class: z.object({
         room: z
           .string()
           .regex(/^\d+$/, "ห้องเรียนของคุณครูต้องเป็นตัวเลข")
@@ -42,48 +43,56 @@ export default function TeacherRegistrationForm() {
           .string()
           .regex(/^\d+$/, "ชั้นเรียนของคุณครูต้องเป็นตัวเลข")
           .min(1, "กรุณากรอกชั้นเรียนของคุณครู"),
-      })
-      .optional(),
+      }).optional(),
+    }),
   })
   .refine(
     (data) => {
-      if (data.position === "ครูประจำชั้น") {
-        return data.class?.room && data.class?.level;
+      if (data.registerTeacherData.position === "ครูประจำชั้น") {
+        return (
+          data.registerTeacherData.class?.room &&
+          data.registerTeacherData.class?.level
+        );
       }
       return true;
     },
     {
       message: "กรุณากรอกข้อมูลชั้นเรียนและห้องเรียน",
-      path: ["class"],
+      path: ["registerTeacherData", "class"],
     }
   );
 
   interface FormData {
-    position: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    gender: string;
-    class: {
-      room: string;
-      level: string;
+    role: "teacher";
+    registerTeacherData: {
+      position: string;
+      email: string;
+      firstName: string;
+      lastName: string;
+      gender: string;
+      class?: {
+        room: string;
+        level: string;
+      };
+      phoneNumber: string;
     };
-    phoneNumber: string;
   }
-
-
+  
   const [formData, setFormData] = useState<FormData>({
-    position: "",
-    email: "",
-    firstName: "",
-    lastName: "",
-    gender: "",
-    class:{
-      room: "",
-      level:"" 
-  },
-    phoneNumber: "",
-  })
+    role: "teacher",
+    registerTeacherData: {
+      position: "",
+      email: "",
+      firstName: "",
+      lastName: "",
+      gender: "",
+      class: {
+        room: "",
+        level: "",
+      },
+      phoneNumber: "",
+    },
+  });
 
   const [errors, setErrors] = useState<ZodFormattedError<z.infer<typeof formSchema>, string>>()
   const [submitStatus, setSubmitStatus] = useState<string>("")
@@ -92,13 +101,22 @@ export default function TeacherRegistrationForm() {
   
     setFormData((prev) => ({
       ...prev,
-      class: name === "room" || name === "level"
-        ? { ...prev.class, [name]: value }  
-        : prev.class,  
-      ...(name !== "room" && name !== "level" ? { [name]: value } : {}), 
+      registerTeacherData: {
+        ...prev.registerTeacherData,
+        ...(name === "room" || name === "level"
+          ? prev.registerTeacherData.position === "ครูประจำชั้น"
+            ? { 
+                class: { 
+                  ...(prev.registerTeacherData.class ?? { room: "", level: "" }), 
+                  [name]: value 
+                } 
+              }
+            : {} // ถ้าไม่ใช่ "ครูประจำชั้น" ให้ลบ `class` ออกไป
+          : { [name]: value }),
+      },
     }));
-    // setErrors((prev) => { ...prev})
   };
+  
   
   
 
@@ -107,35 +125,36 @@ export default function TeacherRegistrationForm() {
   
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
-      class: value === "ครูประจำชั้น" ? prev.class : { level: "", room: "" }, 
+      registerTeacherData: {
+        ...prev.registerTeacherData,
+        [name]: value,
+        class: value === "ครูประจำชั้น" ? prev.registerTeacherData.class : undefined,
+      },
     }));
-    
   };
 
   const sendForm = async () => {
-    
     try {
       const payload =
-        formData.position === "ครูประจำชั้น"
+        formData.registerTeacherData.position === "ครูประจำชั้น"
           ? formData
-          : { ...formData, class: undefined };
+          : { ...formData, registerTeacherData: { ...formData.registerTeacherData, class: undefined } };
   
       formSchema.parse(payload);
-      setErrors(undefined)
+      setErrors(undefined);
       await axios.post(MEMO_API.teacherRegister, payload);
       setShowOtpPopup(true);
       console.log("ผ่าน");
       console.log(payload);
-      setSubmitStatus("")
-
-    }catch (error) {
+      setSubmitStatus("");
+    } catch (error) {
       if (error instanceof z.ZodError) {
         console.log("Validation ไม่ผ่าน:", error.format());
+
         setErrors(error.format());
       } else if (axios.isAxiosError(error) && error.response) {
         console.log("API Response Error:", error.response.data);
-        setSubmitStatus("อีเมล์หรือเบอร์นี้ถูกใช้งานแล้ว ลองใช้อีเมลอื่น")
+        setSubmitStatus("อีเมล์หรือเบอร์นี้ถูกใช้งานแล้ว ลองใช้อีเมลอื่น");
         setErrors(error.response.data.message);
       } else {
         console.error("เกิดข้อผิดพลาด:", error);
@@ -163,10 +182,12 @@ export default function TeacherRegistrationForm() {
     setIsLoading(true)
     const data = {
       otp: otp,
-      emailTeacher: formData.email,
+      email: formData.registerTeacherData.email,
     }
     try {
+      
       const response = await axios.post(MEMO_API.teacherOtp, data)
+      console.log(data)
       if (response.status === 200) {
         setShowOtpPopup(false)
         setShowSuccesPopup(true)
@@ -174,6 +195,7 @@ export default function TeacherRegistrationForm() {
 
       }
     } catch (error) {
+      console.log(data)
       console.log(error);
       setError("ไม่สามารถยืนยันรหัส OTP ได้ กรุณาลองใหม่อีกครั้ง")
       setIsLoading(false)
@@ -198,7 +220,7 @@ export default function TeacherRegistrationForm() {
         <MemoPopUp show={showSuccessPopup} onClose={handleClosePopup} redirectUrl="/">
           <LetterIcon className="space-x-xl w-48 h-56  " />
           <h2 className="text-title font-bold mb-2">ลงทะเบียนผู้ใช้สำเร็จ</h2>
-          <p className='text-body mb-4 '>กลับไปยังหน้าเลือกผู้ใช้</p>
+          <p className='text-body mb-4 '>กรุณารอการอนุมัติจากทางคุณครู</p>
         </MemoPopUp>
 
         <section className="flex flex-col items-center overflow-auto space-y-xl">
@@ -210,8 +232,8 @@ export default function TeacherRegistrationForm() {
             type="text"
             name="firstName"
             placeholder="กรุณาพิมพ์ชื่อของคุณ"
-            error={errors?.firstName?._errors[0]}
-            value={formData.firstName}
+            error={errors?.registerTeacherData?.firstName?._errors[0]}
+            value={formData.registerTeacherData.firstName}
             onChange={handleChange}
           />
 
@@ -220,8 +242,8 @@ export default function TeacherRegistrationForm() {
             type="text"
             name="lastName"
             placeholder="กรุณาพิมพ์นามสกุลของคุณ"
-            error={errors?.lastName?._errors[0]}
-            value={formData.lastName}
+            error={errors?.registerTeacherData?.lastName?._errors[0]}
+            value={formData.registerTeacherData.lastName}
             onChange={handleChange}
           />
 
@@ -230,8 +252,8 @@ export default function TeacherRegistrationForm() {
             type="email"
             name="email"
             placeholder="กรุณาพิมพ์อีเมลของคุณ"
-            error={errors?.email?._errors[0]}
-            value={formData.email}
+            error={errors?.registerTeacherData?.email?._errors[0]}
+            value={formData.registerTeacherData.email}
             onChange={handleChange}
           />
           <div className='flex flex-row gap-x-lg'>
@@ -241,49 +263,50 @@ export default function TeacherRegistrationForm() {
               options={["หญิง", "ชาย"]}
               onChange={handleSelect}
               placeholder="เลือกเพศ"
-              value={formData.gender}
-              error={errors?.gender?._errors[0]}
+              value={formData.registerTeacherData.gender}
+              error={errors?.registerTeacherData?.gender?._errors[0]}
             />
 
             <MemoSelectHeader
               label="ตำแหน่ง"
               name="position"
               options={["ครูประจำชั้น", "ครูฝ่ายปกครอง"]}
-              error={errors?.position?._errors[0]}
-              value={formData.position}
+              error={errors?.registerTeacherData?.position?._errors[0]}
+              value={formData.registerTeacherData.position}
               onChange={handleSelect}
               placeholder="เลือกตำแหน่ง"
             />
           </div>
-      {formData.position === "ครูประจำชั้น" && (
-        <div className="w-full md:w-[48%] flex space-x-4">
-          <MemoInputHeader
-            text="ชั้นเรียน"
-            type="text"
-            name="level"
-            placeholder="กรุณาพิมพ์ชั้นเรียน"
-            error={errors?.class?.level?._errors[0]}
-            value={formData.class.level}
-            onChange={handleChange}
-          />
-          <MemoInputHeader
-            text="ห้องเรียน"
-            type="text"
-            name="room"
-            placeholder="กรุณาพิมพ์ห้องเรียน"
-            error={errors?.class?.room?._errors[0]}
-            value={formData.class.room}
-            onChange={handleChange}
-          />
-        </div>
-      )}
+          {formData.registerTeacherData.position === "ครูประจำชั้น" && (
+            <div className="w-full md:w-[48%] flex space-x-4">
+              <MemoInputHeader
+                text="ชั้นเรียน"
+                type="text"
+                name="level"
+                placeholder="กรุณาพิมพ์ชั้นเรียน"
+                error={errors?.registerTeacherData?.class?.level?._errors[0]}
+                value={formData.registerTeacherData?.class?.level || ""}
+                onChange={handleChange}
+              />
+              <MemoInputHeader
+                text="ห้องเรียน"
+                type="text"
+                name="room"
+                placeholder="กรุณาพิมพ์ห้องเรียน"
+                error={errors?.registerTeacherData?.class?.room?._errors[0]}
+                value={formData.registerTeacherData?.class?.room || ""}
+                onChange={handleChange}
+              />
+            </div>
+          )}
+
           <MemoInputHeader
             text="เบอร์โทรศัพท์"
             type="text"
             name="phoneNumber"
             placeholder="กรุณาพิมพ์เบอร์โทรศัพท์ของคุณ"
-            error={errors?.phoneNumber?._errors[0]}
-            value={formData.phoneNumber}
+            error={errors?.registerTeacherData?.phoneNumber?._errors[0]}
+            value={formData.registerTeacherData.phoneNumber}
             onChange={handleChange}
           />
 

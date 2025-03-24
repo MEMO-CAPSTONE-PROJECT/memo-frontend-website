@@ -8,11 +8,12 @@ interface Column {
 
 interface TableProps<T> {
   columns: Column[];
-  data: T[]; // ใช้ Generic แทน any[]
-  renderRow: (item: T) => React.ReactNode[]; // ใช้ Generic แทน any
+  data: T[];
+  renderRow: (item: T) => React.ReactNode[];
   loading?: boolean;
   error?: string | null;
 }
+
 
 const Table = <T,>({ columns, data, renderRow, loading, error }: TableProps<T>) => {
   return (
