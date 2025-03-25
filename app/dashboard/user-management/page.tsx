@@ -340,16 +340,6 @@ const UserManagement = () => {
   ];
 
   const [isOpenPopUpExcel, setIsOpenPopUpExcel] = useState(false);
-  const [uploadMessage, setUploadMessage] = useState<string | null>(null); // ✅ State เก็บข้อความสำเร็จหรือ error
-
-  const handleSuccess = (message: string) => {
-    setUploadMessage(`✅ ${message}`);
-    setIsOpenPopUpExcel(false);
-  };
-
-  const handleError = (errorMessage: string) => {
-    setUploadMessage(`❌ ${errorMessage}`);
-  };
 
   return (
     <AuthGuard>
@@ -357,9 +347,6 @@ const UserManagement = () => {
       <Sidebar />
       <div className="ml-4 pt-6 p-6 text-title-1 w-full bg-system-white">
         <div className="flex ">
-
-        {uploadMessage && <p className="mt-2">{uploadMessage}</p>} 
-     
           <TopbarButton
             name="รายชื่อครู"
             isActive={activeMenu === "รายชื่อครู"}
@@ -438,22 +425,37 @@ const UserManagement = () => {
             </button>
           )}
 
-       <div className="relative inline-block">
-          {!deletingMode && ( 
-            <button onClick={() => setIsOpen(!isOpen)} className="bg-system-success-2 rounded-sm w-32 text-system-white p-2">เพิ่มผู้ใช้ ▼</button>
-          )}
+<div 
+  className="relative inline-block"
+  onMouseLeave={() => setIsOpen(false)} // ปิดเมนูเมื่อเอาเมาส์ออก
+>
+  {!deletingMode && ( 
+    <button 
+      onClick={() => setIsOpen(!isOpen)} 
+      className="bg-system-success-2 rounded-sm w-32 text-system-white p-2"
+    >
+      เพิ่มผู้ใช้   ▼
+    </button>
+  )}
 
-        {isOpen && (
-           <div className="absolute right-0 mt-2 w-48 bg-system-white border rounded shadow-md z-10">
-            <button onClick={() => { setIsPopupOpen(true); setIsOpen(false);}} className="block w-full text-left px-4 py-2 hover:bg-body-1">
-              เพิ่มผู้ใช้จาก Form
-            </button>
-            <button onClick={() => setIsOpenPopUpExcel(true)} className="block w-full text-left px-4 py-2 hover:bg-body-1">
-              เพิ่มผู้ใช้จาก Excel
-            </button>
-          </div>
-        )}
-          </div>
+  {isOpen && (
+    <div className="absolute right-0 mt- w-48 bg-system-white border border-2 border-xsm border-system-gray">
+      <button 
+        onClick={() => { setIsPopupOpen(true); setIsOpen(false); }} 
+        className="block w-full text-left px-4 py-2 hover:bg-body-2"
+      >
+        เพิ่มผู้ใช้จาก Form
+      </button>
+      <button 
+        onClick={() => setIsOpenPopUpExcel(true)} 
+        className="block w-full text-left px-4 py-2 hover:bg-body-2"
+      >
+        เพิ่มผู้ใช้จาก Excel
+      </button>
+    </div>
+  )}
+</div>
+
         </div>
 
         {activeMenu === "รายชื่อครู" && (
@@ -635,23 +637,30 @@ const UserManagement = () => {
           <PopUpAddTeacherList
             isOpen={isPopupOpen}
             onClose={() => setIsPopupOpen(false)}
-            onAddSuccess={() => fetchData()} // ✅ โหลดข้อมูลใหม่เมื่อเพิ่มสำเร็จ
+            onAddSuccess={() => fetchData()} 
           />
         ) : (
           <PopUpAddStudentList
             isOpen={isPopupOpen}
             onClose={() => setIsPopupOpen(false)}
-            onAddSuccess={() => fetchData()} // ✅ โหลดข้อมูลใหม่เมื่อเพิ่มสำเร็จ
+            onAddSuccess={() => fetchData()}
           />
         )}
 
 {isOpenPopUpExcel && (
-        activeMenu === "รายชื่อครู" ? (
-          <UploadTeacherExcel onSuccess={handleSuccess} onError={handleError} onClose={() => setIsOpenPopUpExcel(false)} />
-        ) : (
-          <UploadStudentExcel onSuccess={handleSuccess} onError={handleError} onClose={() => setIsOpenPopUpExcel(false)} />
-        )
-      )}
+  activeMenu === "รายชื่อครู" ? (
+    <UploadTeacherExcel onClose={() => {
+      setIsOpenPopUpExcel(false);
+      fetchData(); 
+    }} />
+  ) : (
+    <UploadStudentExcel onClose={() => {
+      setIsOpenPopUpExcel(false);
+      fetchData(); 
+    }} />
+  )
+)}
+
       </div>
     </div>
     </AuthGuard>

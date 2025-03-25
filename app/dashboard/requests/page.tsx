@@ -92,7 +92,7 @@ const UserRequests = () => {
 
 
   const columnsTeacher = [
-    { header: "ID", key: "id", className: "w-20" },
+    { header: "รหัส", key: "id", className: "w-20" },
     { header: "ชื่อ", key: "firstName" },
     { header: "นามสกุล", key: "lastName" },
     { header: "ตำแหน่ง", key: "position" },
@@ -106,7 +106,7 @@ const UserRequests = () => {
 
   // 🔹 คอลัมน์ของนักเรียน
   const columnsStudent = [
-    { header: "ID", key: "id", className: "w-20" },
+    { header: "รหัส", key: "id", className: "w-20" },
     { header: "ชื่อ", key: "firstName" },
     { header: "นามสกุล", key: "lastName" },
     { header: "ชั้น", key: "classLevelRoom" },
@@ -143,9 +143,9 @@ const UserRequests = () => {
   };
 
   const getStatusCell = (status: string) => {
-    let bgColor = "bg-gray-200"; 
+    let bgColor = "bg-body-2"; 
     if (status === "อนุมัติ") bgColor = "bg-system-success-light border-system-success-2 rounded-sm text-system-success-2";
-    else if (status === "ไม่อนุมัติ") bgColor = "bg-secondary-4 border-system-success-2 rounded-sm text-system-error-2 ";
+    else if (status === "ไม่อนุมัติ") bgColor = "bg-secondary-4 border-system-success-2 rounded-sm text-system-error-2  ";
     else if (status === "รอดำเนินการ") bgColor = "bg-system-blue text-system-button border-system-button rounded-sm";
   
     return <span className={`px-2 py-1 rounded text-center ${bgColor}`}>{status}</span>;
@@ -155,13 +155,13 @@ const UserRequests = () => {
     const actionButtons = (id: number, role: string) => (
       <div className="flex gap-2">
         <button
-          className="bg-system-success-2 text-system-white px-6 py-2 rounded-sm flex items-center space-x-2"
+          className="bg-system-success-2 text-system-white px-6 py-2 rounded-sm  items-center space-x-2"
           onClick={() => handleApprove(id, role)}
         >
           อนุมัติ
         </button>
         <button
-          className="bg-system-error-2 text-system-white px-6 py-2 rounded-sm flex items-center space-x-2"
+          className="bg-system-error-2 text-system-white px-6 py-2 rounded-sm items-center space-x-2"
           onClick={() => handleReject(id)}
         >
           ปฏิเสธ
@@ -231,6 +231,12 @@ const UserRequests = () => {
       ? baseColumns
       : baseColumns.filter((col) => col.key !== "action");
 
+  const statusOptions = [
+        { value: "อนุมัติ", label: "อนุมัติ" },
+        { value: "ไม่อนุมัติ", label: "ไม่อนุมัติ" },
+        { value: "รอดำเนินการ", label: "รอดำเนินการ" },
+      ];
+
   return (
     <AuthGuard>
     <div className="flex bg-system-white w-screen">
@@ -249,45 +255,25 @@ const UserRequests = () => {
             onClick={() => setActiveMenu("รายชื่อนักเรียน")}
           />
         </div>
+
         <div className="pt-8">
-          <p className="text-[20px] font-semibold">
-            ระบบจัดการคำขอสร้างบัญชี
-            {activeMenu === "รายชื่อครู" ? "คุณครู" : "นักเรียน"}
-          </p>
-          <p className="text-[16px] text-body-2">
-          รายชื่อ{activeMenu === "รายชื่อครู" ? "คุณครู" : "นักเรียน"}
-            ที่สมัครเข้าใช้งานระบบ Memo และรอการอนุมัติ
-          </p>
+          <p className="text-[20px] font-semibold">ระบบจัดการคำขอสร้างบัญชี{activeMenu === "รายชื่อครู" ? "คุณครู" : "นักเรียน"}</p>
+          <p className="text-[16px] text-body-2">รายชื่อ{activeMenu === "รายชื่อครู" ? "คุณครู" : "นักเรียน"}ที่สมัครเข้าใช้งานระบบ Memo และรอการอนุมัติ</p>
         </div>
 
-        <div className="flex gap-2 my-4">
-  <button
-    className={`px-4 py-2 rounded ${statusFilter === "อนุมัติ" ? "bg-green-500 text-white" : "bg-gray-200"}`}
-    onClick={() => handleStatusFilter("อนุมัติ")}
-  >
-    อนุมัติ
-  </button>
-  <button
-    className={`px-4 py-2 rounded ${statusFilter === "ไม่อนุมัติ" ? "bg-red-500 text-white" : "bg-gray-200"}`}
-    onClick={() => handleStatusFilter("ไม่อนุมัติ")}
-  >
-    ไม่อนุมัติ
-  </button>
-  <button
-    className={`px-4 py-2 rounded ${statusFilter === "รอดำเนินการ" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-    onClick={() => handleStatusFilter("รอดำเนินการ")}
-  >
-    รอดำเนินการ
-  </button>
-</div>
-
-<Table<TeacherData | StudentData>
-  columns={filteredColumns}
-  data={filteredData}
-  renderRow={renderRow}
-  loading={loading}
-  error={error}
-/>
+        <Filterbutton
+          options={statusOptions}
+          selectedFilter={statusFilter}
+          onChange={handleStatusFilter}
+        />;
+            {/* <Searchbar onSearch={setSearchText} /> */}
+        <Table<TeacherData | StudentData>
+          columns={filteredColumns}
+          data={filteredData}
+          renderRow={renderRow}
+          loading={loading}
+          error={error}
+        />
 
 
         </div>

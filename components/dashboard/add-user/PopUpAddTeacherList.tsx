@@ -185,7 +185,7 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClo
   if (!isOpen) return null;
   return (
 <div className="fixed inset-0 flex items-center justify-center bg-title-1 bg-opacity-50 px-4">
-  <div className="bg-system-white p-6 md:p-8 rounded-lg shadow-lg w-full max-w-lg md:max-w-2xl relative">
+  <div className="bg-system-white p-6 md:p-8 rounded-md shadow-lg w-full max-w-lg md:max-w-2xl relative">
     <h2 className="font-bold mb-4 text-[18px] text-left">เพิ่มรายชื่อคุณครู</h2>
     <form onSubmit={handleSubmit} className="space-y-3">
       <div className="flex flex-wrap gap-4">
@@ -282,7 +282,7 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClo
       </div>
       {error && <p className="text-system-error">{error}</p>}
       
-      <div className="flex space-x-4 ">
+      <div className="flex space-x-4 pt-2 ">
         <MemoButton title="ยกเลิก" variant="ghost" onClick={handleClose} />
         <MemoButton title="เพิ่ม" variant="primary" disabled={loading} type="submit" />
       </div>

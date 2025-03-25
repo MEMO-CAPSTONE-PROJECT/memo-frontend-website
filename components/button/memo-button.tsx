@@ -18,12 +18,14 @@ interface MemoButtonVariant {
     ghost: string
     cancle: string
     cancleghost: string
+    disable: string
 }
 
 export default function MemoButton({ title, variant = "primary", size = "full", ...props }: Readonly<MemoButtonProps>) {
     const variants: MemoButtonVariant = {
         primary: "bg-primary-2 text-system-white hover:bg-primary-2-hover",
         secondary: "bg-secondary-2 text-system-white hover:bg-secondary-2-hover",
+        disable: "bg-body-2 text-system-white ",
         ghost: "inner-border-primary-2 inner-border-xsm text-primary-2 hover:bg-primary-2 hover:text-system-white",
         cancle: "bg-system-error-2 text-system-white hover:bg-system-error-2-hover",
         cancleghost: "inner-border-system-error-2 inner-border-xsm text-system-error-2 hover:bg-system-error-2 hover:text-system-white",
