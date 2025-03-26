@@ -418,7 +418,7 @@ const UserManagement = () => {
 
           {deletingMode && (
             <button
-              className="bg-body-2 rounded-sm w-32 text-system-white"
+              className="bg-body-2 rounded-sm w-32 text-system-white "
               onClick={handleToggleDeleteMode}
             >
               ยกเลิก
@@ -432,7 +432,7 @@ const UserManagement = () => {
   {!deletingMode && ( 
     <button 
       onClick={() => setIsOpen(!isOpen)} 
-      className="bg-system-success-2 rounded-sm w-32 text-system-white p-2"
+      className="bg-system-success-2 rounded-sm w-32 text-system-white "
     >
       เพิ่มผู้ใช้   ▼
     </button>
