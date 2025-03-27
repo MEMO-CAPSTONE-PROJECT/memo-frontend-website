@@ -248,3 +248,4 @@ const PopUpAddAdmin: React.FC<PopUpAddAdminProps> = ({
 };
 
 export default PopUpAddAdmin;
+

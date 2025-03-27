@@ -6,6 +6,7 @@ import Table from "@/components/dashboard/table";
 import { MEMO_API } from "@/constants/apis";
 import AuthGuard from "@/components/AuthGuard/AuthGuard";
 import PopUpAddAdminList from "@/components/dashboard/add-user/PopUpAddAdminList";
+import PopUpEditAdminList from "@/components/dashboard/Edit-popup/PopUpEditAdmin"; // Import PopUpEditAdminList
 import MemoButton from "@/components/button/memo-button";
 import Searchbar from "@/components/dashboard/searchbar";
 import EditIcon from "@/components/ui/icons/dashboard/edit-icon";
@@ -19,22 +20,30 @@ interface AdminTable {
   role: string;
 }
 
-const Dashboard = () => {
+interface AdminData {
+  teacherId: number;
+  firstName: string;
+  lastName: string;
+  userName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+const AdminManagement = () => {
   const [data, setData] = useState<AdminTable[] | undefined>(undefined);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loadingAdd, setLoadingAdd] = useState<boolean>(false);
+  const [errorGet, setErrorGet] = useState<string | null>(null);
+  const [isAdminAddPopupOpen, setIsAdminAddPopupOpen] = useState(false);
+  const [isAdminEditPopupOpen, setIsAdminEditPopupOpen] = useState(false); // State for edit popup
+  const [selectedAdmin, setSelectedAdmin] = useState<AdminData | null>(null); // Selected admin for edit
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
-      setError(null);
+      setLoadingAdd(true);
+      setErrorGet(null);
       try {
         const response = await apiClient.get(MEMO_API.adminList);
-        console.log(response);
-        console.log(response.data.data);
-        console.log(response.data); // ดูโครงสร้างของข้อมูล
-        console.log(response.data.data.registers); // ตรวจสอบว่า fields ตรงหรือไม่
-
         if (response.data.data.registers) {
           const registers: AdminTable[] = response.data.data.registers;
           setData(registers);
@@ -42,9 +51,9 @@ const Dashboard = () => {
           setData([]);
         }
       } catch (err: any) {
-        setError(err.message || "เกิดข้อผิดพลาดในการดึงข้อมูล");
+        setErrorGet(err.message || "เกิดข้อผิดพลาดในการดึงข้อมูล");
       } finally {
-        setLoading(false);
+        setLoadingAdd(false);
       }
     };
 
@@ -57,7 +66,7 @@ const Dashboard = () => {
     { header: "นามสกุล", key: "lastName" },
     { header: "ชื่อผู้ใช้", key: "username" },
     { header: "อีเมล", key: "email" },
-    { header: "Action", key: "action" }, // ✅ เพิ่มคอลัมน์ Action
+    { header: "Action", key: "action" },
   ];
 
   const renderRow = (item: AdminTable) => {
@@ -67,30 +76,36 @@ const Dashboard = () => {
       item.lastName,
       item.username,
       item.email,
-                      <button
-                        className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2"
-                        onClick={() => handleEditAdmin(item)}
-                        key={item.teacherId} // ใช้ key เพื่อระบุปุ่มแก้ไขเฉพาะแถว
-                      >
-                        <EditIcon className="h-6 w-6" />
-                        <span>แก้ไข</span>
-                      </button>
-
+      <button
+        className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2"
+        onClick={() => handleEditAdmin(item)} // Call edit on button click
+        key={item.teacherId} 
+      >
+        <EditIcon className="h-6 w-6" />
+        <span>แก้ไข</span>
+      </button>,
     ];
   };
+
   const handleEditAdmin = (item: AdminTable) => {
-    console.log("แก้ไขข้อมูลของ:", item);
-    // สามารถเปิด PopUp หรือทำการแก้ไขข้อมูลได้
+    const adminData: AdminData = {
+      teacherId: item.teacherId,
+      firstName: item.firstName,
+      lastName: item.lastName,
+      userName: item.username,  // แปลง username เป็น userName
+      email: item.email,
+      password: "",  // กำหนดค่าเริ่มต้น
+      confirmPassword: "",  // กำหนดค่าเริ่มต้น
+    };
+  
+    setSelectedAdmin(adminData);  // ตั้งค่า state ให้เป็น AdminData
+    setIsAdminEditPopupOpen(true);  // เปิด PopUp
   };
-  const [isAdminPopupOpen, setIsAdminPopupOpen] = useState(false);
 
-  // ฟังก์ชันเปิด/ปิด PopUp
-  const openAdminPopup = () => setIsAdminPopupOpen(true);
-  const closeAdminPopup = () => setIsAdminPopupOpen(false);
+  const closeAdminAddPopup = () => setIsAdminAddPopupOpen(false);
+  const openAdminAddPopup = () => setIsAdminAddPopupOpen(true);
 
-  // ฟังก์ชันเมื่อเพิ่ม admin สำเร็จ
   const handleAddAdminSuccess = () => {
-    // คุณสามารถทำสิ่งที่ต้องการหลังจากเพิ่ม admin สำเร็จ เช่น รีเฟรชข้อมูล
     console.log("Admin Added Successfully!");
   };
 
@@ -113,26 +128,33 @@ const Dashboard = () => {
             <MemoButton
               title="ลบผู้ดูแลระบบ"
               variant="cancle"
-              onClick={openAdminPopup}
+              onClick={openAdminAddPopup}
             />
             <MemoButton
               title="เพิ่มผู้ดูแลระบบ"
               variant="success"
-              onClick={openAdminPopup}
+              onClick={openAdminAddPopup}
             />
           </div>
           {/* เรียกใช้งาน PopUpAddAdmin */}
           <PopUpAddAdminList
-            isOpen={isAdminPopupOpen}
-            onClose={closeAdminPopup}
+            isOpen={isAdminAddPopupOpen}
+            onClose={closeAdminAddPopup}
             onAddSuccess={handleAddAdminSuccess}
+          />
+          {/* เรียกใช้งาน PopUpEditAdminList */}
+          <PopUpEditAdminList
+            isOpen={isAdminEditPopupOpen}
+            onClose={() => setIsAdminEditPopupOpen(false)}
+            onEditSuccess={() => console.log("Admin Edited Successfully!")}
+            adminData={selectedAdmin} // Pass selected admin data to the popup
           />
           <Table
             columns={columns}
             data={data || []}
             renderRow={renderRow}
-            loading={loading}
-            error={error}
+            loading={loadingAdd}
+            error={errorGet}
           />
         </div>
       </div>
@@ -140,4 +162,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default AdminManagement;
