@@ -432,7 +432,7 @@ const UserManagement = () => {
   {!deletingMode && ( 
     <button 
       onClick={() => setIsOpen(!isOpen)} 
-      className="bg-system-success-2 rounded-sm w-32 text-system-white "
+      className="bg-system-success-2 rounded-sm w-32 text-system-white h-full"
     >
       เพิ่มผู้ใช้   ▼
     </button>

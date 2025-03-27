@@ -37,5 +37,13 @@ export const MEMO_API = {
     teacherTrashes : baseUrl + "/v1/trash/teacher",
     allDeleteTrashes : baseUrl + "/v1/trash",
 
+    //Admin-Management
+    adminList: baseUrl + "/v1/admins?role=Teacher%20Staff",
+    adminDeleteList: baseUrl + "/v1/admin",
+    adminAddForm: baseUrl + "/v1/admin",
+    adminEdit: baseUrl + "/v1/admin/"
+
+
+
 
 }

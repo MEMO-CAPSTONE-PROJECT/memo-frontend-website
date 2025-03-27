@@ -33,7 +33,8 @@ const Table = <T,>({ columns, data, renderRow, loading, error }: TableProps<T>) 
             </tr>
           </thead>
           <tbody>
-            {data.length > 0 ? (
+            {data && data.length > 0 ? (
+
               data.map((item, index) => (
                 <tr key={index} className="border border-b-2xsm border-system-gray min-w-full table-auto text-[16px] text-center">
                   {renderRow(item).map((cell, cellIndex) => (

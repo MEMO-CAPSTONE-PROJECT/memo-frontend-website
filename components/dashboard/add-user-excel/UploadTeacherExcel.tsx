@@ -4,7 +4,7 @@ import { MEMO_API } from "@/constants/apis";
 import MemoButton from "@/components/button/memo-button";
 import ExcelLogo from "@/components/ui/icons/dashboard/microsoft-excel-logo";
 import UploadIcon from "@/components/ui/icons/dashboard/upload";
-import UserAddIcon from "@/components/ui/icons/dashboard/user-plus";
+import SuccessIcon from "@/components/ui/icons/pop-up/success-icon";
 
 interface UploadTeacherExcelProps {
   onClose: () => void;
@@ -139,13 +139,9 @@ const UploadTeacherExcel: React.FC<UploadTeacherExcelProps> = ({ onClose }) => {
           </div>
         </div>
       ) : (
-        // Pop-up แจ้งเตือนอัปโหลดสำเร็จ
-        <div className="bg-system-white p-6 rounded-md shadow-2xl w-96 text-center">
-           <UserAddIcon className="w-44 h-44 p-6 pr-4 mr-2 bg-system-success-2 mb-6 rounded-full mt-6"/>
-          <h2 className="text-2xl font-semibold text-green-600 mb-4">
-            อัปโหลดรายชื่อเข้าสู่ระบบสำเร็จ!
-          </h2>
-          <p className="text-title-1 text-sm">รายชื่อคุณครูถูกเพิ่มเรียบร้อยแล้ว</p>
+         <div className="bg-system-white p-6 rounded-md shadow-2xl w-96 text-center">
+         <SuccessIcon className="w-24 h-24 mx-auto mb-4 " />
+         <h2 className="text-title font-bold text-center">เพิ่มรายชื่อคุณครูสำเร็จ</h2>
         </div>
       )}
     </div>
