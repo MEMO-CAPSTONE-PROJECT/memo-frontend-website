@@ -20,6 +20,7 @@ interface MemoButtonVariant {
     cancleghost: string
     disable: string
     success:string
+    Bluebutton:string
 }
 
 export default function MemoButton({ title, variant = "primary", size = "full", ...props }: Readonly<MemoButtonProps>) {
@@ -31,6 +32,7 @@ export default function MemoButton({ title, variant = "primary", size = "full", 
         cancle: "bg-system-error-2 text-system-white hover:bg-system-error-2-hover",
         cancleghost: "inner-border-system-error-2 inner-border-xsm text-system-error-2 hover:bg-system-error-2 hover:text-system-white",
         success:"bg-system-success-2 rounded-sm  text-system-white h-full w-full hover:bg-system-success-2-hover",
+        Bluebutton: "bg-system-button text-system-white w-1/6 ",
     }
     const sizes: MemoButtonSize = {
         full: "w-full",

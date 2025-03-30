@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import apiClient from "@/components/axios/axiosConfig";
 import { z, type ZodFormattedError } from "zod";
 
 import { MEMO_API } from "@/constants/apis";
@@ -137,6 +137,7 @@ const PopUpEditTeacherList: React.FC<PopUpEditTeacherListProps> = ({
   
     if (!result.success) {
       setErrors(result.error.format());
+      
       return;
     }
   
@@ -150,10 +151,10 @@ const PopUpEditTeacherList: React.FC<PopUpEditTeacherListProps> = ({
       return rest;
     };
     const filteredFormData = getFilteredFormData(formData);
-  
+    console.log(filteredFormData)
     try {
-      await axios.put(`${MEMO_API.teacherEdit}/${teacherId}`, filteredFormData);
-      
+      await apiClient.put(`${MEMO_API.teacherEdit}/${teacherId}`, filteredFormData);
+      console.log(filteredFormData)
       setError(null);
       onEditSuccess();
       setIsSuccess(true);
