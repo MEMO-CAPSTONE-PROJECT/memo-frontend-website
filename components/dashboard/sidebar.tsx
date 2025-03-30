@@ -4,7 +4,6 @@ import UserlistIcon from "@/components/ui/icons/sidebar-icons/user-list";
 import UsersIcon from "@/components/ui/icons/sidebar-icons/users";
 import WarningIcon from "@/components/ui/icons/sidebar-icons/warningIcon";
 import TrashIcon from "@/components/ui/icons/sidebar-icons/trashIcon";
-import GearIcon from "@/components/ui/icons/sidebar-icons/gearIcon";
 import SignOutIcon from "@/components/ui/icons/sidebar-icons/sign-out";
 import SidebarButton from "@/components/button/memo-sidebar-button";
 import MemoPopUp from '@/components/container/memo-popup-notime';
@@ -21,7 +20,7 @@ const Sidebar = () => {
     { name: "จัดการผู้ดูแลระบบ", path: "/dashboard/admin-management", icon: <UsersIcon /> },
     { name: "คำขอสร้างบัญชี", path: "/dashboard/requests", icon: <WarningIcon /> },
     { name: "ถังขยะ", path: "/dashboard/user-delete", icon: <TrashIcon /> },
-    { name: "จัดการโปรไฟล์", path: "/dashboard/setting", icon: <GearIcon /> },
+
   ];
 
   const handleNavigation = (path: string) => {

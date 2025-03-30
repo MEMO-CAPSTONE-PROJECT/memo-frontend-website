@@ -4,7 +4,6 @@ import { MEMO_API } from "@/constants/apis";
 import MemoButton from "@/components/button/memo-button";
 import ExcelLogo from "@/components/ui/icons/dashboard/microsoft-excel-logo";
 import UploadIcon from "@/components/ui/icons/dashboard/upload";
-import UserAddIcon from "@/components/ui/icons/dashboard/user-plus";
 import SuccessIcon from "@/components/ui/icons/pop-up/success-icon";
 
 interface UploadStudentExcelProps {

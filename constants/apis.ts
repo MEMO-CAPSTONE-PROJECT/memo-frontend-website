@@ -26,6 +26,10 @@ export const MEMO_API = {
     studentAddExcel : baseUrl + "/v1/student/excel",
     teacherAddExcel : baseUrl + "/v1/teacher/excel",
 
+    parentEdit :baseUrl + "/v1/parent",
+    studentEdit :baseUrl + "/v1/student",
+    teacherEdit :baseUrl + "/v1/teacher",
+
     //Approve user
     allUserRequests : baseUrl +"/v1/registers",
     teacherApprove : baseUrl +"/v1/register/teacher/approve",

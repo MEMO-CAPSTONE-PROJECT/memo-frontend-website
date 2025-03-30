@@ -5,11 +5,12 @@ import AuthGuard from "@/components/AuthGuard/AuthGuard";
 import Table from "@/components/dashboard/table";
 import { MEMO_API } from "@/constants/apis";
 import Sidebar from "@/components/dashboard/sidebar";
-import axios from "axios";
+
 import TopbarButton from "@/components/button/memo-topbar";
 import MemoPopUp from "@/components/container/memo-popup-notime";
 import MemoButton from "@/components/button/memo-button";
 import TrashIcon from "@/components/ui/icons/dashboard/trash-icon";
+import Searchbar from "@/components/dashboard/searchbar";
 
 interface DeletedStudent {
   trashId: number;
@@ -21,6 +22,7 @@ interface DeletedStudent {
   gender: string;
   emailStudent: string;
   phoneNumber: string;
+  startDate: string;
   endDate: string;
 }
 
@@ -44,8 +46,9 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [activeMenu, setActiveMenu] = useState<string>("รายชื่อครู");
-  const [selectedIds, setSelectedIds] = useState<number[]>([]); // State สำหรับจัดการ ID ที่เลือก
-  const [deletingMode, setDeletingMode] = useState<boolean>(false); // สถานะโหมดลบ
+  const [selectedIds, setSelectedIds] = useState<number[]>([]); 
+  const [deletingMode, setDeletingMode] = useState<boolean>(false); 
+     const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -85,6 +88,7 @@ const Dashboard: React.FC = () => {
                 gender: item.gender,
                 emailStudent: item.emailStudent,
                 phoneNumber: item.phoneNumber,
+                startDate: item.startDate,
                 endDate: item.endDate,
               }));
   
@@ -101,35 +105,39 @@ const Dashboard: React.FC = () => {
   
 
   const renderRow = (item: DeletedUser) => {
-    const isChecked = selectedIds.includes(item.trashId);
-  
     return [
-      deletingMode && (
-        <input
-          type="checkbox"
-          checked={isChecked}
-          onChange={() => handleSelectChange(item.trashId)} // ใช้ trashId
-        />
-      ),
-      "teacherId" in item ? item.teacherId : item.studentId,
-      "teacherId" in item ? item.position : item.classRoom,
-      "teacherId" in item ? item.email : item.emailStudent,
+
+      ...(deletingMode
+        ? [
+            <input
+             
+              type="checkbox"
+              checked={selectedIds.includes(item.trashId)}
+          onChange={() => handleSelectChange(item.trashId)}
+            />,
+          ]
+        : []),
+      "teacherId" in item ? item.teacherId : item.studentId, 
       item.firstName,
       item.lastName,
       item.gender,
+      "teacherId" in item ? item.position : `ป.${item.classLevel}/${item.classRoom}`,
+      "teacherId" in item ? item.email : item.emailStudent,
       item.phoneNumber,
-      "startDate" in item ? (
-        <div className="p-2">
-          <span className="bg-system-success-light text-system-success-2 px-2 py-1 rounded-sm">
-            {new Date(item.startDate).toLocaleDateString()}
-          </span>
-        </div>
+      item.startDate ? (
+        <div className="p-2"><span className="bg-system-success-light text-system-success-2 px-2 py-1 rounded-sm">
+          {new Date(item.startDate).toLocaleDateString()}
+        </span></div>
       ) : null,
-      <span className="bg-system-error-light text-system-error-2 px-2 py-1 rounded-sm">
-        {new Date(item.endDate).toLocaleDateString()}
-      </span>,
+      item.endDate ? (
+        <span className="bg-system-error-light text-system-error-2 px-2 py-1 rounded-sm">
+          {new Date(item.endDate).toLocaleDateString()}
+        </span>
+      ) : null,
     ];
   };
+  
+  
   
 
   // ปรับปรุง handleSelectChange ให้ทำงานได้ถูกต้อง
@@ -154,11 +162,12 @@ const Dashboard: React.FC = () => {
   };
   
   const handleDeleteConfirm = async () => {
+    
     try {
       const payload = { ids: selectedIds.map(String) }; // แปลง ID เป็น string[]
       const apiUrl = MEMO_API.allDeleteTrashes;
   
-      const response = await axios.delete(apiUrl, {
+      const response = await apiClient.delete(apiUrl, {
         headers: { "Content-Type": "application/json" },
         data: payload, // ส่ง `ids` ที่เป็น string[]
       });
@@ -176,6 +185,7 @@ const Dashboard: React.FC = () => {
     } finally {
       setShowPopupDelete(false); // ปิด Popup
     }
+    setDeletingMode(false);
   };
   
   const handleCancelDelete = () => {
@@ -221,69 +231,70 @@ const Dashboard: React.FC = () => {
             </p>
           </div>
 
-          <div className="space-x-2 pt-4">
-            <button
-              className={`bg-system-error-2 rounded-sm w-32 text-system-white p-2 ${
-                deletingMode && selectedIds.length === 0
-                  ? "opacity-50 cursor-not-allowed"
-                  : ""
-              }`}
-              onClick={
-                deletingMode ? handleDelete : () => setDeletingMode(true)
-              }
-              disabled={deletingMode && selectedIds.length === 0}
-            >
-              {deletingMode ? `ลบจำนวน ${selectedIds.length}` : "ถังขยะ"}
-            </button>
+          <div className="flex items-center justify-between pt-4">
+  <Searchbar onSearch={setSearchText}  />
+  
+  <div className="flex space-x-2">
+    <button
+      className={`bg-system-error-2 rounded-sm w-32 text-system-white p-2 ${
+        deletingMode && selectedIds.length === 0
+          ? "opacity-50 cursor-not-allowed"
+          : ""
+      }`}
+      onClick={
+        deletingMode ? handleDelete : () => setDeletingMode(true)
+      }
+      disabled={deletingMode && selectedIds.length === 0}
+    >
+      {deletingMode ? `ลบจำนวน ${selectedIds.length}` : "ถังขยะ"}
+    </button>
 
-            {deletingMode && (
-              <button
-                className="bg-body-2 rounded-sm w-32 text-system-white p-2"
-                onClick={handleToggleDeleteMode}
-              >
-                ยกเลิก
-              </button>
-            )}
-          </div>
+    {deletingMode && (
+      <button
+        className="bg-body-2 rounded-sm w-32 text-system-white p-2"
+        onClick={handleToggleDeleteMode}
+      >
+        ยกเลิก
+      </button>
+    )}
+  </div>
+</div>
 
-          <Table
-            columns={
-              activeMenu === "รายชื่อครู"
-                ? [
-                    ...(deletingMode
-                      ? [{ header: "Select", key: "select" }]
-                      : []),
-                    { header: "Teacher ID", key: "teacherId" },
-                    { header: "Position", key: "position" },
-                    { header: "Email", key: "email" },
-                    { header: "First Name", key: "firstName" },
-                    { header: "Last Name", key: "lastName" },
-                    { header: "Gender", key: "gender" },
-                    { header: "Phone Number", key: "phoneNumber" },
-                    { header: "Start Date", key: "startDate" },
-                    { header: "End Date", key: "endDate" },
-                  ]
-                : [
-                    ...(deletingMode
-                      ? [{ header: "Select", key: "select" }]
-                      : []),
-                    { header: "Student ID", key: "studentId" },
-                    { header: "Classroom", key: "classRoom" },
-                    { header: "Class Level", key: "classLevel" },
-                    { header: "First Name", key: "firstName" },
-                    { header: "Last Name", key: "lastName" },
-                    { header: "Gender", key: "gender" },
-                    { header: "Email", key: "emailStudent" },
-                    { header: "Phone Number", key: "phoneNumber" },
-                    { header: "Start Date", key: "startDate" },
-                    { header: "End Date", key: "endDate" },
-                  ]
-            }
-            data={data}
-            renderRow={renderRow}
-            loading={loading}
-            error={error}
-          />
+
+<Table
+  columns={
+    activeMenu === "รายชื่อครู"
+      ? [
+          ...(deletingMode ? [{ header: "Select", key: "select" }] : []),
+          { header: "รหัส", key: "Teacher ID" },
+          { header: "ชื่อ", key: "First Name" },
+          { header: "นามสกุล", key: "Last Name" },
+          { header: "เพศ", key: "Gender" },
+          { header: "ตำแหน่ง", key: "Position" },
+          { header: "อีเมล", key: "Email" },
+          { header: "เบอร์", key: "Phone Number" },
+          { header: "วันเข้าสู่ระบบ", key: "Start Date" },
+          { header: "วันออกจากระบบ", key: "End Date" },
+        ]
+      : [
+          ...(deletingMode ? [{ header: "Select", key: "select" }] : []),
+          { header: "รหัส", key: "studentId" },
+          { header: "ชื่อ", key: "firstName" },
+          { header: "นามสกุล", key: "lastName" },
+          { header: "เพศ", key: "gender" },
+          { header: "ชั้น", key: "classLevel" },
+          { header: "อีเมล", key: "emailStudent" },
+          { header: "เบอร์", key: "phoneNumber" },
+          { header: "วันเข้าสู่ระบบ", key: "startDate" },
+          { header: "วันออกจากระบบ", key: "endDate" },
+        ]
+  }
+  data={data}
+  renderRow={renderRow} // ✅ ใช้ renderRow เป็นตัวกำหนดค่า
+  loading={loading}
+  error={error}
+/>
+
         </div>
         {showPopupDelete && ( 
   <MemoPopUp

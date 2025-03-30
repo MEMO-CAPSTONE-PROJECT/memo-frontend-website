@@ -6,10 +6,12 @@ import Table from "@/components/dashboard/table";
 import { MEMO_API } from "@/constants/apis";
 import AuthGuard from "@/components/AuthGuard/AuthGuard";
 import PopUpAddAdminList from "@/components/dashboard/add-user/PopUpAddAdminList";
-import PopUpEditAdminList from "@/components/dashboard/Edit-popup/PopUpEditAdmin"; // Import PopUpEditAdminList
+import PopUpEditAdminList from "@/components/dashboard/Edit-popup/PopUpEditAdmin"; 
 import MemoButton from "@/components/button/memo-button";
 import Searchbar from "@/components/dashboard/searchbar";
 import EditIcon from "@/components/ui/icons/dashboard/edit-icon";
+import Filterbutton from "@/components/dashboard/filterbutton";
+
 
 interface AdminTable {
   teacherId: number;
@@ -35,30 +37,31 @@ const AdminManagement = () => {
   const [loadingAdd, setLoadingAdd] = useState<boolean>(false);
   const [errorGet, setErrorGet] = useState<string | null>(null);
   const [isAdminAddPopupOpen, setIsAdminAddPopupOpen] = useState(false);
-  const [isAdminEditPopupOpen, setIsAdminEditPopupOpen] = useState(false); // State for edit popup
-  const [selectedAdmin, setSelectedAdmin] = useState<AdminData | null>(null); // Selected admin for edit
+  const [isAdminEditPopupOpen, setIsAdminEditPopupOpen] = useState(false);
+  const [selectedAdmin, setSelectedAdmin] = useState<AdminData | null>(null);
+   const [searchText, setSearchText] = useState("");
+
+  const fetchData = async () => {
+    setLoadingAdd(true);
+    setErrorGet(null);
+    try {
+      const response = await apiClient.get(MEMO_API.adminList);
+      if (response.data.data.registers) {
+        const registers: AdminTable[] = response.data.data.registers;
+        setData(registers);
+      } else {
+        setData([]);
+      }
+    } catch (err: any) {
+      setErrorGet(err.message || "เกิดข้อผิดพลาดในการดึงข้อมูล");
+    } finally {
+      setLoadingAdd(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoadingAdd(true);
-      setErrorGet(null);
-      try {
-        const response = await apiClient.get(MEMO_API.adminList);
-        if (response.data.data.registers) {
-          const registers: AdminTable[] = response.data.data.registers;
-          setData(registers);
-        } else {
-          setData([]);
-        }
-      } catch (err: any) {
-        setErrorGet(err.message || "เกิดข้อผิดพลาดในการดึงข้อมูล");
-      } finally {
-        setLoadingAdd(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+    fetchData(); // Call fetchData to load data initially
+  }, []); // Empty dependency array to call on mount
 
   const columns = [
     { header: "รหัสครู", key: "teacherId" },
@@ -92,14 +95,20 @@ const AdminManagement = () => {
       teacherId: item.teacherId,
       firstName: item.firstName,
       lastName: item.lastName,
-      userName: item.username,  // แปลง username เป็น userName
+      userName: item.username,
       email: item.email,
-      password: "",  // กำหนดค่าเริ่มต้น
-      confirmPassword: "",  // กำหนดค่าเริ่มต้น
+      password: "",
+      confirmPassword: "",
     };
-  
-    setSelectedAdmin(adminData);  // ตั้งค่า state ให้เป็น AdminData
-    setIsAdminEditPopupOpen(true);  // เปิด PopUp
+
+    setSelectedAdmin(adminData);
+    setIsAdminEditPopupOpen(true);
+  };
+
+  const handleEditSuccess = () => {
+    console.log("Admin Edited Successfully!");
+    fetchData(); // Re-fetch data after successful edit
+    setIsAdminEditPopupOpen(false); // Close the popup after success
   };
 
   const closeAdminAddPopup = () => setIsAdminAddPopupOpen(false);
@@ -107,6 +116,7 @@ const AdminManagement = () => {
 
   const handleAddAdminSuccess = () => {
     console.log("Admin Added Successfully!");
+    fetchData(); // Reload the data after adding a new admin
   };
 
   return (
@@ -123,19 +133,28 @@ const AdminManagement = () => {
               ระบบจัดการรายชื่อผู้ดูแลระบบ
             </p>
           </div>
-          <div className="relative flex pt-6 w-full space-x-2">
-            <div className="relative w-full flex"></div>
-            <MemoButton
-              title="ลบผู้ดูแลระบบ"
-              variant="cancle"
-              onClick={openAdminAddPopup}
-            />
-            <MemoButton
-              title="เพิ่มผู้ดูแลระบบ"
-              variant="success"
-              onClick={openAdminAddPopup}
-            />
-          </div>
+          <div className="relative flex pt-6 w-full items-center">
+  <div className="flex-1 pr-4"> 
+    <Searchbar onSearch={setSearchText} /> 
+  </div>        
+  
+  <div className="flex space-x-2">
+    <button
+      className="w-36 bg-system-error-2 text-system-white hover:bg-system-error-2-hover rounded-sm px-4 py-2"
+      onClick={openAdminAddPopup}
+    >
+      ลบผู้ดูแลระบบ
+    </button>
+    <button
+      className="w-36 bg-system-success-2 text-system-white hover:bg-system-success-2-hover rounded-sm px-4 py-2"
+      onClick={openAdminAddPopup}
+    >
+      เพิ่มผู้ดูแลระบบ
+    </button>
+  </div>
+</div>
+
+
           {/* เรียกใช้งาน PopUpAddAdmin */}
           <PopUpAddAdminList
             isOpen={isAdminAddPopupOpen}
@@ -146,8 +165,8 @@ const AdminManagement = () => {
           <PopUpEditAdminList
             isOpen={isAdminEditPopupOpen}
             onClose={() => setIsAdminEditPopupOpen(false)}
-            onEditSuccess={() => console.log("Admin Edited Successfully!")}
-            adminData={selectedAdmin} // Pass selected admin data to the popup
+            onEditSuccess={handleEditSuccess} // Pass the success callback
+            adminData={selectedAdmin}
           />
           <Table
             columns={columns}

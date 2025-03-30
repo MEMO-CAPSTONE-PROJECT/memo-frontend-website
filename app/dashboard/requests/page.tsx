@@ -8,7 +8,7 @@ import apiClient from "@/components/axios/axiosConfig";
 import AuthGuard from "@/components/AuthGuard/AuthGuard";
 import Table from "@/components/dashboard/table";
 import { MEMO_API } from "@/constants/apis";
-import axios from "axios";
+
 
 
   interface TeacherData {
@@ -50,6 +50,7 @@ const UserRequests = () => {
     const [students, setStudents] = useState<StudentData[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [searchText, setSearchText] = useState("");
   
     const fetchData = async () => {
       setLoading(true);
@@ -122,7 +123,7 @@ const UserRequests = () => {
       const apiUrl =
         role === "teacher" ? MEMO_API.teacherApprove : MEMO_API.studentApprove;
       
-      await axios.put(apiUrl, { id: id.toString() });
+      await apiClient.put(apiUrl, { id: id.toString() });
   
       console.log(`✅ อนุมัติสำเร็จ ID: ${id}`);
       fetchData();
@@ -133,7 +134,7 @@ const UserRequests = () => {
 
   const handleReject = async (id: number) => {
     try {
-      await axios.put(MEMO_API.allUserDecline, { id: id.toString() });
+      await apiClient.put(MEMO_API.allUserDecline, { id: id.toString() });
   
       console.log(`❌ ปฏิเสธสำเร็จ ID: ${id}`);
       fetchData();
@@ -261,11 +262,18 @@ const UserRequests = () => {
           <p className="text-[16px] text-body-2">รายชื่อ{activeMenu === "รายชื่อครู" ? "คุณครู" : "นักเรียน"}ที่สมัครเข้าใช้งานระบบ Memo และรอการอนุมัติ</p>
         </div>
 
-        <Filterbutton
-          options={statusOptions}
-          selectedFilter={statusFilter}
-          onChange={handleStatusFilter}
-        />;
+        <div className="flex items-center space-x-2 pt-4">
+  <Searchbar onSearch={setSearchText} />
+  <div className="flex space-x-2">
+    <Filterbutton
+      options={statusOptions}
+      selectedFilter={statusFilter}
+      onChange={handleStatusFilter}
+    />
+   
+  </div>
+</div>
+
             {/* <Searchbar onSearch={setSearchText} /> */}
         <Table<TeacherData | StudentData>
           columns={filteredColumns}

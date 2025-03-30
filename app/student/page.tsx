@@ -167,13 +167,11 @@ export default function StudentRegistrationForm() {
       console.log(getFormData())
       if (response.status === 200) {
         setShowOtpPopup(true);
-      } else {
-        console.error("Error registering students:", response.data);
-        setSubmitStatus("ไม่สามารถสมัครอีเมลนักเรียนหรือผู้ปกครองซ้ำได้");
-      }
+        setSubmitStatus("");
+      } 
     } catch (error) {
       console.error("Network error:", error);
-      setSubmitStatus("มีผู้ใช้อีเมลนักเรียนหรือผู้ปกครองนี้แล้ว");
+      setSubmitStatus("มีผู้ใช้อีเมลหรือเบอร์โทรของผู้ปกครองนี้แล้ว");
     }
   };
   

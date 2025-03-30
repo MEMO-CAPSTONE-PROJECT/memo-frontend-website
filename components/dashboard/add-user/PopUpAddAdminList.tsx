@@ -27,13 +27,19 @@ const adminSchema = z
       .regex(/\d/, "รหัสผ่านต้องประกอบไปด้วยตัวเลข")
       .regex(/[@$!%*?&]/, "รหัสผ่านต้องมีอักขระพิเศษ (@, $, !, %, *, ?, &)"),
     confirmPassword: z
-    .string()
-    .min(1, "กรุณากรอกยืนยันรหัสผ่าน"),
+      .string()
+      .min(1, "กรุณากรอกยืนยันรหัสผ่าน"),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => {
+    if (data.password && data.confirmPassword) {
+      return data.password === data.confirmPassword;
+    }
+    return true;
+  }, {
     message: "รหัสผ่านไม่ตรงกัน",
     path: ["confirmPassword"],
   });
+
 
 interface PopUpAddAdminProps {
   isOpen: boolean;

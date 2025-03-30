@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 
 import { MEMO_API } from "@/constants/apis";
 import apiClient from "@/components/axios/axiosConfig";
@@ -17,6 +16,7 @@ import PopUpAddTeacherList from "@/components/dashboard/add-user/PopUpAddTeacher
 import PopUpAddStudentList from "@/components/dashboard/add-user/PopUpAddStudentList";
 import UploadTeacherExcel from "@/components/dashboard/add-user-excel/UploadTeacherExcel";
 import UploadStudentExcel from "@/components/dashboard/add-user-excel/UploadStudentExcel";
+import PopUpEditTeacher from "@/components/dashboard/Edit-popup/PopUpEditTeacher";
 
 import EditIcon from "@/components/ui/icons/dashboard/edit-icon";
 import CaretLefttIcon from "@/components/ui/icons/dashboard/caret-left";
@@ -277,7 +277,7 @@ const UserManagement = () => {
       console.log("Deleting:", selectedIds);
       console.log("API URL:", apiUrl);
 
-      const response = await axios.delete(apiUrl, {
+      const response = await apiClient.delete(apiUrl, {
         headers: { "Content-Type": "application/json" },
         data: payload,
       });
@@ -340,7 +340,14 @@ const UserManagement = () => {
   ];
 
   const [isOpenPopUpExcel, setIsOpenPopUpExcel] = useState(false);
-
+  const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(null);
+  const [isPopupEditeTeacherOpen, setIsPopupEditeTeacherOpen] = useState(false);
+  
+  const handleEditTeacher = (id: string) => {
+    setSelectedTeacherId(id);  // Set the teacher ID for the popup
+    setIsPopupEditeTeacherOpen(true);       // Open the popup
+  };
+  
   return (
     <AuthGuard>
     <div className="flex bg-system-white w-screen">
@@ -484,13 +491,16 @@ const UserManagement = () => {
               <span key={`email-${teacher.teacherId}`}>{teacher.email}</span>,
               <span key={`phone-${teacher.teacherId}`}>{teacher.phoneNumber}</span>,
               <div key={`action-${teacher.teacherId}`} className="flex justify-center">
-                <button
-                  className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2"
-                  onClick={() => handleEdit(teacher.teacherId)}
-                >
-                  <EditIcon className="h-6 w-6" />
-                  <span>แก้ไข</span>
-                </button>
+                <div key={`action-${teacher.teacherId}`} className="flex justify-center">
+  <button
+    className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2"
+    onClick={() => handleEditTeacher(teacher.teacherId)} // Trigger edit
+  >
+    <EditIcon className="h-6 w-6" />
+    <span>แก้ไข</span>
+  </button>
+</div>
+
               </div>,
             ]}
             loading={loading}
@@ -660,6 +670,73 @@ const UserManagement = () => {
     }} />
   )
 )}
+
+{/* {isPopupEditeTeacherOpen && selectedTeacherId && (
+  <PopUpEditTeacher
+    isOpen={isPopupEditeTeacherOpen}  
+    teacherId={selectedTeacherId}
+    initialData= {
+      firstName: teacher.teacherId;
+      lastName: teacher.lastName;
+      position: teacher.position;
+      gender: teacher.gender;
+      class: { level: teacher.class.level; room: teacher.class.room };
+      email: string;
+      phoneNumber: string;
+    }
+    onClose={() => setIsPopupEditeTeacherOpen(false)} 
+    onEditSuccess={() => {
+      
+      setIsPopupEditeTeacherOpen(false);
+      
+    }}
+  />
+)} */}
+{isPopupEditeTeacherOpen && selectedTeacherId && (
+  <PopUpEditTeacher
+    isOpen={isPopupEditeTeacherOpen}  
+    teacherId={selectedTeacherId}
+    initialData={
+      (() => {
+        const teacher = teachers.find(t => t.teacherId === selectedTeacherId);
+        if (teacher) {
+          return {
+            firstName: teacher.firstName,
+            lastName: teacher.lastName,
+            position: teacher.position,
+            gender: teacher.gender,
+            class: {
+              level: String(teacher.class?.level || ""), 
+              room: String(teacher.class?.room || "")    
+            },
+            email: teacher.email || "", 
+            phoneNumber: teacher.phoneNumber || ""  
+          };
+        } else {
+          return {
+            firstName: "",
+            lastName: "",
+            position: "",
+            gender: "",
+            class: {
+              level: "",
+              room: ""
+            },
+            email: "",
+            phoneNumber: ""
+          };
+        }
+      })()
+    }
+    onClose={() => setIsPopupEditeTeacherOpen(false)} 
+    onEditSuccess={() => {
+      setIsPopupEditeTeacherOpen(false);
+      // คุณอาจต้องการโหลดข้อมูลใหม่หรือรีเฟรชข้อมูลครูที่มีอยู่
+    }}
+  />
+)}
+
+
 
       </div>
     </div>

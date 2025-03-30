@@ -20,8 +20,8 @@ const teacherSchema = z
     gender: z.enum(["ชาย", "หญิง"], { errorMap: () => ({ message: "กรุณาเลือกเพศ" }) }),
     class: z
       .object({
-        level: z.string().min(1, "กรุณากรอกชั้นเรียน"),
-        room: z.string().min(1, "กรุณากรอกห้องเรียน"),
+        level: z.string().min(1, "กรุณากรอกชั้นเรียน").regex(/^\d+$/, "ชั้นเรียนต้องเป็นตัวเลข"),
+        room: z.string().min(1, "กรุณากรอกห้องเรียน").regex(/^\d+$/, "ห้องเรียนต้องเป็นตัวเลข"),
       })
       .optional() 
       .nullable(),
