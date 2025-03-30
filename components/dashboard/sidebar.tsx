@@ -34,7 +34,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-[17%] bg-primary-2 h-screen flex flex-col p-4 text-white justify-between">
+    <div className="w-fit bg-primary-2 h-screen flex flex-col p-4 text-white justify-between">
       <div>
         <div className="flex items-center space-x-4 mt-2 mb-6">
           <LogoIcon className="w-15 h-15" />

@@ -17,7 +17,7 @@ interface TableProps<T> {
 
 const Table = <T,>({ columns, data, renderRow, loading, error }: TableProps<T>) => {
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full h-96 2xl:h-fit overflow-x-auto">
       {loading && <p className="text-center p-4">กำลังโหลดข้อมูล...</p>}
       {error && <p className="text-center text-secondary-3 p-4">{error}</p>}
 

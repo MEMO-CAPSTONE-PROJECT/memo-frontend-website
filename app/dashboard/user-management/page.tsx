@@ -54,7 +54,6 @@ interface ParentInfo {
   emailParent: string;
 }
 
-
 const teacherFilterOptions = [
   { value: "all", label: "ทั้งหมด" },
   { value: "teacherId", label: "รหัสครู" },
@@ -98,7 +97,6 @@ const UserManagement = () => {
   const [searchText, setSearchText] = useState("");
   const filterOptions =
     activeMenu === "รายชื่อครู" ? teacherFilterOptions : studentFilterOptions;
-
 
   const fetchData = async () => {
     setLoading(true);
@@ -340,338 +338,369 @@ const UserManagement = () => {
   ];
 
   const [isOpenPopUpExcel, setIsOpenPopUpExcel] = useState(false);
-  const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(null);
+  const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(
+    null
+  );
   const [isPopupEditeTeacherOpen, setIsPopupEditeTeacherOpen] = useState(false);
-  
+
   const handleEditTeacher = (id: string) => {
-    setSelectedTeacherId(id);  // Set the teacher ID for the popup
-    setIsPopupEditeTeacherOpen(true);       // Open the popup
+    setSelectedTeacherId(id); // Set the teacher ID for the popup
+    setIsPopupEditeTeacherOpen(true); // Open the popup
   };
-  
+
   return (
     <AuthGuard>
-    <div className="flex bg-system-white w-screen">
-      <Sidebar />
-      <div className="ml-4 pt-6 p-6 text-title-1 w-full bg-system-white">
-        <div className="flex ">
-          <TopbarButton
-            name="รายชื่อครู"
-            isActive={activeMenu === "รายชื่อครู"}
-            onClick={() => {
-              setActiveMenu("รายชื่อครู");
-              setCurrentPage(1);
-            }}
-          />
-          <TopbarButton
-            name="รายชื่อนักเรียน"
-            isActive={activeMenu === "รายชื่อนักเรียน"}
-            onClick={() => {
-              setActiveMenu("รายชื่อนักเรียน");
-              setCurrentPage(1);
-            }}
-          />
-        </div>
-
-        <div className="pt-8">
-          <p className="text-[20px] font-semibold">
-            ระบบจัดการรายชื่อ
-            {activeMenu === "รายชื่อครู" ? "คุณครู" : "นักเรียน"}
-          </p>
-          <p className="text-[16px] text-body-2">
-            รายชื่อ{activeMenu === "รายชื่อครู" ? "คุณครู" : "นักเรียน"}
-            ที่ใช้งานระบบ Memo 
-          </p>
-        </div>
-
-        <div className="relative flex pt-6 w-full space-x-2">
-          <div className="relative w-full flex">
-            <Searchbar onSearch={setSearchText} />
-            <Filterbutton
-              options={filterOptions}
-              selectedFilter={searchType}
-              onChange={setSearchType}
+      <div className="flex bg-system-white w-full">
+        <Sidebar />
+        {/* <div className="ml-4 pt-6 p-6 text-title-1 w-fit bg-system-white"> */}
+        <div className="flex-1 p-8 text-title-1 w-full bg-system-white">
+          <div className="flex ">
+            <TopbarButton
+              name="รายชื่อครู"
+              isActive={activeMenu === "รายชื่อครู"}
+              onClick={() => {
+                setActiveMenu("รายชื่อครู");
+                setCurrentPage(1);
+              }}
+            />
+            <TopbarButton
+              name="รายชื่อนักเรียน"
+              isActive={activeMenu === "รายชื่อนักเรียน"}
+              onClick={() => {
+                setActiveMenu("รายชื่อนักเรียน");
+                setCurrentPage(1);
+              }}
             />
           </div>
 
-          <button
-            className={`bg-system-error-2 rounded-sm w-32 text-system-white ${
-              deletingMode &&
-              (activeMenu === "รายชื่อครู"
-                ? selectedTeachers.length === 0
-                : selectedStudents.length === 0)
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-            }`}
-            onClick={
-              deletingMode
-                ? () => setshowPopupDelete(true)
-                : handleToggleDeleteMode
-            }
-            disabled={
-              deletingMode &&
-              (activeMenu === "รายชื่อครู"
-                ? selectedTeachers.length === 0
-                : selectedStudents.length === 0)
-            }
-          >
-            {deletingMode
-              ? `ลบจำนวน ${
-                  activeMenu === "รายชื่อครู"
-                    ? selectedTeachers.length
-                    : selectedStudents.length
-                }`
-              : "ถังขยะ"}
-          </button>
+          <div className="pt-8">
+            <p className="text-[20px] font-semibold">
+              ระบบจัดการรายชื่อ
+              {activeMenu === "รายชื่อครู" ? "คุณครู" : "นักเรียน"}
+            </p>
+            <p className="text-[16px] text-body-2">
+              รายชื่อ{activeMenu === "รายชื่อครู" ? "คุณครู" : "นักเรียน"}
+              ที่ใช้งานระบบ Memo
+            </p>
+          </div>
 
-          {deletingMode && (
+          <div className="relative flex pt-6 w-full space-x-2">
+            <div className="relative w-full flex">
+              <Searchbar onSearch={setSearchText} />
+              <Filterbutton
+                options={filterOptions}
+                selectedFilter={searchType}
+                onChange={setSearchType}
+              />
+            </div>
+
             <button
-              className="bg-body-2 rounded-sm w-32 text-system-white "
-              onClick={handleToggleDeleteMode}
+              className={`bg-system-error-2 rounded-sm w-32 text-system-white ${
+                deletingMode &&
+                (activeMenu === "รายชื่อครู"
+                  ? selectedTeachers.length === 0
+                  : selectedStudents.length === 0)
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
+              onClick={
+                deletingMode
+                  ? () => setshowPopupDelete(true)
+                  : handleToggleDeleteMode
+              }
+              disabled={
+                deletingMode &&
+                (activeMenu === "รายชื่อครู"
+                  ? selectedTeachers.length === 0
+                  : selectedStudents.length === 0)
+              }
             >
-              ยกเลิก
+              {deletingMode
+                ? `ลบจำนวน ${
+                    activeMenu === "รายชื่อครู"
+                      ? selectedTeachers.length
+                      : selectedStudents.length
+                  }`
+                : "ถังขยะ"}
             </button>
-          )}
 
-<div 
-  className="relative inline-block"
-  onMouseLeave={() => setIsOpen(false)} // ปิดเมนูเมื่อเอาเมาส์ออก
->
-  {!deletingMode && ( 
-    <button 
-      onClick={() => setIsOpen(!isOpen)} 
-      className="bg-system-success-2 rounded-sm w-32 text-system-white h-full"
-    >
-      เพิ่มผู้ใช้   ▼
-    </button>
-  )}
-
-  {isOpen && (
-    <div className="absolute right-0 mt- w-48 bg-system-white border border-2 border-xsm border-system-gray">
-      <button 
-        onClick={() => { setIsPopupOpen(true); setIsOpen(false); }} 
-        className="block w-full text-left px-4 py-2 hover:bg-body-2"
-      >
-        เพิ่มผู้ใช้จาก Form
-      </button>
-      <button 
-        onClick={() => setIsOpenPopUpExcel(true)} 
-        className="block w-full text-left px-4 py-2 hover:bg-body-2"
-      >
-        เพิ่มผู้ใช้จาก Excel
-      </button>
-    </div>
-  )}
-</div>
-
-        </div>
-
-        {activeMenu === "รายชื่อครู" && (
-          <Table
-            data={paginateData(filteredTeachers)}
-            columns={teacherColumns}
-            renderRow={(teacher) => [
-              ...(deletingMode
-                ? [
-                    <input
-                      key={`checkbox-${teacher.teacherId}`}
-                      type="checkbox"
-                      checked={selectedTeachers.includes(teacher.teacherId)}
-                      onChange={() => handleSelectTeacher(teacher.teacherId)}
-                    />,
-                  ]
-                : []),
-
-              <span key={`id-${teacher.teacherId}`}>{teacher.teacherId}</span>,
-              <span key={`fname-${teacher.teacherId}`}>{teacher.firstName}</span>,
-              <span key={`lname-${teacher.teacherId}`}>{teacher.lastName}
-              </span>,
-              <span key={`gender-${teacher.teacherId}`}>{teacher.gender}</span>,
-              <span key={`position-${teacher.teacherId}`}>{teacher.position}</span>,
-              <span key={`class-${teacher.teacherId}`}>{teacher.class?.level ? `ป. ${teacher.class.level}` : "-"}{teacher.class?.room ? `/${teacher.class.room}` : ""}</span>,
-              <span key={`email-${teacher.teacherId}`}>{teacher.email}</span>,
-              <span key={`phone-${teacher.teacherId}`}>{teacher.phoneNumber}</span>,
-              <div key={`action-${teacher.teacherId}`} className="flex justify-center">
-                <div key={`action-${teacher.teacherId}`} className="flex justify-center">
-  <button
-    className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2"
-    onClick={() => handleEditTeacher(teacher.teacherId)} // Trigger edit
-  >
-    <EditIcon className="h-6 w-6" />
-    <span>แก้ไข</span>
-  </button>
-</div>
-
-              </div>,
-            ]}
-            loading={loading}
-            error={error}
-          />
-        )}
-
-        {activeMenu === "รายชื่อนักเรียน" && (
-          <Table
-            data={paginateData(filteredStudents)}
-            columns={studentColumns}
-            renderRow={(student) => [
-              ...(deletingMode
-                ? [
-                    <input
-                      key={`checkbox-${student.studentId}`}
-                      type="checkbox"
-                      checked={selectedStudents.includes(student.studentId)}
-                      onChange={() => handleSelectStudent(student.studentId)}
-                    />,
-                  ]
-                : []),
-              <span key={`${student.studentId}-id`}>{student.studentId}</span>,
-              <span key={`${student.studentId}-firstName`}>
-                {student.firstName}
-              </span>,
-              <span key={`${student.studentId}-lastName`}>
-                {student.lastName}
-              </span>,
-              <span key={`${student.studentId}-gender`}>{student.gender}</span>,
-              <span key={`${student.studentId}-class`}>
-                ป. {student.classLevel}/{student.classRoom}
-              </span>,
+            {deletingMode && (
               <button
-                key={`${student.studentId}-details`}
-                className="text-system-button underline"
-                onClick={() => handleShowDetails(student.parents ?? [])}
+                className="bg-body-2 rounded-sm w-32 text-system-white "
+                onClick={handleToggleDeleteMode}
               >
-                รายละเอียด
-              </button>,
-              <div
-                key={`${student.studentId}-actions`}
-                className="flex justify-center"
-              >
+                ยกเลิก
+              </button>
+            )}
+
+            <div
+              className="relative inline-block"
+              onMouseLeave={() => setIsOpen(false)} // ปิดเมนูเมื่อเอาเมาส์ออก
+            >
+              {!deletingMode && (
                 <button
-                  className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2 "
-                  onClick={() => handleEdit(student.studentId.toString())}
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="bg-system-success-2 rounded-sm w-32 text-system-white h-full"
                 >
-                  <EditIcon className="h-6 w-6" />
-                  <span>แก้ไข</span>
+                  เพิ่มผู้ใช้ ▼
                 </button>
-              </div>,
-            ]}
-            loading={loading}
-            error={error}
-          />
-        )}
+              )}
 
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex justify-center mt-4  bg-white p-3 pl-20 ">
-          <button
-            className="flex items-center space-x-2 border-x-2xsm border-y-2xsm  border-system-gray text-white rounded disabled:opacity-50 p-2"
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            <CaretLefttIcon className="h-6 w-6" />
-          </button>
-
-          <div className="flex">
-            <div className="px-4 py-2 font-semibold text-primary-2 text-[16px] border-x-2xsm border-y-2xsm  border-system-gray">
-              {currentPage} / {totalPages}
+              {isOpen && (
+                <div className="absolute right-0 mt- w-48 bg-system-white border border-2 border-xsm border-system-gray">
+                  <button
+                    onClick={() => {
+                      setIsPopupOpen(true);
+                      setIsOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 hover:bg-body-2"
+                  >
+                    เพิ่มผู้ใช้จาก Form
+                  </button>
+                  <button
+                    onClick={() => setIsOpenPopUpExcel(true)}
+                    className="block w-full text-left px-4 py-2 hover:bg-body-2"
+                  >
+                    เพิ่มผู้ใช้จาก Excel
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
-          <button
-            className="flex items-center space-x-2 border-x-2xsm border-y-2xsm  border-system-gray text-white rounded disabled:opacity-50 p-2"
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            <CaretRightIcon className="h-6 w-6" />
-          </button>
-        </div>
+          {activeMenu === "รายชื่อครู" && (
+            <Table
+              data={paginateData(filteredTeachers)}
+              columns={teacherColumns}
+              renderRow={(teacher) => [
+                ...(deletingMode
+                  ? [
+                      <input
+                        key={`checkbox-${teacher.teacherId}`}
+                        type="checkbox"
+                        checked={selectedTeachers.includes(teacher.teacherId)}
+                        onChange={() => handleSelectTeacher(teacher.teacherId)}
+                      />,
+                    ]
+                  : []),
 
-        {showPopup && (
-          <MemoPopUp show={showPopup} onClose={() => setShowPopup(false)}>
-            <div className="w-full relative pl-4 pr-4">
-              <h2 className="text-lg font-bold mb-2 mt-2">ข้อมูลผู้ปกครอง</h2>
-              {selectedParents.length > 0 ? (
-                selectedParents.map((parent) => (
-                  <div key={parent.parentId} className="mb-2">
-                    <p>
-                      <span className="font-semibold ">ชื่อ : </span>{" "}
-                      {parent.firstName} {parent.lastName}
-                    </p>
-                    <p>
-                      <span className="font-semibold ">อีเมล : </span>{" "}
-                      {parent.emailParent}
-                    </p>
-                    <p>
-                      <span className="font-semibold ">เบอร์โทร : </span>{" "}
-                      {parent.phoneNumber}
-                    </p>
-                    <p>
-                      <span className="font-semibold ">ความสัมพันธ์ : </span>{" "}
-                      {parent.relation}
-                    </p>
+                <span key={`id-${teacher.teacherId}`}>
+                  {teacher.teacherId}
+                </span>,
+                <span key={`fname-${teacher.teacherId}`}>
+                  {teacher.firstName}
+                </span>,
+                <span key={`lname-${teacher.teacherId}`}>
+                  {teacher.lastName}
+                </span>,
+                <span key={`gender-${teacher.teacherId}`}>
+                  {teacher.gender}
+                </span>,
+                <span key={`position-${teacher.teacherId}`}>
+                  {teacher.position}
+                </span>,
+                <span key={`class-${teacher.teacherId}`}>
+                  {teacher.class?.level ? `ป. ${teacher.class.level}` : "-"}
+                  {teacher.class?.room ? `/${teacher.class.room}` : ""}
+                </span>,
+                <span key={`email-${teacher.teacherId}`}>{teacher.email}</span>,
+                <span key={`phone-${teacher.teacherId}`}>
+                  {teacher.phoneNumber}
+                </span>,
+                <div
+                  key={`action-${teacher.teacherId}`}
+                  className="flex justify-center"
+                >
+                  <div
+                    key={`action-${teacher.teacherId}`}
+                    className="flex justify-center"
+                  >
+                    <button
+                      className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2"
+                      onClick={() => handleEditTeacher(teacher.teacherId)} // Trigger edit
+                    >
+                      <EditIcon className="h-6 w-6" />
+                      <span>แก้ไข</span>
+                    </button>
                   </div>
-                ))
-              ) : (
-                <p>ไม่มีข้อมูลผู้ปกครอง</p>
-              )}{" "}
-              <MemoButton
-                title="ย้อนกลับ"
-                onClick={() => setShowPopup(false)}
-              />
+                </div>,
+              ]}
+              loading={loading}
+              error={error}
+            />
+          )}
+
+          {activeMenu === "รายชื่อนักเรียน" && (
+            <Table
+              data={paginateData(filteredStudents)}
+              columns={studentColumns}
+              renderRow={(student) => [
+                ...(deletingMode
+                  ? [
+                      <input
+                        key={`checkbox-${student.studentId}`}
+                        type="checkbox"
+                        checked={selectedStudents.includes(student.studentId)}
+                        onChange={() => handleSelectStudent(student.studentId)}
+                      />,
+                    ]
+                  : []),
+                <span key={`${student.studentId}-id`}>
+                  {student.studentId}
+                </span>,
+                <span key={`${student.studentId}-firstName`}>
+                  {student.firstName}
+                </span>,
+                <span key={`${student.studentId}-lastName`}>
+                  {student.lastName}
+                </span>,
+                <span key={`${student.studentId}-gender`}>
+                  {student.gender}
+                </span>,
+                <span key={`${student.studentId}-class`}>
+                  ป. {student.classLevel}/{student.classRoom}
+                </span>,
+                <button
+                  key={`${student.studentId}-details`}
+                  className="text-system-button underline"
+                  onClick={() => handleShowDetails(student.parents ?? [])}
+                >
+                  รายละเอียด
+                </button>,
+                <div
+                  key={`${student.studentId}-actions`}
+                  className="flex justify-center"
+                >
+                  <button
+                    className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2 "
+                    onClick={() => handleEdit(student.studentId.toString())}
+                  >
+                    <EditIcon className="h-6 w-6" />
+                    <span>แก้ไข</span>
+                  </button>
+                </div>,
+              ]}
+              loading={loading}
+              error={error}
+            />
+          )}
+
+          <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex justify-center mt-4  bg-white p-3 pl-20 ">
+            <button
+              className="flex items-center space-x-2 border-x-2xsm border-y-2xsm  border-system-gray text-white rounded disabled:opacity-50 p-2"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <CaretLefttIcon className="h-6 w-6" />
+            </button>
+
+            <div className="flex">
+              <div className="px-4 py-2 font-semibold text-primary-2 text-[16px] border-x-2xsm border-y-2xsm  border-system-gray">
+                {currentPage} / {totalPages}
+              </div>
             </div>
-          </MemoPopUp>
-        )}
 
-        {showPopupDelete && (
-          <MemoPopUp
-            show={showPopupDelete}
-            onClose={() => setshowPopupDelete(false)}
-          >
-            <TrashIcon className="w-44 h-44 p-6 mr-2 bg-system-error-2 mb-6 rounded-full mt-6" />
-            <p className="text-center text-[18px] font-bold">
-              ต้องการลบรายชื่อที่เลือกหรือไม่?
-            </p>
-            <div className="flex justify-between mt-6 w-full space-x-2 pl-4 pr-4 mb-2">
-              <MemoButton
-                title="ยกเลิก"
-                variant="cancleghost"
-                onClick={handleCancelDelete}
+            <button
+              className="flex items-center space-x-2 border-x-2xsm border-y-2xsm  border-system-gray text-white rounded disabled:opacity-50 p-2"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              <CaretRightIcon className="h-6 w-6" />
+            </button>
+          </div>
+
+          {showPopup && (
+            <MemoPopUp show={showPopup} onClose={() => setShowPopup(false)}>
+              <div className="w-full relative pl-4 pr-4">
+                <h2 className="text-lg font-bold mb-2 mt-2">ข้อมูลผู้ปกครอง</h2>
+                {selectedParents.length > 0 ? (
+                  selectedParents.map((parent) => (
+                    <div key={parent.parentId} className="mb-2">
+                      <p>
+                        <span className="font-semibold ">ชื่อ : </span>{" "}
+                        {parent.firstName} {parent.lastName}
+                      </p>
+                      <p>
+                        <span className="font-semibold ">อีเมล : </span>{" "}
+                        {parent.emailParent}
+                      </p>
+                      <p>
+                        <span className="font-semibold ">เบอร์โทร : </span>{" "}
+                        {parent.phoneNumber}
+                      </p>
+                      <p>
+                        <span className="font-semibold ">ความสัมพันธ์ : </span>{" "}
+                        {parent.relation}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p>ไม่มีข้อมูลผู้ปกครอง</p>
+                )}{" "}
+                <MemoButton
+                  title="ย้อนกลับ"
+                  onClick={() => setShowPopup(false)}
+                />
+              </div>
+            </MemoPopUp>
+          )}
+
+          {showPopupDelete && (
+            <MemoPopUp
+              show={showPopupDelete}
+              onClose={() => setshowPopupDelete(false)}
+            >
+              <TrashIcon className="w-44 h-44 p-6 mr-2 bg-system-error-2 mb-6 rounded-full mt-6" />
+              <p className="text-center text-[18px] font-bold">
+                ต้องการลบรายชื่อที่เลือกหรือไม่?
+              </p>
+              <div className="flex justify-between mt-6 w-full space-x-2 pl-4 pr-4 mb-2">
+                <MemoButton
+                  title="ยกเลิก"
+                  variant="cancleghost"
+                  onClick={handleCancelDelete}
+                />
+                <MemoButton
+                  title="ยืนยัน"
+                  variant="cancle"
+                  onClick={handleDeleteConfirm}
+                />
+              </div>
+            </MemoPopUp>
+          )}
+
+          {activeMenu === "รายชื่อครู" ? (
+            <PopUpAddTeacherList
+              isOpen={isPopupOpen}
+              onClose={() => setIsPopupOpen(false)}
+              onAddSuccess={() => fetchData()}
+            />
+          ) : (
+            <PopUpAddStudentList
+              isOpen={isPopupOpen}
+              onClose={() => setIsPopupOpen(false)}
+              onAddSuccess={() => fetchData()}
+            />
+          )}
+
+          {isOpenPopUpExcel &&
+            (activeMenu === "รายชื่อครู" ? (
+              <UploadTeacherExcel
+                onClose={() => {
+                  setIsOpenPopUpExcel(false);
+                  fetchData();
+                }}
               />
-              <MemoButton
-                title="ยืนยัน"
-                variant="cancle"
-                onClick={handleDeleteConfirm}
+            ) : (
+              <UploadStudentExcel
+                onClose={() => {
+                  setIsOpenPopUpExcel(false);
+                  fetchData();
+                }}
               />
-            </div>
-          </MemoPopUp>
-        )}
+            ))}
 
-        {activeMenu === "รายชื่อครู" ? (
-          <PopUpAddTeacherList
-            isOpen={isPopupOpen}
-            onClose={() => setIsPopupOpen(false)}
-            onAddSuccess={() => fetchData()} 
-          />
-        ) : (
-          <PopUpAddStudentList
-            isOpen={isPopupOpen}
-            onClose={() => setIsPopupOpen(false)}
-            onAddSuccess={() => fetchData()}
-          />
-        )}
-
-{isOpenPopUpExcel && (
-  activeMenu === "รายชื่อครู" ? (
-    <UploadTeacherExcel onClose={() => {
-      setIsOpenPopUpExcel(false);
-      fetchData(); 
-    }} />
-  ) : (
-    <UploadStudentExcel onClose={() => {
-      setIsOpenPopUpExcel(false);
-      fetchData(); 
-    }} />
-  )
-)}
-
-{/* {isPopupEditeTeacherOpen && selectedTeacherId && (
+          {/* {isPopupEditeTeacherOpen && selectedTeacherId && (
   <PopUpEditTeacher
     isOpen={isPopupEditeTeacherOpen}  
     teacherId={selectedTeacherId}
@@ -692,54 +721,51 @@ const UserManagement = () => {
     }}
   />
 )} */}
-{isPopupEditeTeacherOpen && selectedTeacherId && (
-  <PopUpEditTeacher
-    isOpen={isPopupEditeTeacherOpen}  
-    teacherId={selectedTeacherId}
-    initialData={
-      (() => {
-        const teacher = teachers.find(t => t.teacherId === selectedTeacherId);
-        if (teacher) {
-          return {
-            firstName: teacher.firstName,
-            lastName: teacher.lastName,
-            position: teacher.position,
-            gender: teacher.gender,
-            class: {
-              level: String(teacher.class?.level || ""), 
-              room: String(teacher.class?.room || "")    
-            },
-            email: teacher.email || "", 
-            phoneNumber: teacher.phoneNumber || ""  
-          };
-        } else {
-          return {
-            firstName: "",
-            lastName: "",
-            position: "",
-            gender: "",
-            class: {
-              level: "",
-              room: ""
-            },
-            email: "",
-            phoneNumber: ""
-          };
-        }
-      })()
-    }
-    onClose={() => setIsPopupEditeTeacherOpen(false)} 
-    onEditSuccess={() => {
-      setIsPopupEditeTeacherOpen(false);
-      // คุณอาจต้องการโหลดข้อมูลใหม่หรือรีเฟรชข้อมูลครูที่มีอยู่
-    }}
-  />
-)}
-
-
-
+          {isPopupEditeTeacherOpen && selectedTeacherId && (
+            <PopUpEditTeacher
+              isOpen={isPopupEditeTeacherOpen}
+              teacherId={selectedTeacherId}
+              initialData={(() => {
+                const teacher = teachers.find(
+                  (t) => t.teacherId === selectedTeacherId
+                );
+                if (teacher) {
+                  return {
+                    firstName: teacher.firstName,
+                    lastName: teacher.lastName,
+                    position: teacher.position,
+                    gender: teacher.gender,
+                    class: {
+                      level: String(teacher.class?.level || ""),
+                      room: String(teacher.class?.room || ""),
+                    },
+                    email: teacher.email || "",
+                    phoneNumber: teacher.phoneNumber || "",
+                  };
+                } else {
+                  return {
+                    firstName: "",
+                    lastName: "",
+                    position: "",
+                    gender: "",
+                    class: {
+                      level: "",
+                      room: "",
+                    },
+                    email: "",
+                    phoneNumber: "",
+                  };
+                }
+              })()}
+              onClose={() => setIsPopupEditeTeacherOpen(false)}
+              onEditSuccess={() => {
+                setIsPopupEditeTeacherOpen(false);
+                // คุณอาจต้องการโหลดข้อมูลใหม่หรือรีเฟรชข้อมูลครูที่มีอยู่
+              }}
+            />
+          )}
+        </div>
       </div>
-    </div>
     </AuthGuard>
   );
 };

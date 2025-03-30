@@ -122,6 +122,7 @@ const PopUpAddStudentList: React.FC<PopUpAddStudentListProps> = ({
     setStudentErrors({});
     setParentErrors({});
     setErrors({});
+    setStep(1)
   };
   
   const handleClose = () => {
@@ -207,7 +208,7 @@ const PopUpAddStudentList: React.FC<PopUpAddStudentListProps> = ({
   
       console.log("ส่งข้อมูลไปยัง API:", transformedData);
       await apiClient.post(MEMO_API.studentAddForm, transformedData);
-  console.log(error)
+
       setLoading(false);
       setIsSuccess(true);
 
@@ -220,6 +221,7 @@ const PopUpAddStudentList: React.FC<PopUpAddStudentListProps> = ({
         setIsSuccess(false);
         handleClose();
         onAddSuccess();
+        
       }, 3000);
     } catch (error) {
       setLoading(false);
