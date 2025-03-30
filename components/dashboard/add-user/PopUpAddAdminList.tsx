@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import apiClient from "@/components/axios/axiosConfig";
 import { z, type ZodFormattedError } from "zod";
 import { MEMO_API } from "@/constants/apis";
 import MemoInputHeader from "@/components/input/header/memo-input-header";
@@ -8,7 +8,6 @@ import MemoPopUp from "@/components/container/memo-popup-time";
 import SuccessIcon from "@/components/ui/icons/pop-up/success-icon";
 import { FaSpinner } from "react-icons/fa";
 
-// เพิ่มการตรวจสอบรหัสผ่าน
 const adminSchema = z
   .object({
     firstName: z.string().min(1, "กรุณากรอกชื่อ"),
@@ -87,7 +86,7 @@ const PopUpAddAdmin: React.FC<PopUpAddAdminProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+    // console.log(formData);
   
     // ตรวจสอบข้อมูลก่อนส่ง API
     const result = adminSchema.safeParse(formData);
@@ -100,11 +99,11 @@ const PopUpAddAdmin: React.FC<PopUpAddAdminProps> = ({
     setLoading(true);
     setIsSuccess(false);
     try {
-      // ส่งข้อมูลไปที่ API พร้อมกับส่งแค่ password
-      await axios.post(MEMO_API.adminAddForm, {
+      
+      await apiClient.post(MEMO_API.adminAddForm, {
         ...formData,
-        role: "Teacher Staff", // กำหนด role ไปเลย
-        password: formData.password, // ส่งแค่ password
+        role: "Teacher Staff", 
+        password: formData.password,
       });
   
       console.log(formData);
@@ -113,21 +112,20 @@ const PopUpAddAdmin: React.FC<PopUpAddAdminProps> = ({
       setLoading(false);
       setIsSuccess(true);
   
-      // ใช้ setTimeout เพื่อแสดงสถานะการสำเร็จ
+      
       setTimeout(() => {
-        setLoading(false);  // ปิดสถานะการโหลด
-        setIsSuccess(true); // แสดงสถานะสำเร็จ
+        setLoading(false);  
+        setIsSuccess(true); 
       }, 1000);
   
       setTimeout(() => {
-        setIsSuccess(false); // รีเซ็ตสถานะสำเร็จหลังจาก 3 วินาที
+        setIsSuccess(false); 
         handleClose();
       }, 3000);
   
     } catch (error) {
       setLoading(false);
-  
-      // ถ้าเกิดข้อผิดพลาดจาก Zod validation
+
       if (error instanceof z.ZodError) {
         console.log("❌ Zod Validation Error:", error.format());
         setErrors(error.format());

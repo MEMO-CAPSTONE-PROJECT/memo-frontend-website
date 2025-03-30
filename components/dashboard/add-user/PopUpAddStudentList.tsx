@@ -1,5 +1,5 @@
-import { useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import apiClient from "@/components/axios/axiosConfig";
 import { z } from "zod";
 
 import { MEMO_API } from "@/constants/apis";
@@ -98,8 +98,12 @@ const PopUpAddStudentList: React.FC<PopUpAddStudentListProps> = ({
       return; // ไม่เปลี่ยนหน้า ถ้าข้อมูลไม่ถูกต้อง
     }
   
+    // รีเซต error ของ parent ก่อนเปลี่ยนไป Step 2
+    setParentErrors({});
+  
     setStep(2);
   };
+  
   
   const handlePrevStep = () => setStep(1);
 
@@ -108,11 +112,26 @@ const PopUpAddStudentList: React.FC<PopUpAddStudentListProps> = ({
     setParentData(initialParentData);
     setErrors({});
   };
-
+  useEffect(() => {
+    if (isOpen) {
+      handleOpen();
+    }
+  }, [isOpen]);
+  
+  const handleOpen = () => {
+    setStudentErrors({});
+    setParentErrors({});
+    setErrors({});
+  };
+  
   const handleClose = () => {
     resetForm();
+    setStudentErrors({});
+    setParentErrors({});
+    setErrors({});
     onClose();
   };
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -187,8 +206,8 @@ const PopUpAddStudentList: React.FC<PopUpAddStudentListProps> = ({
       };
   
       console.log("ส่งข้อมูลไปยัง API:", transformedData);
-      await axios.post(MEMO_API.studentAddForm, transformedData);
-  
+      await apiClient.post(MEMO_API.studentAddForm, transformedData);
+  console.log(error)
       setLoading(false);
       setIsSuccess(true);
 
@@ -202,16 +221,16 @@ const PopUpAddStudentList: React.FC<PopUpAddStudentListProps> = ({
         handleClose();
         onAddSuccess();
       }, 3000);
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        console.error("Error จาก API:", err.response?.data);
-        setError(
-          err.response.data.message || "อีเมลหรือเบอร์โทรถูกใช้แล้ว ลองใช้อันอื่น"
-        );
-      } else {
-        setError("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
-      }
+    } catch (error) {
       setLoading(false);
+  
+      // ถ้าเกิดข้อผิดพลาดจาก Zod validation
+      if (error instanceof z.ZodError) {
+        console.log("❌ Zod Validation Error:", error.format());
+      } else {
+        console.error("เกิดข้อผิดพลาดในการส่งข้อมูล:", error);
+        setError("อีเมล์หรือเบอร์นักเรียนนี้ถูกใช้งานแล้ว ลองใช้อีเมลหรือเบอร์อื่น");
+      }
     }
   };
   
@@ -393,6 +412,7 @@ const PopUpAddStudentList: React.FC<PopUpAddStudentListProps> = ({
                     onChange={handleChange}
                   />
                 </div>
+                {error && <p className="text-system-error">{error}</p>}
               </div>
               <div className="flex space-x-4 pt-2">
                 <MemoButton

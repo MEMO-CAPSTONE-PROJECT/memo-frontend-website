@@ -107,8 +107,8 @@ const AdminManagement = () => {
 
   const handleEditSuccess = () => {
     console.log("Admin Edited Successfully!");
-    fetchData(); // Re-fetch data after successful edit
-    setIsAdminEditPopupOpen(false); // Close the popup after success
+    fetchData();
+    setIsAdminEditPopupOpen(false); 
   };
 
   const closeAdminAddPopup = () => setIsAdminAddPopupOpen(false);
@@ -116,7 +116,7 @@ const AdminManagement = () => {
 
   const handleAddAdminSuccess = () => {
     console.log("Admin Added Successfully!");
-    fetchData(); // Reload the data after adding a new admin
+    fetchData(); 
   };
 
   return (
@@ -141,7 +141,6 @@ const AdminManagement = () => {
   <div className="flex space-x-2">
     <button
       className="w-36 bg-system-error-2 text-system-white hover:bg-system-error-2-hover rounded-sm px-4 py-2"
-      onClick={openAdminAddPopup}
     >
       ลบผู้ดูแลระบบ
     </button>

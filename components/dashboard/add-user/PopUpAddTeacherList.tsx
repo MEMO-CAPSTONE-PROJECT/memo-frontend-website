@@ -1,5 +1,5 @@
 import { useState,useEffect } from "react";
-import axios from "axios";
+import apiClient from "@/components/axios/axiosConfig";
 import { z, type ZodFormattedError } from "zod";
 
 
@@ -153,7 +153,7 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({ isOpen, onClo
     
     
     try {
-      await axios.post(MEMO_API.teacherAddForm, filteredFormData);
+      await apiClient.post(MEMO_API.teacherAddForm, filteredFormData);
       setError(null);
       console.log("✅ ส่ง API สำเร็จ!"); // ✅ Debug ถ้าส่งผ่าน
       onAddSuccess();

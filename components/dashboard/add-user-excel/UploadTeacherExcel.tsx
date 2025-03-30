@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import apiClient from "@/components/axios/axiosConfig";
 import { MEMO_API } from "@/constants/apis";
 import MemoButton from "@/components/button/memo-button";
 import ExcelLogo from "@/components/ui/icons/dashboard/microsoft-excel-logo";
@@ -50,7 +50,7 @@ const UploadTeacherExcel: React.FC<UploadTeacherExcelProps> = ({ onClose }) => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await axios.post(MEMO_API.teacherAddExcel, formData, {
+      const response = await apiClient.post(MEMO_API.teacherAddExcel, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (progressEvent) => {
           if (progressEvent.total) {
