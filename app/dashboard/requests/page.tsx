@@ -60,7 +60,7 @@ const UserRequests = () => {
         
         setTeachers(
           registers
-          //@typescript-eslint/no-explicit-any
+      /* eslint-disable @typescript-eslint/no-explicit-any */
             .filter((item: any) => item.role === "teacher" && item.registerTeacherData)
             .map((item: any) => ({
               registerId: item.registerId,

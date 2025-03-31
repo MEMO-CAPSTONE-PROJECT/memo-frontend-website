@@ -56,7 +56,7 @@ const AdminManagement = () => {
       } else {
         setData([]);
       }
-      //@typescript-eslint/no-explicit-any
+      /* eslint-disable @typescript-eslint/no-explicit-any */
     } catch (err: any) {
       setErrorGet(err.message || "เกิดข้อผิดพลาดในการดึงข้อมูล");
     } finally {

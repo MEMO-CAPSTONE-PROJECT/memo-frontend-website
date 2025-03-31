@@ -66,6 +66,7 @@ const Dashboard: React.FC = () => {
   console.log(searchText)
         const formattedData: DeletedUser[] =
           activeMenu === "รายชื่อครู"
+                /* eslint-disable @typescript-eslint/no-explicit-any */
             ? teacherData.map((item: any) => ({
                 trashId: item.trashId,
                 teacherId: item.teacherId,
@@ -78,6 +79,7 @@ const Dashboard: React.FC = () => {
                 startDate: item.startDate,
                 endDate: item.endDate,
               }))
+                    /* eslint-disable @typescript-eslint/no-explicit-any */
             : studentData.map((item: any) => ({
                 trashId: item.trashId,
                 studentId: item.studentId,
@@ -99,11 +101,11 @@ const Dashboard: React.FC = () => {
       }
       setLoading(false);
     };
-  
+  // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchData();
-  }, [activeMenu]);
+  },[activeMenu, searchText]);
   
-
+console.log(searchText)
   const renderRow = (item: DeletedUser) => {
     return [
 

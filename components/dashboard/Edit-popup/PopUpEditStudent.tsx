@@ -1,33 +1,37 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import apiClient from "@/components/axios/axiosConfig";
 import { z, type ZodFormattedError } from "zod";
 
 import { MEMO_API } from "@/constants/apis";
 import MemoInputHeader from "@/components/input/header/memo-input-header";
 import MemoSelectHeader from "@/components/input/header/memo-select-header";
-import MemoButton from '@/components/button/memo-button'
-import MemoPopUp from '@/components/container/memo-popup-time';
+import MemoButton from "@/components/button/memo-button";
+import MemoPopUp from "@/components/container/memo-popup-time";
 
 import SuccessIcon from "@/components/ui/icons/pop-up/success-icon";
 import { FaSpinner } from "react-icons/fa";
 
+// Updated schema for student only (parent-related fields removed)
 const studentSchema = z.object({
   firstName: z.string().min(1, "กรุณากรอกชื่อ"),
   lastName: z.string().min(1, "กรุณากรอกนามสกุล"),
-  classLevel: z.string().min(1, "กรุณากรอกระดับชั้น").regex(/^[1-4]$/, "ชั้นเรียนต้องเป็นตัวเลขจาก 1 ถึง 4"),
-  classRoom: z.string().min(1, "กรุณากรอกห้องเรียน").regex(/^[1-6]$/, "ห้องเรียนต้องเป็นตัวเลขจาก 1 ถึง 6"),
+  classLevel: z
+    .string()
+    .min(1, "กรุณากรอกระดับชั้น")
+    .regex(/^[1-4]$/, "ชั้นเรียนต้องเป็นตัวเลขจาก 1 ถึง 4"),
+  classRoom: z
+    .string()
+    .min(1, "กรุณากรอกห้องเรียน")
+    .regex(/^[1-6]$/, "ห้องเรียนต้องเป็นตัวเลขจาก 1 ถึง 6"),
   displayName: z.string().min(1, "กรุณากรอกชื่อผู้ใช้"),
-  gender: z.enum(["ชาย", "หญิง"], { errorMap: () => ({ message: "กรุณาเลือกเพศ" }) }),
+  gender: z.enum(["ชาย", "หญิง"], {
+    errorMap: () => ({ message: "กรุณาเลือกเพศ" }),
+  }),
   emailStudent: z.string().email("กรุณากรอกอีเมลของนักเรียน"),
-  phoneNumber: z.string().regex(/^\d+$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข").length(10, "เบอร์โทรศัพท์ต้องมีจำนวน 10 หลัก")
-});
-
-const parentSchema = z.object({
-  parentFirstName: z.string().min(1, "กรุณากรอกชื่อของผู้ปกครอง"),
-  parentLastName: z.string().min(1, "กรุณากรอกนามสกุลของผู้ปกครอง"),
-  parentRelation: z.string().min(1, "กรุณากรอกความสัมพันธ์"),
-  parentEmail: z.string().email("กรุณากรอกอีเมลของผู้ปกครอง"),
-  parentPhone: z.string().regex(/^\d+$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข").length(10, "เบอร์โทรศัพท์ต้องมีจำนวน 10 หลัก")
+  phoneNumber: z
+    .string()
+    .regex(/^\d+$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข")
+    .length(10, "เบอร์โทรศัพท์ต้องมีจำนวน 10 หลัก"),
 });
 
 interface PopUpEditStudentListProps {
@@ -44,13 +48,6 @@ interface PopUpEditStudentListProps {
     gender: string;
     emailStudent: string;
     phoneNumber: string;
-    parent: {
-      firstName: string;
-      lastName: string;
-      relation: string;
-      email: string;
-      phoneNumber: string;
-    };
   };
 }
 
@@ -62,83 +59,53 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
   initialData,
 }) => {
   const [formData, setFormData] = useState(initialData);
-  const [parentData, setParentData] = useState(initialData.parent);
-  const [errors, setErrors] = useState<ZodFormattedError<z.infer<typeof studentSchema>, string> | null>(null);
-  const [parentErrors, setParentErrors] = useState<ZodFormattedError<z.infer<typeof parentSchema>, string> | null>(null);
+  const [errors, setErrors] = useState<ZodFormattedError<
+    z.infer<typeof studentSchema>,
+    string
+  > | null>(null);
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(1);
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setErrors(null); // Reset errors when popup opens
-      setParentErrors(null);
     }
     setFormData(initialData);
-    setParentData(initialData.parent);
   }, [isOpen, initialData]);
 
   const handleClose = () => {
     setError(null);
     onClose();
+    console.log(error)
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    if (name.startsWith("parent")) {
-      setParentData(prev => ({ ...prev, [name]: value }));
-      setParentErrors(prev => prev ? { ...prev, [name]: undefined } : null);
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-      setErrors(prev => prev ? { ...prev, [name]: undefined } : null);
-    }
-  };
-
-  const handleNextStep = () => {
-    setStep(2);
-  };
-
-  const handlePrevStep = () => {
-    setStep(1);
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => (prev ? { ...prev, [name]: undefined } : null));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-console.log(error)
-    // Validate based on the current step
-    const schemaToUse = step === 1 ? studentSchema : parentSchema;
-    const result = schemaToUse.safeParse(step === 1 ? formData : parentData);
+
+    const result = studentSchema.safeParse(formData);
 
     if (!result.success) {
-      if (step === 1) {
-        setErrors(result.error.format());
-      } else {
-        setParentErrors(result.error.format());
-      }
+      console.log(result.error.format()); // ตรวจสอบโครงสร้างของ error
+      setErrors(result.error.format());
       return;
     }
 
+    setErrors(null);
     setLoading(true);
     setIsSuccess(false);
 
     try {
-      const studentData = step === 1 ? formData : null;
-      const parentDataToSubmit = step === 2 ? parentData : null;
-
-      // First, update the student information
-      await axios.put(`${MEMO_API.studentEdit}/${studentId}`, {
-        ...studentData,
-        parentPhoneNumber: parentDataToSubmit?.phoneNumber, // Ensure parent's phone is linked
-      });
-
-      // Then, update the parent information
-      await axios.put(`${MEMO_API.studentEdit}/${studentId}`, {
-        ...parentDataToSubmit,
-        phoneNumber: parentDataToSubmit?.phoneNumber, // Match parent's phone number to student's phone number
-      });
-
-      setError(null);
+      await apiClient.put(`${MEMO_API.studentEdit}/${studentId}`, formData);
       onEditSuccess();
       setIsSuccess(true);
 
@@ -148,12 +115,10 @@ console.log(error)
       }, 3000);
     } catch (error: any) {
       setLoading(false);
-
-      if (error.response?.data?.message) {
-        setError(error.response.data.message);
-      } else {
-        setError("ข้อมูลซ้ำกับข้อมูลเดิม กรุณาแก้ไขข้อมูลใหม่");
-      }
+      setError(
+        error.response?.data?.message ||
+          "ข้อมูลซ้ำกับข้อมูลเดิม กรุณาแก้ไขข้อมูลใหม่"
+      );
     }
   };
 
@@ -162,203 +127,134 @@ console.log(error)
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-title-1 bg-opacity-50 px-4">
       <div className="bg-system-white p-6 md:p-8 rounded-lg shadow-lg w-full max-w-lg md:max-w-2xl relative">
-        {step === 1 ? (
-          <>
-            <h2 className="font-bold mb-4 text-[18px] text-left">เพิ่มรายชื่อนักเรียน</h2>
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="flex flex-wrap gap-4">
-                <div className="w-full md:w-[48%]">
-                  <MemoInputHeader
-                    text="ชื่อ"
-                    type="text"
-                    name="firstName"
-                    placeholder="กรุณาพิมพ์ชื่อของนักเรียน"
-                    error={errors?.firstName?._errors[0]}
-                    value={formData.firstName}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="w-full md:w-[48%]">
-                  <MemoInputHeader
-                    text="นามสกุล"
-                    type="text"
-                    name="lastName"
-                    placeholder="กรุณาพิมพ์นามสกุลของนักเรียน"
-                    error={errors?.lastName?._errors[0]}
-                    value={formData.lastName}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="w-full md:w-[48%]">
-                  <MemoInputHeader
-                    text="ระดับชั้น"
-                    type="text"
-                    name="classLevel"
-                    placeholder="กรุณาพิมพ์ระดับชั้นของนักเรียน"
-                    error={errors?.classLevel?._errors[0]}
-                    value={formData.classLevel}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="w-full md:w-[48%]">
-                  <MemoInputHeader
-                    text="ห้องเรียน"
-                    type="text"
-                    name="classRoom"
-                    placeholder="กรุณาพิมพ์ห้องเรียนของนักเรียน"
-                    error={errors?.classRoom?._errors[0]}
-                    value={formData.classRoom}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="w-full md:w-[48%]">
-                  <MemoInputHeader
-                    text="ชื่อผู้ใช้"
-                    type="text"
-                    name="displayName"
-                    placeholder="กรุณาพิมพ์ชื่อผู้ใช้ของนักเรียน"
-                    error={errors?.displayName?._errors[0]}
-                    value={formData.displayName}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="w-full md:w-[48%]">
-                  <MemoSelectHeader
-                    label="เพศ"
-                    options={["หญิง", "ชาย"]}
-                    name="gender"
-                    placeholder="กรุณาเลือกเพศ"
-                    value={formData.gender}
-                    error={errors?.gender?._errors[0]}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="w-full">
-                  <MemoInputHeader
-                    text="อีเมล"
-                    type="email"
-                    name="emailStudent"
-                    placeholder="กรุณาพิมพ์อีเมลของนักเรียน"
-                    error={errors?.emailStudent?._errors[0]}
-                    value={formData.emailStudent}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="w-full">
-                  <MemoInputHeader
-                    text="เบอร์โทรศัพท์"
-                    type="text"
-                    name="phoneNumber"
-                    placeholder="กรุณาพิมพ์เบอร์โทรศัพท์ของนักเรียน"
-                    error={errors?.phoneNumber?._errors[0]}
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-              <div className="flex justify-between gap-4 mt-6">
-                <MemoButton
-                  title="ถัดไป"
-                  type="button"
-                  onClick={handleNextStep}
-                  className="bg-primary-400 w-[48%] text-white"
-                />
-              </div>
-            </form>
-          </>
-        ) : (
-          <>
-            <h2 className="font-bold mb-4 text-[18px] text-left">ข้อมูลผู้ปกครอง</h2>
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="flex flex-wrap gap-4">
-                <div className="w-full md:w-[48%]">
-                  <MemoInputHeader
-                    text="ชื่อของผู้ปกครอง"
-                    type="text"
-                    name="parentFirstName"
-                    placeholder="กรุณาพิมพ์ชื่อของผู้ปกครอง"
-                    error={parentErrors?.parentFirstName?._errors[0]}
-                    value={parentData.firstName}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="w-full md:w-[48%]">
-                  <MemoInputHeader
-                    text="นามสกุลของผู้ปกครอง"
-                    type="text"
-                    name="parentLastName"
-                    placeholder="กรุณาพิมพ์นามสกุลของผู้ปกครอง"
-                    error={parentErrors?.parentLastName?._errors[0]}
-                    value={parentData.lastName}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="w-full md:w-[48%]">
-                  <MemoInputHeader
-                    text="ความสัมพันธ์"
-                    type="text"
-                    name="parentRelation"
-                    placeholder="กรุณาพิมพ์ความสัมพันธ์"
-                    error={parentErrors?.parentRelation?._errors[0]}
-                    value={parentData.relation}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="w-full md:w-[48%]">
-                  <MemoInputHeader
-                    text="อีเมลของผู้ปกครอง"
-                    type="email"
-                    name="parentEmail"
-                    placeholder="กรุณาพิมพ์อีเมลของผู้ปกครอง"
-                    error={parentErrors?.parentEmail?._errors[0]}
-                    value={parentData.email}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="w-full">
-                  <MemoInputHeader
-                    text="เบอร์โทรศัพท์ของผู้ปกครอง"
-                    type="text"
-                    name="parentPhone"
-                    placeholder="กรุณาพิมพ์เบอร์โทรศัพท์ของผู้ปกครอง"
-                    error={parentErrors?.parentPhone?._errors[0]}
-                    value={parentData.phoneNumber}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-              <div className="flex justify-between gap-4 mt-6">
-                <MemoButton
-                 title="ย้อนกลับ"
-                  type="button"
-                  onClick={handlePrevStep}
-                  className="bg-secondary-400 w-[48%] text-white"
-                />
-                <MemoButton
-                  title="บันทึก"
-                  type="submit"
-                  className="bg-primary-400 w-[48%] text-white"
-                />
-              </div>
-            </form>
-          </>
-        )}
+        <h2 className="font-bold mb-4 text-[18px] text-left">
+          เพิ่มรายชื่อนักเรียน
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <div className="flex flex-wrap gap-4">
+            <div className="w-full md:w-[48%]">
+              <MemoInputHeader
+                text="ชื่อ"
+                type="text"
+                name="firstName"
+                placeholder="กรุณาพิมพ์ชื่อของนักเรียน"
+                error={errors?.firstName?._errors?.[0]}
+                value={formData.firstName}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="w-full md:w-[48%]">
+              <MemoInputHeader
+                text="นามสกุล"
+                type="text"
+                name="lastName"
+                placeholder="กรุณาพิมพ์นามสกุลของนักเรียน"
+                error={errors?.lastName?._errors?.[0]}
+                value={formData.lastName}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="w-full md:w-[48%]">
+              <MemoInputHeader
+                text="ระดับชั้น"
+                type="text"
+                name="classLevel"
+                placeholder="กรุณาพิมพ์ระดับชั้นของนักเรียน"
+                error={errors?.classLevel?._errors?.[0]}
+                value={formData.classLevel}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="w-full md:w-[48%]">
+              <MemoInputHeader
+                text="ห้องเรียน"
+                type="text"
+                name="classRoom"
+                placeholder="กรุณาพิมพ์ห้องเรียนของนักเรียน"
+                error={errors?.classRoom?._errors?.[0]}
+                value={formData.classRoom}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="w-full md:w-[48%]">
+              <MemoInputHeader
+                text="ชื่อผู้ใช้"
+                type="text"
+                name="displayName"
+                placeholder="กรุณาพิมพ์ชื่อผู้ใช้ของนักเรียน"
+                error={errors?.displayName?._errors?.[0]}
+                value={formData.displayName}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="w-full md:w-[48%]">
+              <MemoSelectHeader
+                label="เพศ"
+                options={["หญิง", "ชาย"]}
+                name="gender"
+                placeholder="กรุณาเลือกเพศ"
+                value={formData.gender}
+                error={errors?.gender?._errors?.[0]}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="w-full">
+              <MemoInputHeader
+                text="อีเมล"
+                type="email"
+                name="emailStudent"
+                placeholder="กรุณาพิมพ์อีเมลของนักเรียน"
+                error={errors?.emailStudent?._errors?.[0]}
+                value={formData.emailStudent}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="w-full">
+              <MemoInputHeader
+                text="เบอร์โทรศัพท์"
+                type="text"
+                name="phoneNumber"
+                placeholder="กรุณาพิมพ์เบอร์โทรศัพท์ของนักเรียน"
+                error={errors?.phoneNumber?._errors[0]}
+                value={formData.phoneNumber}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+          <div className="flex space-x-4 pt-2 ">
+            <MemoButton title="ยกเลิก" variant="ghost" onClick={handleClose} />
+            <MemoButton
+              title="บันทึก"
+              variant="primary"
+              disabled={loading}
+              type="submit"
+            />
+          </div>
+        </form>
 
- {(loading || isSuccess) && (
-            <MemoPopUp show={loading || isSuccess} onClose={handleClose} redirectUrl="/">
-              {loading ? (
-                <>
-                  <FaSpinner className="animate-spin text-4xl mx-auto mb-4" />
-                  <h2 className="text-title font-bold text-center">กำลังแก้ไข...</h2>
-                </>
-              ) : (
-                <>
-                  <SuccessIcon className="w-24 h-24 mx-auto mb-4 " />
-                  <h2 className="text-title font-bold text-center">แก้ไขรายชื่อนักเรียนสำเร็จ</h2>
-                </>
-              )}
-            </MemoPopUp>
-          )}
+        {(loading || isSuccess) && (
+          <MemoPopUp
+            show={loading || isSuccess}
+            onClose={handleClose}
+            redirectUrl="/"
+          >
+            {loading ? (
+              <>
+                <FaSpinner className="animate-spin text-4xl mx-auto mb-4" />
+                <h2 className="text-title font-bold text-center">
+                  กำลังแก้ไข...
+                </h2>
+              </>
+            ) : (
+              <>
+                <SuccessIcon className="w-24 h-24 mx-auto mb-4 " />
+                <h2 className="text-title font-bold text-center">
+                  แก้ไขรายชื่อนักเรียนสำเร็จ
+                </h2>
+              </>
+            )}
+          </MemoPopUp>
+        )}
       </div>
     </div>
   );

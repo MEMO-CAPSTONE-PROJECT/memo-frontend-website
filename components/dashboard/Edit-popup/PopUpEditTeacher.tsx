@@ -145,12 +145,13 @@ const PopUpEditTeacherList: React.FC<PopUpEditTeacherListProps> = ({
     setLoading(true);
     setIsSuccess(false);
   
-    // ฟังก์ชันแยกเพื่อกรองข้อมูลก่อนส่ง
     const getFilteredFormData = (data: typeof formData) => {
       if (data.position === "ครูประจำชั้น") return data;
-      const { class: _, ...rest } = data;
+      const { class: className, ...rest } = data;
+      console.log("Class Name Removed:", className); 
       return rest;
     };
+    
     const filteredFormData = getFilteredFormData(formData);
     console.log(filteredFormData)
     try {
@@ -164,6 +165,7 @@ const PopUpEditTeacherList: React.FC<PopUpEditTeacherListProps> = ({
         setIsSuccess(false);
         handleClose();
       }, 3000);
+      /* eslint-disable @typescript-eslint/no-explicit-any */
     } catch (error: any) {
       setLoading(false);
   

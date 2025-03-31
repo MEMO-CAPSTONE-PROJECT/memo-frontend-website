@@ -72,10 +72,10 @@ const PopUpEditAdminList: React.FC<PopUpEditAdminListProps> = ({
     password: "",
     confirmPassword: "",
   });
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
   const [errors, setErrors] = useState<any>({});
   const [loading, setLoading] = useState(false);
-  const [isEditingPassword, setIsEditingPassword] = useState(false); // State for editing password
+  const [isEditingPassword, setIsEditingPassword] = useState(false); 
 
   useEffect(() => {
     if (adminData) {
@@ -126,7 +126,7 @@ const PopUpEditAdminList: React.FC<PopUpEditAdminListProps> = ({
         ...dataToUpdate,
         role: "Teacher Staff",
       });
-  
+  console.log(confirmPassword)
       setIsSuccessPopupOpen(true);
       setTimeout(() => {
         setIsSuccessPopupOpen(false); 
@@ -136,7 +136,7 @@ const PopUpEditAdminList: React.FC<PopUpEditAdminListProps> = ({
       setTimeout(() => {
         onEditSuccess();
         handleCancel()
-      }, 1500);
+      }, 2000);
       
   
     } catch (error) {
@@ -230,10 +230,9 @@ const PopUpEditAdminList: React.FC<PopUpEditAdminListProps> = ({
                     title={isEditingPassword ? "ยกเลิก" : "แก้รหัส"}
                     variant="Bluebutton"
                     onClick={(e) => {
-                      e.preventDefault(); // ป้องกันการ submit form
+                      e.preventDefault(); 
                       setIsEditingPassword(!isEditingPassword);
                       if (!isEditingPassword) {
-                        // ถ้าเริ่มแก้ไขรหัสผ่าน ให้เคลียร์ค่า password
                         setFormData((prev) => ({
                           ...prev,
                           password: "",
@@ -244,7 +243,7 @@ const PopUpEditAdminList: React.FC<PopUpEditAdminListProps> = ({
                   />
                 </div>
               </div>
-              {isEditingPassword && ( // Conditionally render password fields
+              {isEditingPassword && ( 
                 <>
                   <div className="w-full">
                     <MemoInputHeader

@@ -71,7 +71,7 @@ const PopUpAddAdmin: React.FC<PopUpAddAdminProps> = ({
       setFormData(initialFormData);
       setErrors(null);
     }
-  }, [isOpen]);
+  }, [isOpen, initialFormData]);
 
   const handleClose = () => {
     setError(null);

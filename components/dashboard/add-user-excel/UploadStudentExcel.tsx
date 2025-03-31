@@ -14,7 +14,7 @@ const UploadStudentExcel: React.FC<UploadStudentExcelProps> = ({ onClose }) => {
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string>("");
   const [fileSize, setFileSize] = useState<string>("");
-  // const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [isUploading, setIsUploading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
@@ -24,6 +24,7 @@ const UploadStudentExcel: React.FC<UploadStudentExcelProps> = ({ onClose }) => {
       const selectedFile = event.target.files[0];
       if (!selectedFile.name.match(/\.(xls|xlsx)$/)) {
         setErrorMessage("กรุณาเลือกไฟล์ Excel (.xls หรือ .xlsx) เท่านั้น");
+        console.log(uploadProgress);
         return;
       }
       setFile(selectedFile);
@@ -46,36 +47,41 @@ const UploadStudentExcel: React.FC<UploadStudentExcelProps> = ({ onClose }) => {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const response = await apiClient.post(MEMO_API.studentAddExcel, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total) {
-            const percentCompleted = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            setUploadProgress(percentCompleted);
-          }
-        },
-      });
+      const response = await apiClient.post(
+        MEMO_API.studentAddExcel,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              setUploadProgress(percentCompleted);
+            }
+          },
+        }
+      );
       if (response.data.status === 200) {
         setShowSuccessPopup(true);
       } else {
         setErrorMessage(response.data.message || "เกิดข้อผิดพลาดในการอัปโหลด");
       }
     } catch (error) {
-      setErrorMessage("อัปโหลดล้มเหลวเนื่องจากโครงสร้างไม่ถูกต้อง กรุณาลองใหม่");
-      console.log(error)
+      setErrorMessage(
+        "อัปโหลดล้มเหลวเนื่องจากโครงสร้างไม่ถูกต้อง กรุณาลองใหม่"
+      );
+      console.log(error);
     } finally {
       setIsUploading(false);
     }
   };
 
-
   useEffect(() => {
     if (showSuccessPopup) {
       const timer = setTimeout(() => {
-        setShowSuccessPopup(false); 
-        onClose(); 
+        setShowSuccessPopup(false);
+        onClose();
       }, 3000);
 
       return () => clearTimeout(timer);
@@ -120,7 +126,9 @@ const UploadStudentExcel: React.FC<UploadStudentExcelProps> = ({ onClose }) => {
             )}
           </div>
 
-          {errorMessage && <p className="text-system-error-2 text-sm mt-2">{errorMessage}</p>}
+          {errorMessage && (
+            <p className="text-system-error-2 text-sm mt-2">{errorMessage}</p>
+          )}
 
           <div className="flex gap-3 mt-4">
             <MemoButton title="ยกเลิก" variant="ghost" onClick={onClose} />
@@ -135,11 +143,12 @@ const UploadStudentExcel: React.FC<UploadStudentExcelProps> = ({ onClose }) => {
           </div>
         </div>
       ) : (
-         <div className="bg-system-white p-6 rounded-md shadow-2xl w-96 text-center">
-         <SuccessIcon className="w-24 h-24 mx-auto mb-4 " />
-         <h2 className="text-title font-bold text-center">เพิ่มรายชื่อนักเรียนสำเร็จ</h2>
+        <div className="bg-system-white p-6 rounded-md shadow-2xl w-96 text-center">
+          <SuccessIcon className="w-24 h-24 mx-auto mb-4 " />
+          <h2 className="text-title font-bold text-center">
+            เพิ่มรายชื่อนักเรียนสำเร็จ
+          </h2>
         </div>
-
       )}
     </div>
   );

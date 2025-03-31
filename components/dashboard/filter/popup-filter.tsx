@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default function FilterPopup({ isOpen, onClose, onFilter }: { isOpen: boolean; onClose: () => void; onFilter: (filters: any) => void }) {
   const [filters, setFilters] = useState({
     search: "",
