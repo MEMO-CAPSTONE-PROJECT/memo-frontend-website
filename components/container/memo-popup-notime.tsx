@@ -1,4 +1,3 @@
-import { useRouter } from 'next/navigation';
 import React from 'react';
 
 interface MemoPopUpProps {
@@ -13,10 +12,7 @@ export default function MemoPopUp({
   children,
   className = '',
   show,
-  onClose,
-  redirectUrl,
 }: Readonly<MemoPopUpProps>) {
-  const router = useRouter();
 
   if (!show) return null;
 

@@ -33,6 +33,7 @@ export default function TeacherRegistrationForm() {
         .string()
         .regex(/^\d+$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข")
         .length(10, "เบอร์โทรศัพท์ต้องมีจำนวน 10 หลัก")
+        .regex(/^0\d{9}$/, "กรุณากรอกหมายเลขโทรศัพท์ที่ถูกต้อง")
         .min(1, "กรุณากรอกเบอร์โทรศัพท์ของคุณครู"),
       class: z.object({
         room: z

@@ -14,8 +14,8 @@ import { FaSpinner } from "react-icons/fa";
 const studentSchema = z.object({
   firstName: z.string().min(1, "กรุณากรอกชื่อ"),
   lastName: z.string().min(1, "กรุณากรอกนามสกุล"),
-  classLevel: z.string().min(1, "กรุณากรอกระดับชั้น"),
-  classRoom: z.string().min(1, "กรุณากรอกห้องเรียน"),
+  classLevel: z.string().min(1, "กรุณากรอกระดับชั้น").regex(/^[1-4]$/, "ชั้นเรียนต้องเป็นตัวเลขจาก 1 ถึง 4"),
+  classRoom: z.string().min(1, "กรุณากรอกห้องเรียน").regex(/^[1-6]$/, "ห้องเรียนต้องเป็นตัวเลขจาก 1 ถึง 6"),
   displayName: z.string().min(1, "กรุณากรอกชื่อผู้ใช้"),
   gender: z.enum(["ชาย", "หญิง"], { errorMap: () => ({ message: "กรุณาเลือกเพศ" }) }),
   emailStudent: z.string().email("กรุณากรอกอีเมลของนักเรียน"),
@@ -105,7 +105,7 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+console.log(error)
     // Validate based on the current step
     const schemaToUse = step === 1 ? studentSchema : parentSchema;
     const result = schemaToUse.safeParse(step === 1 ? formData : parentData);
@@ -173,7 +173,7 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
                     type="text"
                     name="firstName"
                     placeholder="กรุณาพิมพ์ชื่อของนักเรียน"
-                    error={errors?.firstName}
+                    error={errors?.firstName?._errors[0]}
                     value={formData.firstName}
                     onChange={handleChange}
                   />
@@ -184,7 +184,7 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
                     type="text"
                     name="lastName"
                     placeholder="กรุณาพิมพ์นามสกุลของนักเรียน"
-                    error={errors?.lastName}
+                    error={errors?.lastName?._errors[0]}
                     value={formData.lastName}
                     onChange={handleChange}
                   />
@@ -195,7 +195,7 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
                     type="text"
                     name="classLevel"
                     placeholder="กรุณาพิมพ์ระดับชั้นของนักเรียน"
-                    error={errors?.classLevel}
+                    error={errors?.classLevel?._errors[0]}
                     value={formData.classLevel}
                     onChange={handleChange}
                   />
@@ -206,7 +206,7 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
                     type="text"
                     name="classRoom"
                     placeholder="กรุณาพิมพ์ห้องเรียนของนักเรียน"
-                    error={errors?.classRoom}
+                    error={errors?.classRoom?._errors[0]}
                     value={formData.classRoom}
                     onChange={handleChange}
                   />
@@ -217,7 +217,7 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
                     type="text"
                     name="displayName"
                     placeholder="กรุณาพิมพ์ชื่อผู้ใช้ของนักเรียน"
-                    error={errors?.displayName}
+                    error={errors?.displayName?._errors[0]}
                     value={formData.displayName}
                     onChange={handleChange}
                   />
@@ -229,7 +229,7 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
                     name="gender"
                     placeholder="กรุณาเลือกเพศ"
                     value={formData.gender}
-                    error={errors?.gender}
+                    error={errors?.gender?._errors[0]}
                     onChange={handleChange}
                   />
                 </div>
@@ -239,7 +239,7 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
                     type="email"
                     name="emailStudent"
                     placeholder="กรุณาพิมพ์อีเมลของนักเรียน"
-                    error={errors?.emailStudent}
+                    error={errors?.emailStudent?._errors[0]}
                     value={formData.emailStudent}
                     onChange={handleChange}
                   />
@@ -250,7 +250,7 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
                     type="text"
                     name="phoneNumber"
                     placeholder="กรุณาพิมพ์เบอร์โทรศัพท์ของนักเรียน"
-                    error={errors?.phoneNumber}
+                    error={errors?.phoneNumber?._errors[0]}
                     value={formData.phoneNumber}
                     onChange={handleChange}
                   />
@@ -258,7 +258,7 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
               </div>
               <div className="flex justify-between gap-4 mt-6">
                 <MemoButton
-                  text="ถัดไป"
+                  title="ถัดไป"
                   type="button"
                   onClick={handleNextStep}
                   className="bg-primary-400 w-[48%] text-white"
@@ -277,8 +277,8 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
                     type="text"
                     name="parentFirstName"
                     placeholder="กรุณาพิมพ์ชื่อของผู้ปกครอง"
-                    error={parentErrors?.parentFirstName}
-                    value={parentData.parentFirstName}
+                    error={parentErrors?.parentFirstName?._errors[0]}
+                    value={parentData.firstName}
                     onChange={handleChange}
                   />
                 </div>
@@ -288,8 +288,8 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
                     type="text"
                     name="parentLastName"
                     placeholder="กรุณาพิมพ์นามสกุลของผู้ปกครอง"
-                    error={parentErrors?.parentLastName}
-                    value={parentData.parentLastName}
+                    error={parentErrors?.parentLastName?._errors[0]}
+                    value={parentData.lastName}
                     onChange={handleChange}
                   />
                 </div>
@@ -299,8 +299,8 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
                     type="text"
                     name="parentRelation"
                     placeholder="กรุณาพิมพ์ความสัมพันธ์"
-                    error={parentErrors?.parentRelation}
-                    value={parentData.parentRelation}
+                    error={parentErrors?.parentRelation?._errors[0]}
+                    value={parentData.relation}
                     onChange={handleChange}
                   />
                 </div>
@@ -310,8 +310,8 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
                     type="email"
                     name="parentEmail"
                     placeholder="กรุณาพิมพ์อีเมลของผู้ปกครอง"
-                    error={parentErrors?.parentEmail}
-                    value={parentData.parentEmail}
+                    error={parentErrors?.parentEmail?._errors[0]}
+                    value={parentData.email}
                     onChange={handleChange}
                   />
                 </div>
@@ -321,21 +321,21 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
                     type="text"
                     name="parentPhone"
                     placeholder="กรุณาพิมพ์เบอร์โทรศัพท์ของผู้ปกครอง"
-                    error={parentErrors?.parentPhone}
-                    value={parentData.parentPhone}
+                    error={parentErrors?.parentPhone?._errors[0]}
+                    value={parentData.phoneNumber}
                     onChange={handleChange}
                   />
                 </div>
               </div>
               <div className="flex justify-between gap-4 mt-6">
                 <MemoButton
-                  text="ย้อนกลับ"
+                 title="ย้อนกลับ"
                   type="button"
                   onClick={handlePrevStep}
                   className="bg-secondary-400 w-[48%] text-white"
                 />
                 <MemoButton
-                  text="บันทึก"
+                  title="บันทึก"
                   type="submit"
                   className="bg-primary-400 w-[48%] text-white"
                 />
@@ -344,29 +344,21 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
           </>
         )}
 
-        {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <FaSpinner className="animate-spin text-white" size={40} />
-          </div>
-        )}
-
-        {isSuccess && (
-          <MemoPopUp
-            isOpen={isSuccess}
-            onClose={handleClose}
-            icon={<SuccessIcon />}
-            message="การแก้ไขข้อมูลสำเร็จ"
-          />
-        )}
-
-        {error && (
-          <MemoPopUp
-            isOpen={error !== null}
-            onClose={() => setError(null)}
-            icon={<SuccessIcon />}
-            message={error}
-          />
-        )}
+ {(loading || isSuccess) && (
+            <MemoPopUp show={loading || isSuccess} onClose={handleClose} redirectUrl="/">
+              {loading ? (
+                <>
+                  <FaSpinner className="animate-spin text-4xl mx-auto mb-4" />
+                  <h2 className="text-title font-bold text-center">กำลังแก้ไข...</h2>
+                </>
+              ) : (
+                <>
+                  <SuccessIcon className="w-24 h-24 mx-auto mb-4 " />
+                  <h2 className="text-title font-bold text-center">แก้ไขรายชื่อนักเรียนสำเร็จ</h2>
+                </>
+              )}
+            </MemoPopUp>
+          )}
       </div>
     </div>
   );

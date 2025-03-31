@@ -27,7 +27,7 @@ const UploadTeacherExcel: React.FC<UploadTeacherExcelProps> = ({ onClose }) => {
         setErrorMessage("กรุณาเลือกไฟล์ Excel (.xls หรือ .xlsx) เท่านั้น");
         return;
       }
-
+console.log(uploadProgress)
       setFile(selectedFile);
       setFileName(selectedFile.name);
       setFileSize((selectedFile.size / (1024 * 1024)).toFixed(2) + " MB");
@@ -69,6 +69,7 @@ const UploadTeacherExcel: React.FC<UploadTeacherExcelProps> = ({ onClose }) => {
       }
     } catch (error) {
       setErrorMessage("อัปโหลดล้มเหลวเนื่องจากโครงสร้างไม่ถูกต้อง กรุณาลองใหม่");
+      console.log(error)
     } finally {
       setIsUploading(false);
     }

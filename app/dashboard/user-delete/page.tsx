@@ -63,7 +63,7 @@ const Dashboard: React.FC = () => {
   
         const teacherData = response.data?.data?.trashedTeacher ?? [];
         const studentData = response.data?.data?.trashedStudent ?? [];
-  
+  console.log(searchText)
         const formattedData: DeletedUser[] =
           activeMenu === "รายชื่อครู"
             ? teacherData.map((item: any) => ({
@@ -110,7 +110,7 @@ const Dashboard: React.FC = () => {
       ...(deletingMode
         ? [
             <input
-             
+            key={`checkbox-${item.trashId}`}
               type="checkbox"
               checked={selectedIds.includes(item.trashId)}
           onChange={() => handleSelectChange(item.trashId)}

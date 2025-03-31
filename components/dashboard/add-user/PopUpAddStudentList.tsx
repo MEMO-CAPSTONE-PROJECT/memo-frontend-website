@@ -15,11 +15,11 @@ const studentSchema = z.object({
   lastName: z.string().min(1, "กรุณากรอกนามสกุลนักเรียน"),
   classRoom: z
     .string()
-    .regex(/^\d+$/, "ห้องเรียนต้องเป็นตัวเลข")
+    .regex(/^[1-6]$/, "ห้องเรียนต้องเป็นตัวเลขจาก 1 ถึง 6")
     .min(1, "กรุณากรอกห้องเรียน"),
   classLevel: z
     .string()
-    .regex(/^\d+$/, "ชั้นเรียนต้องเป็นตัวเลข")
+    .regex(/^[1-4]$/, "ชั้นเรียนต้องเป็นตัวเลขจาก 1 ถึง 4")
     .min(1, "กรุณากรอกชั้นเรียน"),
   displayName: z.string().min(1, "กรุณากรอกชื่อนักเรียนที่แสดงในระบบ"),
   gender: z.enum(["ชาย", "หญิง"], {
@@ -32,6 +32,7 @@ const studentSchema = z.object({
   phoneNumber: z
     .string()
     .regex(/^\d+$/, "เบอร์โทรต้องเป็นตัวเลข")
+    .regex(/^0\d{9}$/, "กรุณากรอกหมายเลขโทรศัพท์ที่ถูกต้อง")
     .length(10, "เบอร์โทรต้องมี 10 หลัก"),
 });
 
@@ -39,6 +40,7 @@ const parentRegisterSchema = z.object({
   parentPhoneNumber: z
     .string()
     .regex(/^\d+$/, "เบอร์โทรต้องเป็นตัวเลข")
+    .regex(/^0\d{9}$/, "กรุณากรอกหมายเลขโทรศัพท์ที่ถูกต้อง")
     .length(10, "เบอร์โทรต้องมี 10 หลัก"),
   emailParent: z.string().email("รูปแบบอีเมลไม่ถูกต้อง"),
   firstName: z.string().min(1, "กรุณากรอกชื่อผู้ปกครอง"),
@@ -88,6 +90,7 @@ const PopUpAddStudentList: React.FC<PopUpAddStudentListProps> = ({
   const handleNextStep = () => {
     // Validate เฉพาะข้อมูลนักเรียนก่อนเปลี่ยนหน้า
     const studentResult = studentSchema.safeParse(formData);
+    console.log(errors)
     
     if (!studentResult.success) {
       const newStudentErrors: Record<string, string> = {};

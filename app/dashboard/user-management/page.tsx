@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 import { MEMO_API } from "@/constants/apis";
 import apiClient from "@/components/axios/axiosConfig";
@@ -88,7 +87,6 @@ const UserManagement = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [showPopupDelete, setshowPopupDelete] = useState(false);
   const rowsPerPage = 10;
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   const [filteredTeachers, setFilteredTeachers] = useState<Teacher[]>([]);

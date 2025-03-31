@@ -14,7 +14,7 @@ const UploadStudentExcel: React.FC<UploadStudentExcelProps> = ({ onClose }) => {
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string>("");
   const [fileSize, setFileSize] = useState<string>("");
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  // const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [isUploading, setIsUploading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
@@ -64,6 +64,7 @@ const UploadStudentExcel: React.FC<UploadStudentExcelProps> = ({ onClose }) => {
       }
     } catch (error) {
       setErrorMessage("อัปโหลดล้มเหลวเนื่องจากโครงสร้างไม่ถูกต้อง กรุณาลองใหม่");
+      console.log(error)
     } finally {
       setIsUploading(false);
     }

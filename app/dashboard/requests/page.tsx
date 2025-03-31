@@ -51,7 +51,7 @@ const UserRequests = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [searchText, setSearchText] = useState("");
-  
+    console.log(searchText)
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -60,6 +60,7 @@ const UserRequests = () => {
         
         setTeachers(
           registers
+          //@typescript-eslint/no-explicit-any
             .filter((item: any) => item.role === "teacher" && item.registerTeacherData)
             .map((item: any) => ({
               registerId: item.registerId,
@@ -82,6 +83,7 @@ const UserRequests = () => {
         
       } catch (err) {
         setError("ไม่สามารถโหลดข้อมูลได้");
+        console.log(err)
       }
       setLoading(false);
     };

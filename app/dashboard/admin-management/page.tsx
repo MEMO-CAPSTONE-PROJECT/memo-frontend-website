@@ -56,6 +56,7 @@ const AdminManagement = () => {
       } else {
         setData([]);
       }
+      //@typescript-eslint/no-explicit-any
     } catch (err: any) {
       setErrorGet(err.message || "เกิดข้อผิดพลาดในการดึงข้อมูล");
     } finally {
@@ -133,7 +134,8 @@ const AdminManagement = () => {
 
   const handleDeleteSelected = async () => {
     if (selectedAdmins.length === 0) return;
-    setShowPopupDelete(true); // Show the confirmation popup
+    setShowPopupDelete(true);
+    console.log(searchText);
   };
 
   const handleConfirmDelete = async () => {
@@ -145,11 +147,11 @@ const AdminManagement = () => {
         data: { ids: idsToDelete },
       });
       fetchData();
-      setShowPopupDelete(false); // Close the popup after successful deletion
-      setSelectedAdmins([]); // Clear the selected admins
+      setShowPopupDelete(false);
+      setSelectedAdmins([]);
     } catch (error) {
       console.error("Error deleting:", error);
-      setShowPopupDelete(false); // Close the popup even if there is an error
+      setShowPopupDelete(false);
     }
   };
   const handleAddAdminSuccess = () => {
