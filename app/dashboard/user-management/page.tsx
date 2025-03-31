@@ -43,6 +43,7 @@ interface Student {
   classRoom: number;
   gender: string;
   startDate: Date;
+  displayName: string;
   phoneNumber: string;
   email: string;
   parents?: ParentInfo[];
@@ -116,7 +117,7 @@ export default function UserManagement() {
         const response = await apiClient.get<{ data: { students: Student[] } }>(
           MEMO_API.studentsList
         );
-
+        console.log(response.data.data);
         const studentList =
           response.data.data.students?.map((student) => ({
             ...student,
@@ -334,6 +335,7 @@ export default function UserManagement() {
     { key: "lastName", label: "นามสกุล", header: "นามสกุล" },
     { key: "gender", label: "เพศ", header: "เพศ" },
     { key: "classLevel", label: "ชั้น", header: "ชั้น" },
+    { key: "displayName", label: "ชื่อผู้ใช้", header: "ชื่อผู้ใช้" },
     { key: "email", label: "อีเมล", header: "อีเมล" },
     { key: "phoneNumber", label: "เบอร์โทร", header: "เบอร์โทร" },
     { key: "details", label: "ข้อมูลเพิ่มเติม", header: "ข้อมูลเพิ่มเติม" },
@@ -475,7 +477,7 @@ export default function UserManagement() {
                   onClick={() => setIsOpen(!isOpen)}
                   className="flex flex-row justify-center items-center gap-x-sm bg-system-success-2 rounded-sm w-32 text-system-white h-full"
                 >
-                  เพิ่มผู้ใช้ <CaretDown weight="bold" size={20}/>
+                  เพิ่มผู้ใช้ <CaretDown weight="bold" size={20} />
                 </button>
               )}
 
@@ -593,8 +595,11 @@ export default function UserManagement() {
                 <span key={`${student.studentId}-class`}>
                   ป. {student.classLevel}/{student.classRoom}
                 </span>,
-                <span key={`${student.email}-email`}>{student.email}</span>,
-                <span key={`${student.phoneNumber}-phoneNumber`}>
+                <span key={`${student.studentId}-gender`}>
+                  {student.displayName}
+                </span>,
+                <span key={`${student.studentId}-email`}>{student.email}</span>,
+                <span key={`${student.studentId}-phoneNumber`}>
                   {student.phoneNumber}
                 </span>,
                 <button
@@ -787,7 +792,7 @@ export default function UserManagement() {
             <PopUpEditStudent
               isOpen={isPopUpEditStudentOpen}
               onClose={handleCloseEditStudentPopUp}
-              onEditSuccess={handleCloseEditStudentPopUp} 
+              onEditSuccess={handleCloseEditStudentPopUp}
               studentId={selectedStudentId}
               initialData={studentData}
             />
@@ -796,5 +801,4 @@ export default function UserManagement() {
       </div>
     </AuthGuard>
   );
-};
-
+}

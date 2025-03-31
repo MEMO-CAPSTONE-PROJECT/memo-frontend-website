@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState,useMemo,useEffect } from "react";
 import apiClient from "@/components/axios/axiosConfig";
 import { z, type ZodFormattedError } from "zod";
 import { MEMO_API } from "@/constants/apis";
@@ -51,14 +51,14 @@ const PopUpAddAdmin: React.FC<PopUpAddAdminProps> = ({
   onClose,
   onAddSuccess,
 }) => {
-  const initialFormData = {
+  const initialFormData = useMemo(()=> ({
     firstName: "",
     lastName: "",
     userName: "",
     email: "",
     password: "",
     confirmPassword: "",
-  };
+  }),[]);
 
   const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState<ZodFormattedError<z.infer<typeof adminSchema>,string> | null>(null);

@@ -1,5 +1,5 @@
 import apiClient from "@/components/axios/axiosConfig";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 
 import MemoButton from "@/components/button/memo-button";
@@ -59,7 +59,7 @@ const PopUpAddStudentList: React.FC<PopUpAddStudentListProps> = ({
   onAddSuccess,
 }) => {
   const [step, setStep] = useState(1);
-  const initialFormData = {
+  const initialFormData = useMemo(()=> ({
     firstName: "",
     lastName: "",
     classRoom: "",
@@ -68,15 +68,15 @@ const PopUpAddStudentList: React.FC<PopUpAddStudentListProps> = ({
     gender: "",
     emailStudent: "",
     phoneNumber: "",
-  };
+  }),[]);
 
-  const initialParentData = {
+  const initialParentData  = useMemo(()=> ({
     parentPhoneNumber: "",
     emailParent: "",
     firstName: "",
     lastName: "",
     relation: "",
-  };
+  }),[]);
   const [studentErrors, setStudentErrors] = useState<Record<string, string>>({});
   const [parentErrors, setParentErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState(initialFormData);
