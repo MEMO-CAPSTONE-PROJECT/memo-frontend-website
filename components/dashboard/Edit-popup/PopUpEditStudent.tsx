@@ -25,7 +25,7 @@ const studentSchema = z.object({
     .min(1, "กรุณากรอกห้องเรียน"),
   displayName: z.string().min(1, "กรุณากรอกชื่อผู้ใช้"),
   gender: z.enum(["ชาย", "หญิง"], { errorMap: () => ({ message: "กรุณาเลือกเพศ" }) }),
-  emailStudent: z.string().email("กรุณากรอกอีเมลของนักเรียน").min(1, "กรุณากรอกอีเมล"),
+  email: z.string().email("กรุณากรอกอีเมลของนักเรียน").min(1, "กรุณากรอกอีเมล"),
   phoneNumber: z
     .string()
     .min(1, "กรุณากรอกเบอร์")
@@ -203,8 +203,8 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
                 type="email"
                 name="emailStudent"
                 placeholder="กรุณาพิมพ์อีเมลของนักเรียน"
-                error={errors?.emailStudent?._errors?.[0]}
-                value={formData.emailStudent}
+                error={errors?.email?._errors?.[0]}
+                value={formData.email}
                 onChange={handleChange}
               />
             </div>
