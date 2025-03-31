@@ -49,7 +49,7 @@ export default function TeacherRegistrationForm() {
   })
   .refine(
     (data) => {
-      if (data.registerTeacherData.position === "ครูประจำชั้น") {
+      if (data.registerTeacherData.position === "คุณครูประจำชั้น") {
         return (
           data.registerTeacherData.class?.room &&
           data.registerTeacherData.class?.level
@@ -105,7 +105,7 @@ export default function TeacherRegistrationForm() {
       registerTeacherData: {
         ...prev.registerTeacherData,
         ...(name === "room" || name === "level"
-          ? prev.registerTeacherData.position === "ครูประจำชั้น"
+          ? prev.registerTeacherData.position === "คุณครูประจำชั้น"
             ? { 
                 class: { 
                   ...(prev.registerTeacherData.class ?? { room: "", level: "" }), 
@@ -129,7 +129,7 @@ export default function TeacherRegistrationForm() {
       registerTeacherData: {
         ...prev.registerTeacherData,
         [name]: value,
-        class: value === "ครูประจำชั้น" ? prev.registerTeacherData.class : undefined,
+        class: value === "คุณครูประจำชั้น" ? prev.registerTeacherData.class : undefined,
       },
     }));
   };
@@ -137,7 +137,7 @@ export default function TeacherRegistrationForm() {
   const sendForm = async () => {
     try {
       const payload =
-        formData.registerTeacherData.position === "ครูประจำชั้น"
+        formData.registerTeacherData.position === "คุณครูประจำชั้น"
           ? formData
           : { ...formData, registerTeacherData: { ...formData.registerTeacherData, class: undefined } };
   
@@ -271,14 +271,14 @@ export default function TeacherRegistrationForm() {
             <MemoSelectHeader
               label="ตำแหน่ง"
               name="position"
-              options={["ครูประจำชั้น", "ครูฝ่ายปกครอง"]}
+              options={["ครูประจำชั้น", "คุณครูฝ่ายปกครอง"]}
               error={errors?.registerTeacherData?.position?._errors[0]}
               value={formData.registerTeacherData.position}
               onChange={handleSelect}
               placeholder="เลือกตำแหน่ง"
             />
           </div>
-          {formData.registerTeacherData.position === "ครูประจำชั้น" && (
+          {formData.registerTeacherData.position === "คุณครูประจำชั้น" && (
             <div className="w-full md:w-[48%] flex space-x-4">
               <MemoInputHeader
                 text="ชั้นเรียน"

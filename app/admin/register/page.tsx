@@ -144,7 +144,7 @@ export default function AdminRegistrationForm() {
           <MemoSelectHeader
             name="role"
             label="ตำแหน่ง"
-            options={["ครูธุรการ", "ครูฝ่ายปกครอง"]}
+            options={["คุณครูประจำชั้น", "คุณครูฝ่ายปกครอง"]}
             onChange={handleSelect}
             placeholder="กรุณาเลือกตำแหน่ง"
             value={formData.role}

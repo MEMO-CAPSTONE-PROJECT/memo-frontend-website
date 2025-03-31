@@ -36,7 +36,7 @@ const teacherSchema = z
   })
   .refine(
     (data) => {
-      if (data.position === "ครูประจำชั้น") {
+      if (data.position === "คุณครูประจำชั้น") {
         return !!data.class?.level && !!data.class?.room;
       }
       return true;
@@ -133,7 +133,7 @@ const PopUpEditTeacherList: React.FC<PopUpEditTeacherListProps> = ({
     e.preventDefault();
   
     // เลือก Schema ตามตำแหน่งของครู
-    const schemaToUse = formData.position === "ครูฝ่ายปกครอง" ? DisciplinaryTeacherSchema : teacherSchema;
+    const schemaToUse = formData.position === "คุณครูฝ่ายปกครอง" ? DisciplinaryTeacherSchema : teacherSchema;
     const result = schemaToUse.safeParse(formData);
   
     if (!result.success) {
@@ -146,7 +146,7 @@ const PopUpEditTeacherList: React.FC<PopUpEditTeacherListProps> = ({
     setIsSuccess(false);
   
     const getFilteredFormData = (data: typeof formData) => {
-      if (data.position === "ครูประจำชั้น") return data;
+      if (data.position === "คุณครูประจำชั้น") return data;
       const { class: className, ...rest } = data;
       console.log("Class Name Removed:", className); 
       return rest;
@@ -213,7 +213,7 @@ const PopUpEditTeacherList: React.FC<PopUpEditTeacherListProps> = ({
               <MemoSelectHeader
                 label="ตำแหน่ง"
                 name="position"
-                options={["ครูประจำชั้น", "ครูฝ่ายปกครอง"]}
+                options={["คุณครูประจำชั้น", "คุณครูฝ่ายปกครอง"]}
                 error={errors?.position?._errors[0]}
                 value={formData.position}
                 onChange={handleChange}
@@ -232,7 +232,7 @@ const PopUpEditTeacherList: React.FC<PopUpEditTeacherListProps> = ({
                 onChange={handleChange}
               />
             </div>
-            {formData.position === "ครูประจำชั้น" && (
+            {formData.position === "คุณครูประจำชั้น" && (
               <>
                 <div className="w-full md:w-[48%]">
                   <MemoInputHeader

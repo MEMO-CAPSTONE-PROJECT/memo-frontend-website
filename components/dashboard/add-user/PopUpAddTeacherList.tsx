@@ -15,7 +15,7 @@ const teacherSchema = z
   .object({
     firstName: z.string().min(1, "กรุณากรอกชื่อ"),
     lastName: z.string().min(1, "กรุณากรอกนามสกุล"),
-    position: z.string().min(1, "เลือกตำแหน่งของคุณ"),
+    position: z.string().min(1, "เลือกตำแหน่ง"),
     gender: z.enum(["ชาย", "หญิง"], {
       errorMap: () => ({ message: "กรุณาเลือกเพศ" }),
     }),
@@ -45,7 +45,7 @@ const teacherSchema = z
   })
   .refine(
     (data) => {
-      if (data.position === "ครูประจำชั้น") {
+      if (data.position === "คุณครูประจำชั้น") {
         return !!data.class?.level && !!data.class?.room;
       }
       return true;
@@ -59,7 +59,7 @@ const teacherSchema = z
 const DisciplinaryTeacherSchema = z.object({
   firstName: z.string().min(1, "กรุณากรอกชื่อ"),
   lastName: z.string().min(1, "กรุณากรอกนามสกุล"),
-  position: z.string().min(1, "เลือกตำแหน่งของคุณ"),
+  position: z.string().min(1, "เลือกตำแหน่ง"),
   gender: z.enum(["ชาย", "หญิง"], {
     errorMap: () => ({ message: "กรุณาเลือกเพศ" }),
   }),
@@ -144,7 +144,7 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({
     console.log("📋 Form Data ก่อน validate:", formData);
     let result = teacherSchema.safeParse(formData);
 
-    if (formData.position === "ครูฝ่ายปกครอง") {
+    if (formData.position === "คุณครูฝ่ายปกครอง") {
       result = DisciplinaryTeacherSchema.safeParse(formData);
       console.log(formData.position);
     }
@@ -160,7 +160,7 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({
     setLoading(true);
     setIsSuccess(false);
     const filteredFormData =
-      formData.position === "ครูประจำชั้น"
+      formData.position === "คุณครูประจำชั้น"
         ? formData
         : (({ class: className, ...rest }) => {
             // Use className here if you need it
@@ -233,7 +233,7 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({
               <MemoSelectHeader
                 label="ตำแหน่ง"
                 name="position"
-                options={["ครูประจำชั้น", "ครูฝ่ายปกครอง"]}
+                options={["คุณครูประจำชั้น", "คุณครูฝ่ายปกครอง"]}
                 error={errors?.position?._errors[0]}
                 value={formData.position}
                 onChange={handleChange}
@@ -252,7 +252,7 @@ const PopUpAddTeacherList: React.FC<PopUpAddTeacherListProps> = ({
                 onChange={handleChange}
               />
             </div>
-            {formData.position === "ครูประจำชั้น" && (
+            {formData.position === "คุณครูประจำชั้น" && (
               <>
                 <div className="w-full md:w-[48%]">
                   <MemoInputHeader

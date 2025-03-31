@@ -183,7 +183,7 @@ const PopUpAddStudentList: React.FC<PopUpAddStudentListProps> = ({
   
       setStudentErrors(newStudentErrors);
       setParentErrors(newParentErrors);
-      return; // หยุดการทำงานหากข้อมูลไม่ถูกต้อง
+      return; 
     }
   
     setLoading(true);
@@ -312,7 +312,7 @@ const PopUpAddStudentList: React.FC<PopUpAddStudentListProps> = ({
                     label="เพศ"
                     options={["หญิง", "ชาย"]}
                     name="gender"
-                    placeholder="กรุณาเลือกเพศของคุณ"
+                    placeholder="กรุณาเลือกเพศ"
                     value={formData.gender}
                     error={studentErrors?.gender}
                     size="full"

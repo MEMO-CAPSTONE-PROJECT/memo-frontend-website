@@ -23,7 +23,7 @@ export default function Home() {
             <p className='text-body-2 text-title font-medium'>เลือกเพื่อใช้ในการเข้าสู่ระบบ</p>
           </section>
           <div className="flex flex-row gap-5xl">
-            <Link href={"/admin/register"}>
+            <Link href={"/admin/login"}>
               <MemoCharacterCard title="คุณครูผู้ดูแลระบบ">
                 <MemoCharacterContainer size="small" svg={<TeacherManDefaultSvg size={175} />} />
               </MemoCharacterCard>

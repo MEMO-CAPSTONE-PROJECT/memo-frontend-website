@@ -42,6 +42,8 @@ interface Student {
   classRoom: number;
   gender: string;
   startDate: Date;
+  phoneNumber: string;
+  email: string;
   parents?: ParentInfo[];
 }
 
@@ -75,6 +77,8 @@ const studentFilterOptions = [
   { value: "gender", label: "เพศ" },
   { value: "classLevel", label: "ระดับชั้น" },
   { value: "classRoom", label: "ห้องเรียน" },
+  { value: "email", label: "อีเมล" },
+  { value: "phoneNumber", label: "เบอร์โทร" },
 ];
 
 const UserManagement = () => {
@@ -127,7 +131,7 @@ const UserManagement = () => {
       setLoading(false);
     }
   };
-// eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchData();
   }, [activeMenu]);
@@ -329,6 +333,8 @@ const UserManagement = () => {
     { key: "lastName", label: "นามสกุล", header: "นามสกุล" },
     { key: "gender", label: "เพศ", header: "เพศ" },
     { key: "classLevel", label: "ชั้น", header: "ชั้น" },
+    { key: "email", label: "อีเมล", header: "อีเมล" },
+    { key: "phoneNumber", label: "เบอร์โทร", header: "เบอร์โทร" },
     { key: "details", label: "ข้อมูลเพิ่มเติม", header: "ข้อมูลเพิ่มเติม" },
     { key: "action", label: "แอคชั่น", header: "แอคชั่น" },
   ];
@@ -352,13 +358,13 @@ const UserManagement = () => {
   const handleEditStudent = (studentId: string) => {
     console.log("Selected Student ID: ", studentId);
     console.log("Students List: ", students);
-  
+
     const studentToEdit = students.find(
       (student) => String(student.studentId) === String(studentId)
     );
-  
+
     console.log("Found Student: ", studentToEdit);
-  
+
     if (studentToEdit) {
       setSelectedStudentId(studentId);
       setStudentData(studentToEdit);
@@ -367,10 +373,7 @@ const UserManagement = () => {
       console.error("Student not found!");
     }
   };
-  
-  
-  
-  
+
   const handleCloseEditStudentPopUp = () => {
     setIsPopUpEditStudentOpen(false); // Close the pop-up
     setSelectedStudentId(null);
@@ -559,62 +562,66 @@ const UserManagement = () => {
             />
           )}
 
-{activeMenu === "รายชื่อนักเรียน" && (
-      <Table
-        data={paginateData(filteredStudents)}
-        columns={studentColumns}
-        renderRow={(student) => [
-          ...(deletingMode
-            ? [
-                <input
-                  key={`checkbox-${student.studentId}`}
-                  type="checkbox"
-                  checked={selectedStudents.includes(student.studentId)}
-                  onChange={() => handleSelectStudent(student.studentId)}
-                />,
-              ]
-            : []),
-          <span key={`${student.studentId}-id`}>
-            {student.studentId}
-          </span>,
-          <span key={`${student.studentId}-firstName`}>
-            {student.firstName}
-          </span>,
-          <span key={`${student.studentId}-lastName`}>
-            {student.lastName}
-          </span>,
-          <span key={`${student.studentId}-gender`}>
-            {student.gender}
-          </span>,
-          <span key={`${student.studentId}-class`}>
-            ป. {student.classLevel}/{student.classRoom}
-          </span>,
-          <button
-            key={`${student.studentId}-details`}
-            className="text-system-button underline"
-            onClick={() => handleShowDetails(student.parents ?? [])}
-          >
-            รายละเอียด
-          </button>,
-          <div
-            key={`${student.studentId}-actions`}
-            className="flex justify-center"
-          >
-            <button
-              className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2"
-              onClick={() =>
-                handleEditStudent(student.studentId.toString())
-              }
-            >
-              <EditIcon className="h-6 w-6" />
-              <span>แก้ไข</span>
-            </button>
-          </div>,
-        ]}
-        loading={loading}
-        error={error}
-      />
-    )}
+          {activeMenu === "รายชื่อนักเรียน" && (
+            <Table
+              data={paginateData(filteredStudents)}
+              columns={studentColumns}
+              renderRow={(student) => [
+                ...(deletingMode
+                  ? [
+                      <input
+                        key={`checkbox-${student.studentId}`}
+                        type="checkbox"
+                        checked={selectedStudents.includes(student.studentId)}
+                        onChange={() => handleSelectStudent(student.studentId)}
+                      />,
+                    ]
+                  : []),
+                <span key={`${student.studentId}-id`}>
+                  {student.studentId}
+                </span>,
+                <span key={`${student.studentId}-firstName`}>
+                  {student.firstName}
+                </span>,
+                <span key={`${student.studentId}-lastName`}>
+                  {student.lastName}
+                </span>,
+                <span key={`${student.studentId}-gender`}>
+                  {student.gender}
+                </span>,
+                <span key={`${student.studentId}-class`}>
+                  ป. {student.classLevel}/{student.classRoom}
+                </span>,
+                <span key={`${student.email}-email`}>{student.email}</span>,
+                <span key={`${student.phoneNumber}-phoneNumber`}>
+                  {student.phoneNumber}
+                </span>,
+                <button
+                  key={`${student.studentId}-details`}
+                  className="text-system-button underline"
+                  onClick={() => handleShowDetails(student.parents ?? [])}
+                >
+                  รายละเอียด
+                </button>,
+                <div
+                  key={`${student.studentId}-actions`}
+                  className="flex justify-center"
+                >
+                  <button
+                    className="bg-system-button text-system-white px-2 py-2 rounded-sm flex items-center space-x-2"
+                    onClick={() =>
+                      handleEditStudent(student.studentId.toString())
+                    }
+                  >
+                    <EditIcon className="h-6 w-6" />
+                    <span>แก้ไข</span>
+                  </button>
+                </div>,
+              ]}
+              loading={loading}
+              error={error}
+            />
+          )}
 
           <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex justify-center mt-4  bg-white p-3 pl-20 ">
             <button
@@ -770,21 +777,20 @@ const UserManagement = () => {
               onClose={() => setIsPopupEditeTeacherOpen(false)}
               onEditSuccess={() => {
                 setIsPopupEditeTeacherOpen(false);
-                // คุณอาจต้องการโหลดข้อมูลใหม่หรือรีเฟรชข้อมูลครูที่มีอยู่
+                fetchData();
               }}
             />
           )}
 
-{isPopUpEditStudentOpen && studentData && selectedStudentId && (
-  <PopUpEditStudent
-    isOpen={isPopUpEditStudentOpen}
-    onClose={handleCloseEditStudentPopUp}
-    onEditSuccess={handleCloseEditStudentPopUp} // Close after success
-    studentId={selectedStudentId}
-    initialData={studentData}
-  />
-)}
-
+          {isPopUpEditStudentOpen && studentData && selectedStudentId && (
+            <PopUpEditStudent
+              isOpen={isPopUpEditStudentOpen}
+              onClose={handleCloseEditStudentPopUp}
+              onEditSuccess={handleCloseEditStudentPopUp} 
+              studentId={selectedStudentId}
+              initialData={studentData}
+            />
+          )}
         </div>
       </div>
     </AuthGuard>
