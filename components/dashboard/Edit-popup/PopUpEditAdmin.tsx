@@ -135,7 +135,9 @@ const PopUpEditAdminList: React.FC<PopUpEditAdminListProps> = ({
   
       setTimeout(() => {
         onEditSuccess();
+        handleCancel()
       }, 1500);
+      
   
     } catch (error) {
       console.error("เกิดข้อผิดพลาดในการแก้ไข:", error);
