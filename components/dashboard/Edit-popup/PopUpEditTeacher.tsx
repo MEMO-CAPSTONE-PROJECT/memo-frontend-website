@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
 import apiClient from "@/components/axios/axiosConfig";
+import { useEffect, useState } from "react";
 import { z, type ZodFormattedError } from "zod";
 
-import { MEMO_API } from "@/constants/apis";
+import MemoButton from '@/components/button/memo-button';
+import MemoPopUp from '@/components/container/memo-popup-time';
 import MemoInputHeader from "@/components/input/header/memo-input-header";
 import MemoSelectHeader from "@/components/input/header/memo-select-header";
-import MemoButton from '@/components/button/memo-button'
-import MemoPopUp from '@/components/container/memo-popup-time';
+import { MEMO_API } from "@/constants/apis";
 
 import SuccessIcon from "@/components/ui/icons/pop-up/success-icon";
 import { FaSpinner } from "react-icons/fa";
@@ -20,8 +20,8 @@ const teacherSchema = z
     gender: z.enum(["ชาย", "หญิง"], { errorMap: () => ({ message: "กรุณาเลือกเพศ" }) }),
     class: z
       .object({
-        level: z.string().min(1, "กรุณากรอกชั้นเรียน").regex(/^[1-4]$/, "ชั้นเรียนต้องเป็นตัวเลขจาก 1 ถึง 4"),
-        room: z.string().min(1, "กรุณากรอกห้องเรียน").regex(/^[1-6]$/, "ห้องเรียนต้องเป็นตัวเลขจาก 1 ถึง 6"),
+        level: z.string().min(1, "กรุณากรอกชั้นเรียน").regex(/^[4-6]$/, "ชั้นเรียนต้องเป็นตัวเลขจาก 4 ถึง 6"),
+        room: z.string().min(1, "กรุณากรอกห้องเรียน"),
       })
 ,
     email: z

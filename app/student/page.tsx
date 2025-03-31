@@ -4,7 +4,6 @@ import Link from "next/link";
 import { FormEvent, Fragment, useState } from "react";
 import { z } from "zod";
 
-import { MEMO_API } from '@/constants/apis';
 import BrandingBackground from "@/components/background/branding-background";
 import MemoButton from "@/components/button/memo-button";
 import MemoOTPPopup from '@/components/container/memo-otp';
@@ -14,6 +13,7 @@ import MemoErrorMessage from "@/components/helper/memo-error-message";
 import MemoInputHeader from "@/components/input/header/memo-input-header";
 import MemoSelectHeader from "@/components/input/header/memo-select-header";
 import MultiStep from "@/components/step/multi-step";
+import { MEMO_API } from '@/constants/apis';
 
 import LetterIcon from '@/components/ui/icons/letter';
 import StudentIcon from "@/components/ui/icons/registration/student";
@@ -40,12 +40,12 @@ const Step2Schema = z.object({
   gender: z.string().min(1, "กรุณากรอกเพศของนักเรียน"),
   classroom: z
     .string()
-    .regex(/^[1-4]$/, "ชั้นเรียนต้องเป็นตัวเลขจาก 1 ถึง 4")
-    .min(1, "กรุณากรอกห้องเรียนของนักเรียน"),
+    .regex(/^[4-6]$/, "ห้องเรียนต้องเป็นตัวเลขจาก 4 ถึง 6")
+    .min(1, "กรุณากรอกชั้นเรียนของนักเรียน"),
   classLevel: z
     .string()
-    .regex(/^[1-6]$/, "ห้องเรียนต้องเป็นตัวเลขจาก 1 ถึง 6")
-    .min(1, "กรุณากรอกชั้นเรียนของนักเรียน"),
+    .min(1, "กรุณากรอกห้องเรียนของนักเรียน"),
+    
 });
 
 const Step3Schema = z.object({

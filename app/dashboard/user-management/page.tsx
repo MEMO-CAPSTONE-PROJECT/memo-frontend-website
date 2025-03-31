@@ -1,27 +1,28 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-import { MEMO_API } from "@/constants/apis";
+import AuthGuard from "@/components/AuthGuard/AuthGuard";
 import apiClient from "@/components/axios/axiosConfig";
-import Table from "@/components/dashboard/table";
+import MemoButton from "@/components/button/memo-button";
+import TopbarButton from "@/components/button/memo-topbar";
+import MemoPopUp from "@/components/container/memo-popup-notime";
+import UploadStudentExcel from "@/components/dashboard/add-user-excel/UploadStudentExcel";
+import UploadTeacherExcel from "@/components/dashboard/add-user-excel/UploadTeacherExcel";
+import PopUpAddStudentList from "@/components/dashboard/add-user/PopUpAddStudentList";
+import PopUpAddTeacherList from "@/components/dashboard/add-user/PopUpAddTeacherList";
+import PopUpEditStudent from "@/components/dashboard/Edit-popup/PopUpEditStudent";
+import PopUpEditTeacher from "@/components/dashboard/Edit-popup/PopUpEditTeacher";
 import Filterbutton from "@/components/dashboard/filterbutton";
 import Searchbar from "@/components/dashboard/searchbar";
 import Sidebar from "@/components/dashboard/sidebar";
-import TopbarButton from "@/components/button/memo-topbar";
-import MemoPopUp from "@/components/container/memo-popup-notime";
-import MemoButton from "@/components/button/memo-button";
-import AuthGuard from "@/components/AuthGuard/AuthGuard";
-import PopUpAddTeacherList from "@/components/dashboard/add-user/PopUpAddTeacherList";
-import PopUpAddStudentList from "@/components/dashboard/add-user/PopUpAddStudentList";
-import UploadTeacherExcel from "@/components/dashboard/add-user-excel/UploadTeacherExcel";
-import UploadStudentExcel from "@/components/dashboard/add-user-excel/UploadStudentExcel";
-import PopUpEditTeacher from "@/components/dashboard/Edit-popup/PopUpEditTeacher";
-import PopUpEditStudent from "@/components/dashboard/Edit-popup/PopUpEditStudent";
+import Table from "@/components/dashboard/table";
+import { MEMO_API } from "@/constants/apis";
 
-import EditIcon from "@/components/ui/icons/dashboard/edit-icon";
 import CaretLefttIcon from "@/components/ui/icons/dashboard/caret-left";
 import CaretRightIcon from "@/components/ui/icons/dashboard/caret-right";
+import EditIcon from "@/components/ui/icons/dashboard/edit-icon";
 import TrashIcon from "@/components/ui/icons/dashboard/trash-icon";
+import { CaretDown } from "@phosphor-icons/react/dist/ssr";
 
 interface Teacher {
   teacherId: string;
@@ -81,7 +82,7 @@ const studentFilterOptions = [
   { value: "phoneNumber", label: "เบอร์โทร" },
 ];
 
-const UserManagement = () => {
+export default function UserManagement() {
   const [activeMenu, setActiveMenu] = useState<string>("รายชื่อครู");
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
@@ -134,7 +135,7 @@ const UserManagement = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchData();
-  }, [activeMenu]);
+  }, []);
 
   useEffect(() => {
     if (activeMenu === "รายชื่อครู") {
@@ -472,14 +473,14 @@ const UserManagement = () => {
               {!deletingMode && (
                 <button
                   onClick={() => setIsOpen(!isOpen)}
-                  className="bg-system-success-2 rounded-sm w-32 text-system-white h-full"
+                  className="flex flex-row justify-center items-center gap-x-sm bg-system-success-2 rounded-sm w-32 text-system-white h-full"
                 >
-                  เพิ่มผู้ใช้ ▼
+                  เพิ่มผู้ใช้ <CaretDown weight="bold" size={20}/>
                 </button>
               )}
 
               {isOpen && (
-                <div className="absolute right-0 mt- w-48 bg-system-white border border-2 border-xsm border-system-gray">
+                <div className="absolute right-0 w-48 bg-system-white border border-2 border-xsm border-system-gray rounded-sm overflow-hidden">
                   <button
                     onClick={() => {
                       setIsPopupOpen(true);
@@ -797,4 +798,3 @@ const UserManagement = () => {
   );
 };
 
-export default UserManagement;
