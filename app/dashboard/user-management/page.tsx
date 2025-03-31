@@ -136,7 +136,7 @@ export default function UserManagement() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [activeMenu]);
 
   useEffect(() => {
     if (activeMenu === "รายชื่อครู") {

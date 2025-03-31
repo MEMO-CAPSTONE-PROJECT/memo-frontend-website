@@ -15,6 +15,7 @@ const studentSchema = z.object({
   lastName: z.string().min(1, "กรุณากรอกนามสกุลนักเรียน"),
   classRoom: z
     .string()
+    .regex(/^\d+$/, "กรุณากรอกเป็นตัวเลข")
     .min(1, "กรุณากรอกห้องเรียน"),
   classLevel: z
     .string()

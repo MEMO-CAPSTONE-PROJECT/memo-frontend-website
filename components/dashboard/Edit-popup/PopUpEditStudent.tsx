@@ -21,14 +21,14 @@ const studentSchema = z.object({
     .regex(/^[4-6]$/, "ชั้นเรียนต้องเป็นตัวเลขจาก 4 ถึง 6"),
   classRoom: z
     .string()
+    .regex(/^\d+$/, "กรุณากรอกเป็นตัวเลข")
     .min(1, "กรุณากรอกห้องเรียน"),
   displayName: z.string().min(1, "กรุณากรอกชื่อผู้ใช้"),
-  gender: z.enum(["ชาย", "หญิง"], {
-    errorMap: () => ({ message: "กรุณาเลือกเพศ" }),
-  }),
-  emailStudent: z.string().email("กรุณากรอกอีเมลของนักเรียน"),
+  gender: z.enum(["ชาย", "หญิง"], { errorMap: () => ({ message: "กรุณาเลือกเพศ" }) }),
+  emailStudent: z.string().email("กรุณากรอกอีเมลของนักเรียน").min(1, "กรุณากรอกอีเมล"),
   phoneNumber: z
     .string()
+    .min(1, "กรุณากรอกเบอร์")
     .regex(/^\d+$/, "เบอร์โทรศัพท์ต้องเป็นตัวเลข")
     .length(10, "เบอร์โทรศัพท์ต้องมีจำนวน 10 หลัก"),
 });
@@ -107,7 +107,7 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
       await apiClient.put(`${MEMO_API.studentEdit}/${studentId}`, formData);
       onEditSuccess();
       setIsSuccess(true);
-
+      console.log(formData)
       setTimeout(() => {
         setIsSuccess(false);
         handleClose();
@@ -127,7 +127,7 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
     <div className="fixed inset-0 flex items-center justify-center bg-title-1 bg-opacity-50 px-4">
       <div className="bg-system-white p-6 md:p-8 rounded-lg shadow-lg w-full max-w-lg md:max-w-2xl relative">
         <h2 className="font-bold mb-4 text-[18px] text-left">
-          เพิ่มรายชื่อนักเรียน
+          แก้ไขรายชื่อนักเรียน
         </h2>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="flex flex-wrap gap-4">
