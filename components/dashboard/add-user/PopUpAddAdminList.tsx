@@ -140,7 +140,7 @@ const PopUpAddAdmin: React.FC<PopUpAddAdminProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-title-1 bg-opacity-50 px-4">
+    <div className="z-50 fixed inset-0 flex items-center justify-center bg-title-1 bg-opacity-50 px-4">
       <div className="bg-system-white p-6 md:p-8 rounded-md shadow-lg w-full max-w-lg md:max-w-2xl relative">
         <h2 className="font-bold mb-4 text-[18px] text-left">
           เพิ่มข้อมูล Admin

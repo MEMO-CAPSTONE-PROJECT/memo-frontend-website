@@ -243,7 +243,7 @@ const PopUpAddStudentList: React.FC<PopUpAddStudentListProps> = ({
 
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-title-1 bg-opacity-50 px-4">
+    <div className="z-50 fixed inset-0 flex items-center justify-center bg-title-1 bg-opacity-50 px-4">
       <div className="bg-system-white p-6 md:p-8 rounded-lg shadow-lg w-full max-w-lg md:max-w-2xl relative">
         {step === 1 ? (
           <>

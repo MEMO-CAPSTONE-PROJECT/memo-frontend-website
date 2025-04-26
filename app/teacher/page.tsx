@@ -42,7 +42,7 @@ export default function TeacherRegistrationForm() {
           .min(1, "กรุณากรอกห้องเรียนของคุณครู"),
         level: z
           .string()
-          .regex(/^\d+$/, "ชั้นเรียนของคุณครูต้องเป็นตัวเลข")
+          .regex(/^[4-6]$/, "ชั้นเรียนต้องเป็นตัวเลขจาก 4 ถึง 6")
           .min(1, "กรุณากรอกชั้นเรียนของคุณครู"),
       }).optional(),
     }),
@@ -271,7 +271,7 @@ export default function TeacherRegistrationForm() {
             <MemoSelectHeader
               label="ตำแหน่ง"
               name="position"
-              options={["ครูประจำชั้น", "คุณครูฝ่ายปกครอง"]}
+              options={["คุณครูประจำชั้น", "คุณครูฝ่ายปกครอง"]}
               error={errors?.registerTeacherData?.position?._errors[0]}
               value={formData.registerTeacherData.position}
               onChange={handleSelect}

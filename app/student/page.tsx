@@ -40,10 +40,11 @@ const Step2Schema = z.object({
   gender: z.string().min(1, "กรุณากรอกเพศของนักเรียน"),
   classroom: z
     .string()
-    .regex(/^[4-6]$/, "ห้องเรียนต้องเป็นตัวเลขจาก 4 ถึง 6")
+    .regex(/^\d+$/, "กรุณากรอกเป็นตัวเลข")
     .min(1, "กรุณากรอกชั้นเรียนของนักเรียน"),
   classLevel: z
     .string()
+    .regex(/^[4-6]$/, "ชั้นเรียนต้องเป็นตัวเลขจาก 4 ถึง 6")
     .min(1, "กรุณากรอกห้องเรียนของนักเรียน"),
     
 });
@@ -331,7 +332,7 @@ export default function StudentRegistrationForm() {
                     setStudent({ ...student, gender: e.target.value })
                   } />
 
-              <div className="w-[48%] flex space-x-4">
+              <div className="flex space-x-4">
                 <MemoInputHeader
                   text="ชั้นเรียน"
                   type="text"
