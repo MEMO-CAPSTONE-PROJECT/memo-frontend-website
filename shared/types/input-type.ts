@@ -3,6 +3,7 @@ export interface MemoInputSize {
     full: string
     medium: string
     small: string
+    none: string
 }
 export interface MemoInputVariant {
     default: InputContainer

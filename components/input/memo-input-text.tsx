@@ -19,7 +19,7 @@ export default function MemoInputText({
     return (
         <div className={`group input flex items-center pr-3 ${container} ${containerSize}`}>
             <input 
-                className={twMerge(`grow font-regular text-body group-hover:!border-primary-2`, inputClassName)}
+                className={twMerge(`w-full font-regular text-body group-hover:!border-primary-2`, inputClassName)}
                 disabled={state === "disabled"}
                 {...inputProps}
             />

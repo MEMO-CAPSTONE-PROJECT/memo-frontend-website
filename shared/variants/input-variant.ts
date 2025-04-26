@@ -27,4 +27,5 @@ export const InputSizes: MemoInputSize = {
     full: "w-full",
     medium: "w-96", //384px
     small: "w-48", //192px
+    none: ""
 }

@@ -5,7 +5,7 @@ export type MemoSelectHelperProps = MemoSelectProps & MemoErrorMessageProps
 
 export default function MemoSelectHelper({ error, ...input }: Readonly<MemoSelectHelperProps>) {
     return (
-        <div className="flex flex-col gap-sm">
+        <div className="flex-1 flex flex-col gap-sm">
             <MemoSelect state={error ? "error" : input.state} {...input}/>
             <MemoErrorMessage error={error}/>
         </div>

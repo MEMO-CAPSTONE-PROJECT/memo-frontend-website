@@ -5,7 +5,7 @@ type MemoInputTextHelperProps = MemoInputTextProps & MemoErrorMessageProps
 
 export default function MemoInputTextHelper({ error, ...input }: Readonly<MemoInputTextHelperProps>) {
     return (
-        <div className="flex flex-col gap-sm">
+        <div className="flex-1 flex flex-col gap-sm">
             <MemoInputText state={error ? "error" : input.state} {...input}/>
             <MemoErrorMessage error={error}/>
         </div>

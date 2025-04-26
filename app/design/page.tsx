@@ -67,6 +67,10 @@ export default function DesignPage() {
                     <hr className="text-system-gray"/>
                     <MemoInputTextHelper placeholder="Placeholder Text" error={error} size="full" />
                     <MemoInputTextHelper placeholder="Placeholder Text" size="full"/> 
+                    <div className="flex gap-x-lg">
+                        <MemoInputTextHelper placeholder="Placeholder Text" error={error} size="full"/>
+                        <MemoInputTextHelper placeholder="Placeholder Text" size="full"/> 
+                    </div>
                 </div>
             </DesignBorder>
             <DesignBorder title="OtpInputText" center>
@@ -89,6 +93,14 @@ export default function DesignPage() {
                     <MemoButton title={error ? "ปิดแสดงเออเร่อ" : "แสดงเออเร่อ"} variant="ghost" onClick={() => setError(error ? undefined : "Error Text")} />
                     <MemoSelectHelper options={["Option 1", "Option 2", "Option 3"]} placeholder="Placeholder Text" error={error} size="full" />
                     <MemoSelectHelper options={["Option 1", "Option 2", "Option 3"]} placeholder="Placeholder Text" size="full"/>
+                    <div className="flex gap-x-lg">
+                        <MemoSelectHelper options={["Option 1", "Option 2", "Option 3"]} placeholder="Placeholder Text" error={error} size="full" />
+                        <MemoSelectHelper options={["Option 1", "Option 2", "Option 3"]} placeholder="Placeholder Text" error={error} size="full" />
+                    </div>
+                    <div className="flex gap-x-lg">
+                        <MemoSelectHelper options={["Option 1", "Option 2", "Option 3"]} placeholder="Placeholder Text" error={error} size="full" />
+                        <MemoInputTextHelper placeholder="Placeholder Text" size="full"/> 
+                    </div>
                 </div>
             </DesignBorder>
         </div>
