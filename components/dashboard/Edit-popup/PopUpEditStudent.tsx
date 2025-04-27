@@ -204,7 +204,7 @@ const PopUpEditStudentList: React.FC<PopUpEditStudentListProps> = ({
                 name="emailStudent"
                 placeholder="กรุณาพิมพ์อีเมลของนักเรียน"
                 error={errors?.email?._errors?.[0]}
-                value={formData.email}
+                value={formData.emailStudent}
                 onChange={handleChange}
               />
             </div>
