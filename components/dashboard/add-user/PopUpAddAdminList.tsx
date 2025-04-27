@@ -1,12 +1,12 @@
-import { useState,useMemo,useEffect } from "react";
 import apiClient from "@/components/axios/axiosConfig";
-import { z, type ZodFormattedError } from "zod";
-import { MEMO_API } from "@/constants/apis";
-import MemoInputHeader from "@/components/input/header/memo-input-header";
 import MemoButton from "@/components/button/memo-button";
 import MemoPopUp from "@/components/container/memo-popup-time";
+import MemoInputHeader from "@/components/input/header/memo-input-header";
 import SuccessIcon from "@/components/ui/icons/pop-up/success-icon";
+import { MEMO_API } from "@/constants/apis";
+import { useEffect, useMemo, useState } from "react";
 import { FaSpinner } from "react-icons/fa";
+import { z, type ZodFormattedError } from "zod";
 
 const adminSchema = z
   .object({
@@ -143,7 +143,7 @@ const PopUpAddAdmin: React.FC<PopUpAddAdminProps> = ({
     <div className="z-50 fixed inset-0 flex items-center justify-center bg-title-1 bg-opacity-50 px-4">
       <div className="bg-system-white p-6 md:p-8 rounded-md shadow-lg w-full max-w-lg md:max-w-2xl relative">
         <h2 className="font-bold mb-4 text-[18px] text-left">
-          เพิ่มข้อมูล Admin
+          เพิ่มข้อมูลผู้ดูแลระบบ
         </h2>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="flex flex-wrap gap-4">

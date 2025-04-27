@@ -23,6 +23,24 @@ const Sidebar = () => {
 
   ];
 
+  const token = localStorage.getItem("userToken")
+  function parseJwt(token: string) {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+
+      return JSON.parse(jsonPayload);
+  }
+  const user = parseJwt(token as string)
+
+  function formatString(str: string | undefined, mock: string) {
+    if (str === undefined || str.trim() === '')
+      return mock
+    return str
+  }
+
   const handleNavigation = (path: string) => {
     router.push(path);
   };
@@ -34,7 +52,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-fit bg-primary-2 h-screen flex flex-col p-4 text-white justify-between overflow-hidden relative">
+    <div className="w-80 bg-primary-2 h-screen flex flex-col p-4 text-white justify-between overflow-hidden relative">
       <div className="z-0 absolute -top-32 -left-48 opacity-20 w-96 h-96 border-[8rem] border-primary-3 rounded-full"/>
       <div className="z-0 absolute -bottom-32 -left-32 opacity-20 w-96 h-96 border-[8rem] border-primary-3 rounded-full"/>
       <div className="z-10">
@@ -46,8 +64,8 @@ const Sidebar = () => {
         <div className="bg-system-light-gray rounded-[15px] flex flex-col p-6 relative overflow-hidden">
           <div className="z-0 absolute -top-7 -right-7 opacity-10 w-20 h-20 border-[1.75rem] border-body-1 rounded-full"/>
           <div className="z-0 absolute -bottom-10 right-8 opacity-10 w-20 h-20 border-[1.75rem] border-body-1 rounded-full"/>
-          <p className="z-10 text-title-1 text-[16px] font-bold mb-1">นายดวงเจริญ สิวะสุธรรม</p>
-          <p className="z-10 text-body-1 text-[14px]">ครูประจำฝ่ายธุรการ</p>
+          <p className="z-10 text-title-1 text-[16px] font-bold mb-1">{formatString(user?.firstName, "ดวงเจริญ")} {formatString(user?.lastName, "สิวะสุธรรม")}</p>
+          <p className="z-10 text-body-1 text-[14px]">{formatString(user?.position,"ครูประจำฝ่ายธุรการ")}</p>
         </div>
 
         <div className="mt-4">

@@ -385,10 +385,10 @@ export default function UserManagement() {
 
   return (
     <AuthGuard>
-      <div className="flex bg-system-white w-full">
+      <div className="flex bg-system-white w-screen">
         <Sidebar />
         {/* <div className="ml-4 pt-6 p-6 text-title-1 w-fit bg-system-white"> */}
-        <div className="flex-1 p-8 text-title-1 w-full bg-system-white">
+        <div className="ml-4 pt-6 p-6 text-title-1 w-full bg-system-white">
           <div className="flex ">
             <TopbarButton
               name="รายชื่อครู"
@@ -490,7 +490,7 @@ export default function UserManagement() {
                     }}
                     className="block w-full text-left px-4 py-2 hover:bg-body-2"
                   >
-                    เพิ่มผู้ใช้จาก Form
+                    เพิ่มผู้ใช้จากแบบฟอร์ม
                   </button>
                   <button
                     onClick={() => setIsOpenPopUpExcel(true)}

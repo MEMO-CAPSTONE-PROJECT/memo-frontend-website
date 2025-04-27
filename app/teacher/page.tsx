@@ -279,7 +279,7 @@ export default function TeacherRegistrationForm() {
             />
           </div>
           {formData.registerTeacherData.position === "คุณครูประจำชั้น" && (
-            <div className="w-full md:w-[48%] flex space-x-4">
+            <div className="flex space-x-4">
               <MemoInputHeader
                 text="ชั้นเรียน"
                 type="text"

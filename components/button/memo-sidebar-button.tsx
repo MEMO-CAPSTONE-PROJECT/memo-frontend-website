@@ -13,7 +13,7 @@ const SidebarButton: React.FC<SidebarButtonProps> = ({ name, isActive, onClick, 
   onClick={onClick}
   className={`
     text-[16px] py-3 px-4 mb-2 w-full
-    rounded-[15px] flex items-center
+    rounded-md flex items-center
     ${isActive ? "bg-primary-2-hover text-system-white" : "bg-transparent text-system-white"}
     hover:bg-system-white hover:bg-opacity-25
     cursor-pointer transition-colors

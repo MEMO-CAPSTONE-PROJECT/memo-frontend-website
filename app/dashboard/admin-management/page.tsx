@@ -1,17 +1,17 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import Sidebar from "@/components/dashboard/sidebar";
-import apiClient from "@/components/axios/axiosConfig";
-import Table from "@/components/dashboard/table";
-import { MEMO_API } from "@/constants/apis";
 import AuthGuard from "@/components/AuthGuard/AuthGuard";
+import apiClient from "@/components/axios/axiosConfig";
+import MemoButton from "@/components/button/memo-button";
+import MemoPopUp from "@/components/container/memo-popup-notime"; // เพิ่ม Import สำหรับ MemoPopUp
 import PopUpAddAdminList from "@/components/dashboard/add-user/PopUpAddAdminList";
 import PopUpEditAdminList from "@/components/dashboard/Edit-popup/PopUpEditAdmin";
-import MemoButton from "@/components/button/memo-button";
 import Searchbar from "@/components/dashboard/searchbar";
+import Sidebar from "@/components/dashboard/sidebar";
+import Table from "@/components/dashboard/table";
 import EditIcon from "@/components/ui/icons/dashboard/edit-icon";
 import TrashIcon from "@/components/ui/icons/dashboard/trash-icon";
-import MemoPopUp from "@/components/container/memo-popup-notime"; // เพิ่ม Import สำหรับ MemoPopUp
+import { MEMO_API } from "@/constants/apis";
+import { useEffect, useState } from "react";
 
 interface AdminTable {
   teacherId: number;
@@ -75,7 +75,7 @@ const AdminManagement = () => {
     { header: "นามสกุล", key: "lastName" },
     { header: "ชื่อผู้ใช้", key: "username" },
     { header: "อีเมล", key: "email" },
-    { header: "Action", key: "action" },
+    { header: "แอ็คชั่น", key: "action" },
   ];
 
   const renderRow = (item: AdminTable): (JSX.Element | string | number)[] => [
