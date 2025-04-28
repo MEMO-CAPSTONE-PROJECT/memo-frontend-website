@@ -8,12 +8,14 @@ import UserlistIcon from "@/components/ui/icons/sidebar-icons/user-list";
 import UsersIcon from "@/components/ui/icons/sidebar-icons/users";
 import WarningIcon from "@/components/ui/icons/sidebar-icons/warningIcon";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Sidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  const [user, setUser] = useState<any>()
 
   const menuItems = [
     { name: "รายชื่อ", path: "/dashboard/user-management", icon: <UserlistIcon /> },
@@ -23,17 +25,21 @@ const Sidebar = () => {
 
   ];
 
-  const token = localStorage.getItem("userToken")
-  function parseJwt(token: string) {
+  useEffect(() => {
+    const token = localStorage.getItem("userToken")
+    function parseJwt(token: string) {
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
       }).join(''));
 
       return JSON.parse(jsonPayload);
-  }
-  const user = parseJwt(token as string)
+    }
+    const user = parseJwt(token as string)
+    setUser(user)
+    
+  },[])
 
   function formatString(str: string | undefined, mock: string) {
     if (str === undefined || str.trim() === '')
