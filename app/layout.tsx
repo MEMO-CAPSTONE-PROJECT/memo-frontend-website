@@ -4,11 +4,12 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Memo Dashboard",
-  description: "This a online school report system.",
+  description: "This is an online school report system.",
   icons: {
-    icon: "./logo.png",
-  }
-}
+    icon: "/logo.png", 
+  },
+};
+
 
 const kanit = Kanit({
   subsets: ['latin'],

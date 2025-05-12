@@ -3,15 +3,27 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+// แปลง Base64URL → Base64 แล้วใช้ atob
+const base64UrlDecode = (str: string) => {
+  const base64 = str.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, "=");
+  return atob(padded);
+};
+
 const checkAuth = () => {
-  if (typeof window === "undefined") return false; // ป้องกันการรันบน Server
-  const token = localStorage.getItem("userToken");
+  if (typeof window === "undefined") return false; // สำหรับ SSR
+  let token = localStorage.getItem("userToken");
   if (!token) return false;
+
+  if (token.startsWith("Bearer ")) {
+    token = token.slice(7);
+  }
+
   try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
+    const payload = JSON.parse(base64UrlDecode(token.split(".")[1]));
     return payload.exp * 1000 > Date.now();
   } catch (e) {
-    console.log(e);
+    console.error("Token parsing error:", e);
     return false;
   }
 };
@@ -27,7 +39,7 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
         localStorage.removeItem("userToken");
         router.push("/admin/login");
       }
-      setChecked(true); // ป้องกันไม่ให้ `useEffect()` ทำงานซ้ำ
+      setChecked(true);
     }
   }, [checked, router]);
 
